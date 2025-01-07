@@ -1,3 +1,5 @@
+use const_format::formatcp;
+
 /// API incompatible changes.
 pub const VERSION_MAJOR: u32 = 1;
 
@@ -10,9 +12,15 @@ pub const VERSION_PATCH: u32 = 0;
 /// Indicates development branch. Releases will be empty string.
 pub const VERSION_DEV: &str = "-dev";
 
+/// Retrieve the version as static str representation.
+pub const VERSION: &str = formatcp!("{VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}{VERSION_DEV}");
+
 /// Retrieve the version as string representation.
+///
+/// Use [`VERSION`] instead.
+#[deprecated]
 pub fn version() -> String {
-    format!("{VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}{VERSION_DEV}")
+    VERSION.to_owned()
 }
 
 #[cfg(test)]
@@ -20,7 +28,8 @@ mod tests {
     use super::*;
 
     #[test]
+    #[allow(deprecated)]
     fn version_test() {
-        assert_eq!(version(), "1.0.0-dev".to_string())
+        assert_eq!(VERSION, "1.0.0-dev".to_string())
     }
 }
