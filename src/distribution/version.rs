@@ -30,6 +30,6 @@ mod tests {
     #[test]
     #[allow(deprecated)]
     fn version_test() {
-        assert_eq!(VERSION, "1.0.0-dev".to_string())
+        assert_eq!(version(), "1.0.0-dev".to_string())
     }
 }
