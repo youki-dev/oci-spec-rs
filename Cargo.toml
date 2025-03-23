@@ -7,7 +7,7 @@ authors = [
     "Sascha Grunert <sgrunert@redhat.com>",
     "Toru Komatsu <k0ma@utam0k.jp>",
 ]
-description = "Open Container Initiative Specifictions in Rust"
+description = "Open Container Initiative Specifications in Rust"
 documentation = "https://docs.rs/oci-spec"
 readme = "README.md"
 homepage = "https://github.com/youki-dev/oci-spec-rs"

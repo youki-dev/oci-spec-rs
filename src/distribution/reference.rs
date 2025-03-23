@@ -33,7 +33,7 @@ pub enum ParseError {
     /// Will be returned if digest is ill-formed
     #[error("invalid checksum digest format")]
     DigestInvalidFormat,
-    /// Will be returned if digest does not have a correct lenght
+    /// Will be returned if digest does not have a correct length
     #[error("invalid checksum digest length")]
     DigestInvalidLength,
     /// Will be returned for an unknown digest algorithm

@@ -93,7 +93,7 @@ pub struct Linux {
     time_offsets: Option<HashMap<String, String>>,
 }
 
-// Default impl for Linux (see funtions for more info)
+// Default impl for Linux (see functions for more info)
 impl Default for Linux {
     fn default() -> Self {
         Linux {
@@ -271,7 +271,7 @@ pub struct LinuxDeviceCgroup {
     /// Device's minor number
     minor: Option<i64>,
 
-    /// Cgroup access premissions format, rwm.
+    /// Cgroup access permissions format, rwm.
     #[serde(default)]
     #[getset(get_mut = "pub", get = "pub", set = "pub")]
     access: Option<String>,
@@ -648,7 +648,7 @@ pub struct LinuxInterfacePriority {
 /// and you get the ToString implementation for free.
 impl Display for LinuxInterfacePriority {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        // Serde seralization never fails since this is
+        // Serde serialization never fails since this is
         // a combination of String and enums.
         writeln!(f, "{} {}", self.name, self.priority)
     }

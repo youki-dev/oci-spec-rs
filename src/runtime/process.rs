@@ -129,7 +129,7 @@ impl Default for Process {
             user: Default::default(),
             // By default executes sh command, giving user shell
             args: vec!["sh".to_string()].into(),
-            // Sets linux default enviroment for binaries and default xterm emulator
+            // Sets linux default environment for binaries and default xterm emulator
             env: vec![
                 "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin".into(),
                 "TERM=xterm".into(),
@@ -201,7 +201,7 @@ pub enum PosixRlimitType {
     /// heap) in bytes.
     RlimitData,
 
-    /// Maximum size of the proces stack in bytes.
+    /// Maximum size of the process stack in bytes.
     RlimitStack,
 
     /// Maximum size of a core dump file in bytes.
@@ -214,7 +214,7 @@ pub enum PosixRlimitType {
     /// Limit on number of threads for the real uid calling processes.
     RlimitNproc,
 
-    /// One greator than the maximum number of file descritors that one process
+    /// One greator than the maximum number of file descriptors that one process
     /// may open.
     RlimitNofile,
 
@@ -298,7 +298,7 @@ pub struct PosixRlimit {
     setter(into, strip_option),
     build_fn(error = "OciSpecError")
 )]
-/// User id (uid) and group id (gid) tracks file permssions.
+/// User id (uid) and group id (gid) tracks file permissions.
 pub struct User {
     #[serde(default)]
     #[getset(get_mut = "pub", get_copy = "pub", set = "pub")]

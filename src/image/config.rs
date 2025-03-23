@@ -256,13 +256,13 @@ impl ImageConfiguration {
 /// and you get the ToString implementation for free.
 impl Display for ImageConfiguration {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        // Serde seralization never fails since this is
+        // Serde serialization never fails since this is
         // a combination of String and enums.
         write!(
             f,
             "{}",
             self.to_string_pretty()
-                .expect("ImageConfiguration JSON convertion failed")
+                .expect("ImageConfiguration JSON conversion failed")
         )
     }
 }

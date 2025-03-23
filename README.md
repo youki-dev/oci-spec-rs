@@ -131,4 +131,4 @@ let list = RepositoryListBuilder::default()
 
 # Contributing
 This project welcomes your PRs and issues. Should you wish to work on an issue, please claim it first by commenting on the 
-issue that you want to work on it. This is to prevent duplicated efforts from contributers on the same issue.
+issue that you want to work on it. This is to prevent duplicated efforts from contributors on the same issue.
