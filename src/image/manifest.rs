@@ -228,13 +228,13 @@ impl ImageManifest {
 /// and you get the ToString implementation for free.
 impl Display for ImageManifest {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        // Serde seralization never fails since this is
+        // Serde serialization never fails since this is
         // a combination of String and enums.
         write!(
             f,
             "{}",
             self.to_string_pretty()
-                .expect("ImageManifest to JSON convertion failed")
+                .expect("ImageManifest to JSON conversion failed")
         )
     }
 }
