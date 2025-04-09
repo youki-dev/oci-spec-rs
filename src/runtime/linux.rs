@@ -303,7 +303,17 @@ impl Display for LinuxDeviceCgroup {
 }
 
 #[derive(
-    Builder, Clone, Copy, CopyGetters, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
+    Builder,
+    Clone,
+    Copy,
+    CopyGetters,
+    Debug,
+    Default,
+    Deserialize,
+    Eq,
+    PartialEq,
+    Serialize,
+    Setters,
 )]
 #[serde(rename_all = "camelCase")]
 #[builder(
