@@ -97,6 +97,8 @@ pub struct LinuxFeature {
     intel_rdt: Option<IntelRdt>,
     /// The available features related to mount extensions.
     mount_extensions: Option<MountExtensions>,
+    /// The available features related to net devices.
+    net_devices: Option<NetDevices>,
 }
 
 /// Cgroup represents the "cgroup" field.
@@ -300,6 +302,34 @@ pub struct IntelRdt {
 pub struct MountExtensions {
     /// "idMap" field represents the ID mapping support.
     idmap: Option<IDMap>,
+}
+
+/// NetDevices represents the "netDevices" field.
+#[derive(
+    Builder,
+    Clone,
+    Debug,
+    Default,
+    Deserialize,
+    Eq,
+    MutGetters,
+    Getters,
+    Setters,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename_all = "camelCase")]
+#[builder(
+    default,
+    pattern = "owned",
+    setter(into, strip_option),
+    build_fn(error = "OciSpecError")
+)]
+#[getset(get_mut = "pub", get = "pub", set = "pub")]
+pub struct NetDevices {
+    /// "enabled" field represents whether Net Devices support is compiled in.
+    /// Unrelated to whether the host supports Net Devices or not.
+    enabled: Option<bool>,
 }
 
 /// IDMap represents the "idmap" field.
@@ -532,6 +562,9 @@ mod tests {
             "enabled": true
         },
         "intelRdt": {
+            "enabled": true
+        },
+        "netDevices": {
             "enabled": true
         }
     },
@@ -772,6 +805,13 @@ mod tests {
         assert_eq!(
             linux.intel_rdt.as_ref().unwrap(),
             &IntelRdt {
+                enabled: Some(true)
+            }
+        );
+
+        assert_eq!(
+            linux.net_devices.as_ref().unwrap(),
+            &NetDevices {
                 enabled: Some(true)
             }
         );
