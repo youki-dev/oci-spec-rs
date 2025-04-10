@@ -21,6 +21,10 @@ use strum_macros::{Display as StrumDisplay, EnumString};
 /// containers.
 pub struct Linux {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// NetDevices are key-value pairs, keyed by network device name on the host, moved to the container's network namespace.
+    net_devices: Option<HashMap<String, LinuxNetDevice>>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     /// UIDMappings specifies user mappings for supporting user namespaces.
     uid_mappings: Option<Vec<LinuxIdMapping>>,
 
@@ -97,6 +101,8 @@ pub struct Linux {
 impl Default for Linux {
     fn default() -> Self {
         Linux {
+            // Creates empty Hashmap
+            net_devices: None,
             // Creates empty Vec
             uid_mappings: Default::default(),
             // Creates empty Vec
@@ -226,6 +232,33 @@ impl LinuxDeviceType {
             Self::P => "p",
         }
     }
+}
+
+#[derive(
+    Builder,
+    Clone,
+    Debug,
+    Default,
+    Deserialize,
+    Eq,
+    Getters,
+    MutGetters,
+    Setters,
+    PartialEq,
+    Serialize,
+)]
+#[builder(
+    default,
+    pattern = "owned",
+    setter(into, strip_option),
+    build_fn(error = "OciSpecError")
+)]
+/// LinuxNetDevice represents a single network device to be added to the container's network namespace
+pub struct LinuxNetDevice {
+    #[serde(default)]
+    #[getset(get_mut = "pub", get_copy = "pub", set = "pub")]
+    /// Name of the device in the container namespace
+    name: Option<String>,
 }
 
 #[derive(
