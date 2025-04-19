@@ -111,7 +111,11 @@ pub struct Process {
     /// Scheduler specifies the scheduling attributes for a process
     scheduler: Option<Scheduler>,
 
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "execCPUAffinity",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
     #[getset(get = "pub", set = "pub")]
     /// ExecCPUAffinity specifies the cpu affinity for a process
     exec_cpu_affinity: Option<ExecCPUAffinity>,
@@ -565,14 +569,15 @@ pub struct ExecCPUAffinity {
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize"
     )]
-    /// cpu_affinity_initial is a list of CPUs a runtime parent process to be run on
+    /// initial is a list of CPUs a runtime parent process to be run on
     /// initially, before the transition to container's cgroup.
     /// This is a a comma-separated list, with dashes to represent ranges.
     /// For example, `0-3,7` represents CPUs 0,1,2,3, and 7.
-    cpu_affinity_initial: Option<String>,
+    initial: Option<String>,
 
     #[serde(
         default,
+        rename = "final",
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize"
     )]
@@ -585,7 +590,7 @@ pub struct ExecCPUAffinity {
 
 impl ExecCPUAffinityBuilder {
     fn validate(&self) -> Result<(), OciSpecError> {
-        if let Some(Some(ref s)) = self.cpu_affinity_initial {
+        if let Some(Some(ref s)) = self.initial {
             validate_cpu_affinity(s).map_err(|e| OciSpecError::Other(e.to_string()))?;
         }
 
@@ -665,44 +670,44 @@ mod tests {
 
     #[test]
     fn exec_cpu_affinity_valid_initial_final() {
-        let json = json!({"cpu_affinity_initial": "0-3,7", "cpu_affinity_final": "4-6,8"});
+        let json = json!({"initial": "0-3,7", "final": "4-6,8"});
         let result: Result<ExecCPUAffinity, _> = serde_json::from_value(json);
         assert!(result.is_ok());
 
-        let json = json!({"cpu_affinity_initial": "0-3", "cpu_affinity_final": "4-6"});
+        let json = json!({"initial": "0-3", "final": "4-6"});
         let result: Result<ExecCPUAffinity, _> = serde_json::from_value(json);
         assert!(result.is_ok());
 
-        let json = json!({"cpu_affinity_initial": "0", "cpu_affinity_final": "4"});
+        let json = json!({"initial": "0", "final": "4"});
         let result: Result<ExecCPUAffinity, _> = serde_json::from_value(json);
         assert!(result.is_ok());
     }
 
     #[test]
     fn exec_cpu_affinity_invalid_initial() {
-        let json = json!({"cpu_affinity_initial": "0-3,,7", "cpu_affinity_final": "4-6,8"});
+        let json = json!({"initial": "0-3,,7", "final": "4-6,8"});
         let result: Result<ExecCPUAffinity, _> = serde_json::from_value(json);
         assert!(result.is_err());
     }
 
     #[test]
     fn exec_cpu_affinity_invalid_final() {
-        let json = json!({"cpu_affinity_initial": "0-3,7", "cpu_affinity_final": "4-6.,8"});
+        let json = json!({"initial": "0-3,7", "final": "4-6.,8"});
         let result: Result<ExecCPUAffinity, _> = serde_json::from_value(json);
         assert!(result.is_err());
     }
 
     #[test]
     fn exec_cpu_affinity_valid_final() {
-        let json = json!({"cpu_affinity_final": "0,1,2,3"});
+        let json = json!({"final": "0,1,2,3"});
         let result: Result<ExecCPUAffinity, _> = serde_json::from_value(json);
         assert!(result.is_ok());
-        assert!(result.unwrap().cpu_affinity_initial.is_none());
+        assert!(result.unwrap().initial.is_none());
     }
 
     #[test]
     fn exec_cpu_affinity_valid_initial() {
-        let json = json!({"cpu_affinity_initial": "0-1,2-5"});
+        let json = json!({"initial": "0-1,2-5"});
         let result: Result<ExecCPUAffinity, _> = serde_json::from_value(json);
         assert!(result.is_ok());
         assert!(result.unwrap().cpu_affinity_final.is_none());
@@ -714,36 +719,33 @@ mod tests {
         let result: Result<ExecCPUAffinity, _> = serde_json::from_value(json);
         assert!(result.is_ok());
         let affinity = result.unwrap();
-        assert!(affinity.cpu_affinity_initial.is_none());
+        assert!(affinity.initial.is_none());
         assert!(affinity.cpu_affinity_final.is_none());
     }
 
     #[test]
     fn test_build_valid_input() {
         let affinity = ExecCPUAffinityBuilder::default()
-            .cpu_affinity_initial("0-3,7,8,9,10".to_string())
+            .initial("0-3,7,8,9,10".to_string())
             .cpu_affinity_final("4-6,8".to_string())
             .build();
         assert!(affinity.is_ok());
         let affinity = affinity.unwrap();
-        assert_eq!(
-            affinity.cpu_affinity_initial,
-            Some("0-3,7,8,9,10".to_string())
-        );
+        assert_eq!(affinity.initial, Some("0-3,7,8,9,10".to_string()));
         assert_eq!(affinity.cpu_affinity_final, Some("4-6,8".to_string()));
     }
 
     #[test]
     fn test_build_invalid_initial() {
         let affinity = ExecCPUAffinityBuilder::default()
-            .cpu_affinity_initial("0-3,i".to_string())
+            .initial("0-3,i".to_string())
             .cpu_affinity_final("4-6,8".to_string())
             .build();
         let err = affinity.unwrap_err();
         assert_eq!(err.to_string(), "Invalid execCPUAffinity format: 0-3,i");
 
         let affinity = ExecCPUAffinityBuilder::default()
-            .cpu_affinity_initial("-".to_string())
+            .initial("-".to_string())
             .cpu_affinity_final("4-6,8".to_string())
             .build();
         let err = affinity.unwrap_err();
@@ -753,14 +755,14 @@ mod tests {
     #[test]
     fn test_build_invalid_final() {
         let affinity = ExecCPUAffinityBuilder::default()
-            .cpu_affinity_initial("0-3,7".to_string())
+            .initial("0-3,7".to_string())
             .cpu_affinity_final("0-l1".to_string())
             .build();
         let err = affinity.unwrap_err();
         assert_eq!(err.to_string(), "Invalid execCPUAffinity format: 0-l1");
 
         let affinity = ExecCPUAffinityBuilder::default()
-            .cpu_affinity_initial("0-3,7".to_string())
+            .initial("0-3,7".to_string())
             .cpu_affinity_final(",1,2".to_string())
             .build();
         let err = affinity.unwrap_err();
@@ -771,7 +773,7 @@ mod tests {
     fn test_build_empty() {
         let affinity = ExecCPUAffinityBuilder::default().build();
         let affinity = affinity.unwrap();
-        assert!(affinity.cpu_affinity_initial.is_none());
+        assert!(affinity.initial.is_none());
         assert!(affinity.cpu_affinity_final.is_none());
     }
 }
