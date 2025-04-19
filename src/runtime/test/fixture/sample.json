@@ -56,7 +56,11 @@
         ],
         "apparmorProfile": "acme_secure_profile",
         "selinuxLabel": "system_u:system_r:svirt_lxc_net_t:s0:c124,c675",
-        "noNewPrivileges": true
+        "noNewPrivileges": true,
+        "execCPUAffinity": {
+            "initial": "7",
+            "final": "0-3,7"
+        }
     },
     "root": {
         "path": "rootfs",
