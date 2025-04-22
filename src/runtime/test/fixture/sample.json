@@ -230,6 +230,13 @@
                 "gid": 0
             }
         ],
+        "netDevices": {
+            "eth0": {
+                "name": "container_eth0"
+            },
+            "ens4": {},
+            "ens5": {}
+        },
         "uidMappings": [
             {
                 "containerID": 0,
