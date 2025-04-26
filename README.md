@@ -19,7 +19,7 @@ This library provides a convenient way to interact with the specifications defin
 
 ```toml
 [dependencies]
-oci-spec = "0.8.0"
+oci-spec = "0.8.1"
 ```
 *Compiler support: requires rustc 1.54+*
 
