@@ -324,7 +324,7 @@ fn split_domain(name: &str) -> (String, String) {
         domain = DOCKER_HUB_DOMAIN.into();
     }
     if domain == DOCKER_HUB_DOMAIN && !remainder.contains('/') {
-        remainder = format!("{}/{}", DOCKER_HUB_OFFICIAL_REPO_NAME, remainder);
+        remainder = format!("{DOCKER_HUB_OFFICIAL_REPO_NAME}/{remainder}");
     }
 
     (domain, remainder)

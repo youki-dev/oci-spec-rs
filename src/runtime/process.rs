@@ -625,7 +625,7 @@ fn exec_cpu_affinity_regex() -> &'static Regex {
 
 fn validate_cpu_affinity(s: &str) -> Result<(), String> {
     if !exec_cpu_affinity_regex().is_match(s) {
-        return Err(format!("Invalid execCPUAffinity format: {}", s));
+        return Err(format!("Invalid execCPUAffinity format: {s}"));
     }
 
     Ok(())
