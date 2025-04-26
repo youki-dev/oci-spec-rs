@@ -256,7 +256,7 @@ impl LinuxDeviceType {
 /// LinuxNetDevice represents a single network device to be added to the container's network namespace
 pub struct LinuxNetDevice {
     #[serde(default)]
-    #[getset(get_mut = "pub", get_copy = "pub", set = "pub")]
+    #[getset(get_mut = "pub", get = "pub", set = "pub")]
     /// Name of the device in the container namespace
     name: Option<String>,
 }
