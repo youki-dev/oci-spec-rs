@@ -225,14 +225,14 @@ impl FromStr for Reference {
     }
 }
 
-impl TryFrom<String> for Reference {
+impl TryFrom<&str> for Reference {
     type Error = ParseError;
 
-    fn try_from(s: String) -> Result<Self, Self::Error> {
+    fn try_from(s: &str) -> Result<Self, Self::Error> {
         if s.is_empty() {
             return Err(ParseError::NameEmpty);
         }
-        let captures = match reference_regexp().captures(&s) {
+        let captures = match reference_regexp().captures(s) {
             Some(caps) => caps,
             None => {
                 return Err(ParseError::ReferenceInvalidFormat);
@@ -282,10 +282,10 @@ impl TryFrom<String> for Reference {
     }
 }
 
-impl TryFrom<&str> for Reference {
+impl TryFrom<String> for Reference {
     type Error = ParseError;
-    fn try_from(string: &str) -> Result<Self, Self::Error> {
-        TryFrom::try_from(string.to_owned())
+    fn try_from(string: String) -> Result<Self, Self::Error> {
+        TryFrom::try_from(string.as_str())
     }
 }
 
