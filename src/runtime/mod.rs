@@ -1,4 +1,6 @@
 //! [OCI runtime spec](https://github.com/opencontainers/runtime-spec) types and definitions.
+//!
+//! [`Spec`] represents the root object from the specification.
 
 use derive_builder::Builder;
 use getset::{Getters, MutGetters, Setters};
@@ -36,7 +38,7 @@ pub use version::*;
 pub use vm::*;
 pub use windows::*;
 
-/// Base configuration for the container.
+/// `config.json` file root object.
 #[derive(
     Builder, Clone, Debug, Deserialize, Getters, MutGetters, Setters, PartialEq, Eq, Serialize,
 )]
