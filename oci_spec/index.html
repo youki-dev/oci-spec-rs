@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="oci-spec-rs"><title>oci_spec - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="oci_spec" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../oci_spec/index.html">oci_<wbr>spec</a><span class="version">0.8.1</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#oci-spec-rs" title="oci-spec-rs">oci-spec-rs</a><ul><li><a href="#open-container-initiative-oci-specifications-for-rust" title="Open Container Initiative (OCI) Specifications for Rust">Open Container Initiative (OCI) Specifications for Rust</a></li><li><a href="#image-format-spec-examples" title="Image Format Spec Examples">Image Format Spec Examples</a></li><li><a href="#distribution-spec-examples" title="Distribution Spec Examples">Distribution Spec Examples</a></li></ul></li><li><a href="#contributing" title="Contributing">Contributing</a></li></ul><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#types" title="Type Aliases">Type Aliases</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>oci_spec</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/oci_spec/lib.rs.html#1-66">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="oci-spec-rs"><a class="doc-anchor" href="#oci-spec-rs">§</a>oci-spec-rs</h2>
+<p><a href="https://github.com/containers/oci-spec-rs/actions"><img src="https://github.com/containers/oci-spec-rs/workflows/ci/badge.svg" alt="ci" /></a>
+<a href="https://github.com/containers/oci-spec-rs/actions"><img src="https://github.com/containers/oci-spec-rs/workflows/gh-pages/badge.svg" alt="gh-pages" /></a>
+<a href="https://crates.io/crates/oci-spec"><img src="https://img.shields.io/crates/v/oci-spec.svg" alt="crates.io" /></a>
+<a href="https://codecov.io/gh/containers/oci-spec-rs"><img src="https://codecov.io/gh/containers/oci-spec-rs/branch/main/graph/badge.svg" alt="codecov" /></a>
+<a href="https://containers.github.io/oci-spec-rs/oci_spec/index.html"><img src="https://img.shields.io/badge/docs-main-blue.svg" alt="docs" /></a>
+<a href="https://docs.rs/oci-spec"><img src="https://docs.rs/oci-spec/badge.svg" alt="docs.rs" /></a>
+<a href="https://deps.rs/repo/github/containers/oci-spec-rs"><img src="https://deps.rs/repo/github/containers/oci-spec-rs/status.svg" alt="dependencies" /></a>
+<a href="https://github.com/containers/oci-spec-rs/blob/master/LICENSE"><img src="https://img.shields.io/github/license/containers/oci-spec-rs.svg" alt="license" /></a></p>
+<h4 id="open-container-initiative-oci-specifications-for-rust"><a class="doc-anchor" href="#open-container-initiative-oci-specifications-for-rust">§</a>Open Container Initiative (OCI) Specifications for Rust</h4>
+<p>This library provides a convenient way to interact with the specifications defined by the <a href="https://opencontainers.org">Open Container Initiative (OCI)</a>.</p>
+<ul>
+<li><a href="https://github.com/opencontainers/image-spec/blob/main/spec.md">Image Format Specification</a></li>
+<li><a href="https://github.com/opencontainers/runtime-spec/blob/master/spec.md">Runtime Specification</a></li>
+<li><a href="https://github.com/opencontainers/distribution-spec/blob/main/spec.md">Distribution Specification</a></li>
+</ul>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+oci-spec = &quot;0.8.1&quot;</code></pre></div>
+<p><em>Compiler support: requires rustc 1.54+</em></p>
+<p>If you want to propose or cut a new release, then please follow our
+<a href="./release.md">release process documentation</a>.</p>
+<h3 id="image-format-spec-examples"><a class="doc-anchor" href="#image-format-spec-examples">§</a>Image Format Spec Examples</h3>
+<ul>
+<li>Load image manifest from filesystem</li>
+</ul>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>oci_spec::image::ImageManifest;
+
+<span class="kw">let </span>image_manifest = ImageManifest::from_file(<span class="string">"manifest.json"</span>).unwrap();
+<span class="macro">assert_eq!</span>(image_manifest.layers().len(), <span class="number">5</span>);</code></pre></div>
+<ul>
+<li>Create new image manifest using builder</li>
+</ul>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::str::FromStr;
+<span class="kw">use </span>oci_spec::image::{
+    Descriptor, 
+    DescriptorBuilder, 
+    ImageManifest, 
+    ImageManifestBuilder, 
+    MediaType, 
+    Sha256Digest,
+    SCHEMA_VERSION
+};
+
+<span class="kw">let </span>config = DescriptorBuilder::default()
+            .media_type(MediaType::ImageConfig)
+            .size(<span class="number">7023u64</span>)
+            .digest(Sha256Digest::from_str(<span class="string">"b5b2b2c507a0944348e0303114d8d93aaaa081732b86451d9bce1f432a537bc7"</span>).unwrap())
+            .build()
+            .expect(<span class="string">"build config descriptor"</span>);
+
+<span class="kw">let </span>layers: Vec&lt;Descriptor&gt; = [
+    (
+        <span class="number">32654u64</span>,
+        <span class="string">"9834876dcfb05cb167a5c24953eba58c4ac89b1adf57f28f2f9d09af107ee8f0"</span>,
+    ),
+    (
+        <span class="number">16724</span>,
+        <span class="string">"3c3a4604a545cdc127456d94e421cd355bca5b528f4a9c1905b15da2eb4a4c6b"</span>,
+    ),
+    (
+        <span class="number">73109</span>,
+        <span class="string">"ec4b8955958665577945c89419d1af06b5f7636b4ac3da7f12184802ad867736"</span>,
+    ),
+]
+    .iter()
+    .map(|l| {
+    DescriptorBuilder::default()
+        .media_type(MediaType::ImageLayerGzip)
+        .size(l.<span class="number">0</span>)
+        .digest(Sha256Digest::from_str(l.<span class="number">1</span>).unwrap())
+        .build()
+        .expect(<span class="string">"build layer"</span>)
+    })
+    .collect();
+
+<span class="kw">let </span>image_manifest = ImageManifestBuilder::default()
+    .schema_version(SCHEMA_VERSION)
+    .config(config)
+    .layers(layers)
+    .build()
+    .expect(<span class="string">"build image manifest"</span>);
+
+image_manifest.to_file_pretty(<span class="string">"my-manifest.json"</span>).unwrap();</code></pre></div>
+<ul>
+<li>Content of my-manifest.json</li>
+</ul>
+<div class="example-wrap"><pre class="language-json"><code>{
+  &quot;schemaVersion&quot;: 2,
+  &quot;config&quot;: {
+    &quot;mediaType&quot;: &quot;application/vnd.oci.image.config.v1+json&quot;,
+    &quot;digest&quot;: &quot;sha256:b5b2b2c507a0944348e0303114d8d93aaaa081732b86451d9bce1f432a537bc7&quot;,
+    &quot;size&quot;: 7023
+  },
+  &quot;layers&quot;: [
+    {
+      &quot;mediaType&quot;: &quot;application/vnd.oci.image.layer.v1.tar+gzip&quot;,
+      &quot;digest&quot;: &quot;sha256:9834876dcfb05cb167a5c24953eba58c4ac89b1adf57f28f2f9d09af107ee8f0&quot;,
+      &quot;size&quot;: 32654
+    },
+    {
+      &quot;mediaType&quot;: &quot;application/vnd.oci.image.layer.v1.tar+gzip&quot;,
+      &quot;digest&quot;: &quot;sha256:3c3a4604a545cdc127456d94e421cd355bca5b528f4a9c1905b15da2eb4a4c6b&quot;,
+      &quot;size&quot;: 16724
+    },
+    {
+      &quot;mediaType&quot;: &quot;application/vnd.oci.image.layer.v1.tar+gzip&quot;,
+      &quot;digest&quot;: &quot;sha256:ec4b8955958665577945c89419d1af06b5f7636b4ac3da7f12184802ad867736&quot;,
+      &quot;size&quot;: 73109
+    }
+  ]
+}</code></pre></div><h3 id="distribution-spec-examples"><a class="doc-anchor" href="#distribution-spec-examples">§</a>Distribution Spec Examples</h3>
+<ul>
+<li>Create a list of repositories</li>
+</ul>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>oci_spec::distribution::RepositoryListBuilder;
+
+<span class="kw">let </span>list = RepositoryListBuilder::default()
+            .repositories(<span class="macro">vec!</span>[<span class="string">"busybox"</span>.to_owned()])
+            .build().unwrap();</code></pre></div>
+<h2 id="contributing"><a class="doc-anchor" href="#contributing">§</a>Contributing</h2>
+<p>This project welcomes your PRs and issues. Should you wish to work on an issue, please claim it first by commenting on the
+issue that you want to work on it. This is to prevent duplicated efforts from contributors on the same issue.</p>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="distribution/index.html" title="mod oci_spec::distribution">distribution</a></dt><dd><a href="https://github.com/opencontainers/distribution-spec">OCI distribution spec</a> types and definitions.</dd><dt><a class="mod" href="image/index.html" title="mod oci_spec::image">image</a></dt><dd><a href="https://github.com/opencontainers/image-spec">OCI image spec</a> types and definitions.</dd><dt><a class="mod" href="runtime/index.html" title="mod oci_spec::runtime">runtime</a></dt><dd><a href="https://github.com/opencontainers/runtime-spec">OCI runtime spec</a> types and definitions.</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.OciSpecError.html" title="enum oci_spec::OciSpecError">OciSpec<wbr>Error</a></dt><dd>Error type for oci spec errors.</dd></dl><h2 id="types" class="section-header">Type Aliases<a href="#types" class="anchor">§</a></h2><dl class="item-table"><dt><a class="type" href="type.Result.html" title="type oci_spec::Result">Result</a></dt><dd>Spezialized result type for oci spec operations. It is
+used for any operation that might produce an error. This
+typedef is generally used to avoid writing out
+<a href="enum.OciSpecError.html" title="enum oci_spec::OciSpecError">OciSpecError</a> directly and is otherwise a direct mapping
+to <a href="https://doc.rust-lang.org/1.86.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>.</dd></dl></section></div></main></body></html>
