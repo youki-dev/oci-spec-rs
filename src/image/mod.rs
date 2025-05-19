@@ -214,6 +214,8 @@ impl From<&str> for Os {
             "aix" => Os::AIX,
             "android" => Os::Android,
             "darwin" => Os::Darwin,
+            // std::env::consts::OS returns "macos" instead of darwin
+            "macos" => Os::Darwin,
             "dragonfly" => Os::DragonFlyBSD,
             "freebsd" => Os::FreeBSD,
             "hurd" => Os::Hurd,
