@@ -1,0 +1,462 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="All available capabilities."><title>Capability in oci_spec::runtime - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="oci_spec" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc enum"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../oci_spec/index.html">oci_<wbr>spec</a><span class="version">0.8.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Capability</a></h2><h3><a href="#variants">Variants</a></h3><ul class="block variant"><li><a href="#variant.AuditControl" title="AuditControl">AuditControl</a></li><li><a href="#variant.AuditRead" title="AuditRead">AuditRead</a></li><li><a href="#variant.AuditWrite" title="AuditWrite">AuditWrite</a></li><li><a href="#variant.BlockSuspend" title="BlockSuspend">BlockSuspend</a></li><li><a href="#variant.Bpf" title="Bpf">Bpf</a></li><li><a href="#variant.CheckpointRestore" title="CheckpointRestore">CheckpointRestore</a></li><li><a href="#variant.Chown" title="Chown">Chown</a></li><li><a href="#variant.DacOverride" title="DacOverride">DacOverride</a></li><li><a href="#variant.DacReadSearch" title="DacReadSearch">DacReadSearch</a></li><li><a href="#variant.Fowner" title="Fowner">Fowner</a></li><li><a href="#variant.Fsetid" title="Fsetid">Fsetid</a></li><li><a href="#variant.IpcLock" title="IpcLock">IpcLock</a></li><li><a href="#variant.IpcOwner" title="IpcOwner">IpcOwner</a></li><li><a href="#variant.Kill" title="Kill">Kill</a></li><li><a href="#variant.Lease" title="Lease">Lease</a></li><li><a href="#variant.LinuxImmutable" title="LinuxImmutable">LinuxImmutable</a></li><li><a href="#variant.MacAdmin" title="MacAdmin">MacAdmin</a></li><li><a href="#variant.MacOverride" title="MacOverride">MacOverride</a></li><li><a href="#variant.Mknod" title="Mknod">Mknod</a></li><li><a href="#variant.NetAdmin" title="NetAdmin">NetAdmin</a></li><li><a href="#variant.NetBindService" title="NetBindService">NetBindService</a></li><li><a href="#variant.NetBroadcast" title="NetBroadcast">NetBroadcast</a></li><li><a href="#variant.NetRaw" title="NetRaw">NetRaw</a></li><li><a href="#variant.Perfmon" title="Perfmon">Perfmon</a></li><li><a href="#variant.Setfcap" title="Setfcap">Setfcap</a></li><li><a href="#variant.Setgid" title="Setgid">Setgid</a></li><li><a href="#variant.Setpcap" title="Setpcap">Setpcap</a></li><li><a href="#variant.Setuid" title="Setuid">Setuid</a></li><li><a href="#variant.SysAdmin" title="SysAdmin">SysAdmin</a></li><li><a href="#variant.SysBoot" title="SysBoot">SysBoot</a></li><li><a href="#variant.SysChroot" title="SysChroot">SysChroot</a></li><li><a href="#variant.SysModule" title="SysModule">SysModule</a></li><li><a href="#variant.SysNice" title="SysNice">SysNice</a></li><li><a href="#variant.SysPacct" title="SysPacct">SysPacct</a></li><li><a href="#variant.SysPtrace" title="SysPtrace">SysPtrace</a></li><li><a href="#variant.SysRawio" title="SysRawio">SysRawio</a></li><li><a href="#variant.SysResource" title="SysResource">SysResource</a></li><li><a href="#variant.SysTime" title="SysTime">SysTime</a></li><li><a href="#variant.SysTtyConfig" title="SysTtyConfig">SysTtyConfig</a></li><li><a href="#variant.Syslog" title="Syslog">Syslog</a></li><li><a href="#variant.WakeAlarm" title="WakeAlarm">WakeAlarm</a></li></ul><h3><a href="#trait-implementations">Trait Implementations</a></h3><ul class="block trait-implementation"><li><a href="#impl-Clone-for-Capability" title="Clone">Clone</a></li><li><a href="#impl-Copy-for-Capability" title="Copy">Copy</a></li><li><a href="#impl-Debug-for-Capability" title="Debug">Debug</a></li><li><a href="#impl-Deserialize%3C'de%3E-for-Capability" title="Deserialize&#60;&#39;de&#62;">Deserialize&#60;&#39;de&#62;</a></li><li><a href="#impl-Display-for-Capability" title="Display">Display</a></li><li><a href="#impl-Eq-for-Capability" title="Eq">Eq</a></li><li><a href="#impl-FromStr-for-Capability" title="FromStr">FromStr</a></li><li><a href="#impl-Hash-for-Capability" title="Hash">Hash</a></li><li><a href="#impl-PartialEq-for-Capability" title="PartialEq">PartialEq</a></li><li><a href="#impl-Serialize-for-Capability" title="Serialize">Serialize</a></li><li><a href="#impl-StructuralPartialEq-for-Capability" title="StructuralPartialEq">StructuralPartialEq</a></li><li><a href="#impl-TryFrom%3C%26str%3E-for-Capability" title="TryFrom&#60;&#38;str&#62;">TryFrom&#60;&#38;str&#62;</a></li></ul><h3><a href="#synthetic-implementations">Auto Trait Implementations</a></h3><ul class="block synthetic-implementation"><li><a href="#impl-Freeze-for-Capability" title="Freeze">Freeze</a></li><li><a href="#impl-RefUnwindSafe-for-Capability" title="RefUnwindSafe">RefUnwindSafe</a></li><li><a href="#impl-Send-for-Capability" title="Send">Send</a></li><li><a href="#impl-Sync-for-Capability" title="Sync">Sync</a></li><li><a href="#impl-Unpin-for-Capability" title="Unpin">Unpin</a></li><li><a href="#impl-UnwindSafe-for-Capability" title="UnwindSafe">UnwindSafe</a></li></ul><h3><a href="#blanket-implementations">Blanket Implementations</a></h3><ul class="block blanket-implementation"><li><a href="#impl-Any-for-T" title="Any">Any</a></li><li><a href="#impl-Borrow%3CT%3E-for-T" title="Borrow&#60;T&#62;">Borrow&#60;T&#62;</a></li><li><a href="#impl-BorrowMut%3CT%3E-for-T" title="BorrowMut&#60;T&#62;">BorrowMut&#60;T&#62;</a></li><li><a href="#impl-CloneToUninit-for-T" title="CloneToUninit">CloneToUninit</a></li><li><a href="#impl-DeserializeOwned-for-T" title="DeserializeOwned">DeserializeOwned</a></li><li><a href="#impl-From%3CT%3E-for-T" title="From&#60;T&#62;">From&#60;T&#62;</a></li><li><a href="#impl-Into%3CU%3E-for-T" title="Into&#60;U&#62;">Into&#60;U&#62;</a></li><li><a href="#impl-ToOwned-for-T" title="ToOwned">ToOwned</a></li><li><a href="#impl-ToString-for-T" title="ToString">ToString</a></li><li><a href="#impl-TryFrom%3CU%3E-for-T" title="TryFrom&#60;U&#62;">TryFrom&#60;U&#62;</a></li><li><a href="#impl-TryInto%3CU%3E-for-T" title="TryInto&#60;U&#62;">TryInto&#60;U&#62;</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In oci_<wbr>spec::<wbr>runtime</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">oci_spec</a>::<wbr><a href="index.html">runtime</a></div><h1>Enum <span class="enum">Capability</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/oci_spec/runtime/capability.rs.html#27-520">Source</a> </span></div><pre class="rust item-decl"><code>pub enum Capability {
+<details class="toggle type-contents-toggle"><summary class="hideme"><span>Show 41 variants</span></summary>    AuditControl,
+    AuditRead,
+    AuditWrite,
+    BlockSuspend,
+    Bpf,
+    CheckpointRestore,
+    Chown,
+    DacOverride,
+    DacReadSearch,
+    Fowner,
+    Fsetid,
+    IpcLock,
+    IpcOwner,
+    Kill,
+    Lease,
+    LinuxImmutable,
+    MacAdmin,
+    MacOverride,
+    Mknod,
+    NetAdmin,
+    NetBindService,
+    NetBroadcast,
+    NetRaw,
+    Perfmon,
+    Setgid,
+    Setfcap,
+    Setpcap,
+    Setuid,
+    SysAdmin,
+    SysBoot,
+    SysChroot,
+    SysModule,
+    SysNice,
+    SysPacct,
+    SysPtrace,
+    SysRawio,
+    SysResource,
+    SysTime,
+    SysTtyConfig,
+    Syslog,
+    WakeAlarm,
+</details>}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>All available capabilities.</p>
+<p>For the purpose of performing permission checks, traditional UNIX
+implementations distinguish two categories of processes: privileged
+processes (whose effective user ID is 0, referred to as superuser or root),
+and unprivileged processes (whose effective UID is nonzero). Privileged
+processes bypass all kernel permission checks, while unprivileged processes
+are subject to full permission checking based on the process’s credentials
+(usually: effective UID, effective GID, and supplementary group list).</p>
+<p>Starting with kernel 2.2, Linux divides the privileges traditionally
+associated with superuser into distinct units, known as capabilities, which
+can be independently enabled and disabled. Capabilities are a per-thread attribute.</p>
+</div></details><h2 id="variants" class="variants section-header">Variants<a href="#variants" class="anchor">§</a></h2><div class="variants"><section id="variant.AuditControl" class="variant"><a href="#variant.AuditControl" class="anchor">§</a><h3 class="code-header">AuditControl</h3></section><div class="docblock"><p>Enable and disable kernel auditing; change auditing filter rules;
+retrieve auditing status and filtering rules.</p>
+<p><em>since Linux 2.6.11</em></p>
+</div><section id="variant.AuditRead" class="variant"><a href="#variant.AuditRead" class="anchor">§</a><h3 class="code-header">AuditRead</h3></section><div class="docblock"><p>Allow reading the audit log via multicast netlink socket.</p>
+<p><em>since Linux 3.16</em></p>
+</div><section id="variant.AuditWrite" class="variant"><a href="#variant.AuditWrite" class="anchor">§</a><h3 class="code-header">AuditWrite</h3></section><div class="docblock"><p>Write records to kernel auditing log.</p>
+<p><em>since Linux 2.6.11</em></p>
+</div><section id="variant.BlockSuspend" class="variant"><a href="#variant.BlockSuspend" class="anchor">§</a><h3 class="code-header">BlockSuspend</h3></section><div class="docblock"><p>Employ features that can block system suspend
+(<a href="https://man7.org/linux/man-pages/man7/epoll.7.html">epoll(7)</a>
+<strong>EPOLLWAKEUP</strong>, <code>/proc/sys/wake_lock</code>).</p>
+<p><em>since Linux 3.5</em></p>
+</div><section id="variant.Bpf" class="variant"><a href="#variant.Bpf" class="anchor">§</a><h3 class="code-header">Bpf</h3></section><div class="docblock"><p>Employ privileged BPF operations; see
+<a href="https://man7.org/linux/man-pages/man2/bpf.2.html">bpf(2)</a> and
+<a href="https://man7.org/linux/man-pages/man7/bpf-helpers.7.html">bpf-helpers(7)</a>.</p>
+<p>This capability was added to separate out BPF functionality from the
+overloaded <strong>CAP_SYS_ADMIN</strong> capability.</p>
+<p><em>since Linux 5.8</em></p>
+</div><section id="variant.CheckpointRestore" class="variant"><a href="#variant.CheckpointRestore" class="anchor">§</a><h3 class="code-header">CheckpointRestore</h3></section><div class="docblock"><ul>
+<li>update <code>/proc/sys/kernel/ns_last_pid</code> (see
+<a href="https://man7.org/linux/man-pages/man7/pid_namespaces.7.html">pid_namespaces(7)</a>)</li>
+<li>employ the set_tid feature of
+<a href="https://man7.org/linux/man-pages/man2/clone3.2.html">clone3(2)</a></li>
+<li>read the contents of the symbolic links in <code>/proc/[pid]/map_files</code> for
+other processes.</li>
+</ul>
+<p>This capability was added to separate out BPF functionality from the
+overloaded <strong>CAP_SYS_ADMIN</strong> capability.</p>
+<p><em>since Linux 5.9</em></p>
+</div><section id="variant.Chown" class="variant"><a href="#variant.Chown" class="anchor">§</a><h3 class="code-header">Chown</h3></section><div class="docblock"><p>Make arbitrary changes to file UIDs and GIDs (see
+<a href="https://man7.org/linux/man-pages/man2/chown.2.html">chown(2)</a>).</p>
+</div><section id="variant.DacOverride" class="variant"><a href="#variant.DacOverride" class="anchor">§</a><h3 class="code-header">DacOverride</h3></section><div class="docblock"><p>Bypass file read, write, and execute permission checks.</p>
+<p>(DAC is an abbreviation of “discretionary access control”.)</p>
+</div><section id="variant.DacReadSearch" class="variant"><a href="#variant.DacReadSearch" class="anchor">§</a><h3 class="code-header">DacReadSearch</h3></section><div class="docblock"><ul>
+<li>bypass file read permission checks and directory read and execute
+permission checks</li>
+<li>invoke
+<a href="https://man7.org/linux/man-pages/man2/open_by_handle_at.2.html">open_by_handle_at(2)</a></li>
+<li>use the
+<a href="https://man7.org/linux/man-pages/man2/linkat.2.html">linkat(2)</a>
+<strong>AT_EMPTY_PATH</strong> flag to create a link to a file referred to by a
+file descriptor.</li>
+</ul>
+</div><section id="variant.Fowner" class="variant"><a href="#variant.Fowner" class="anchor">§</a><h3 class="code-header">Fowner</h3></section><div class="docblock"><ul>
+<li>Bypass permission checks on operations that normally require the
+filesystem UID of the process to match the UID of the file (e.g.,
+<a href="https://man7.org/linux/man-pages/man2/chmod.2.html">chmod(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/utime.2.html">utime(2)</a>),
+excluding those operations covered by <strong>CAP_DAC_OVERRIDE</strong> and
+<strong>CAP_DAC_READ_SEARCH</strong></li>
+<li>set inode flags (see
+<a href="https://man7.org/linux/man-pages/man2/ioctl_iflags.2.html">ioctl_iflags(2)</a>)
+on arbitrary files</li>
+<li>set Access Control Lists (ACLs) on arbitrary files</li>
+<li>ignore directory sticky bit on file deletion</li>
+<li>modify user extended attributes on sticky directory owned by any user</li>
+<li>specify <strong>O_NOATIME</strong> for arbitrary files in
+<a href="https://man7.org/linux/man-pages/man2/open.2.html">open(2)</a> and
+<a href="https://man7.org/linux/man-pages/man2/fcntl.2.html">fcntl(2)</a></li>
+</ul>
+<p>Overrides all restrictions about allowed operations on files, where
+file owner ID must be equal to the user ID, except where CAP_FSETID
+is applicable. It doesn’t override MAC and DAC restrictions.</p>
+</div><section id="variant.Fsetid" class="variant"><a href="#variant.Fsetid" class="anchor">§</a><h3 class="code-header">Fsetid</h3></section><div class="docblock"><ul>
+<li>don’t clear set-user-ID and set-group-ID mode bits when a file is
+modified</li>
+<li>set the set-group-ID bit for a file whose GID does not match the
+filesystem or any of the supplementary GIDs of the calling process</li>
+</ul>
+</div><section id="variant.IpcLock" class="variant"><a href="#variant.IpcLock" class="anchor">§</a><h3 class="code-header">IpcLock</h3></section><div class="docblock"><ul>
+<li>lock memory
+(<a href="https://man7.org/linux/man-pages/man2/mlock.2.html">mlock(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/mlockall.2.html">mlockall(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/mmap.2.html">mmap(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/shmctl.2.html">shmctl(2)</a>)</li>
+<li>allocate memory using huge pages
+(<a href="https://man7.org/linux/man-pages/man2/memfd_create.2.html">memfd_create(2)</a>
+<a href="https://man7.org/linux/man-pages/man2/mmap.2.html">mmap(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/shmctl.2.html">shmctl(2)</a>)</li>
+</ul>
+</div><section id="variant.IpcOwner" class="variant"><a href="#variant.IpcOwner" class="anchor">§</a><h3 class="code-header">IpcOwner</h3></section><div class="docblock"><p>Bypass permission checks for operations on System V IPC objects.</p>
+</div><section id="variant.Kill" class="variant"><a href="#variant.Kill" class="anchor">§</a><h3 class="code-header">Kill</h3></section><div class="docblock"><p>Bypass permission checks for sending signals (see
+<a href="https://man7.org/linux/man-pages/man2/kill.2.html">kill(2)</a>). This
+includes use of the
+<a href="https://man7.org/linux/man-pages/man2/ioctl.2.html">ioctl(2)</a>
+<strong>KDSIGACCEPT</strong> operation.</p>
+</div><section id="variant.Lease" class="variant"><a href="#variant.Lease" class="anchor">§</a><h3 class="code-header">Lease</h3></section><div class="docblock"><p>Establish leases on arbitrary files (see
+<a href="https://man7.org/linux/man-pages/man2/fcntl.2.html">fcntl(2)</a>).</p>
+<p><em>since Linux 2.4</em></p>
+</div><section id="variant.LinuxImmutable" class="variant"><a href="#variant.LinuxImmutable" class="anchor">§</a><h3 class="code-header">LinuxImmutable</h3></section><div class="docblock"><p>Set the <strong>FS_APPEND_FL</strong> and <strong>FS_IMMUTABLE_FL</strong> inode flags (see
+<a href="https://man7.org/linux/man-pages/man2/ioctl_iflags.2.html">ioctl_iflags(2)</a>).</p>
+</div><section id="variant.MacAdmin" class="variant"><a href="#variant.MacAdmin" class="anchor">§</a><h3 class="code-header">MacAdmin</h3></section><div class="docblock"><p>Allow MAC configuration or state changes.</p>
+<p>Implemented for the Smack Linux Security Module (LSM).</p>
+<p><em>since Linux 2.6.25</em></p>
+</div><section id="variant.MacOverride" class="variant"><a href="#variant.MacOverride" class="anchor">§</a><h3 class="code-header">MacOverride</h3></section><div class="docblock"><p>Override Mandatory Access Control (MAC).</p>
+<p>Implemented for the Smack Linux Security Module (LSM).</p>
+<p><em>since Linux 2.6.25</em></p>
+</div><section id="variant.Mknod" class="variant"><a href="#variant.Mknod" class="anchor">§</a><h3 class="code-header">Mknod</h3></section><div class="docblock"><p>Create special files using
+<a href="https://man7.org/linux/man-pages/man2/mknod.2.html">mknod(2)</a>.</p>
+<p><em>since Linux 2.4</em></p>
+</div><section id="variant.NetAdmin" class="variant"><a href="#variant.NetAdmin" class="anchor">§</a><h3 class="code-header">NetAdmin</h3></section><div class="docblock"><p>Perform various network-related operations:</p>
+<ul>
+<li>interface configuration</li>
+<li>administration of IP firewall, masquerading, and accounting</li>
+<li>modify routing tables</li>
+<li>bind to any address for transparent proxying</li>
+<li>set type-of-service (TOS)</li>
+<li>clear driver statistics</li>
+<li>set promiscuous mode</li>
+<li>enabling multicasting</li>
+<li>use
+<a href="https://man7.org/linux/man-pages/man2/setsockopt.2.html">setsockopt(2)</a>
+to set the following socket options: <strong>SO_DEBUG</strong>, <strong>SO_MARK</strong>,
+<strong>SO_PRIORITY</strong> (for a priority outside the range 0 to 6),
+<strong>SO_RCVBUFFORCE</strong> and <strong>SO_SNDBUFFORCE</strong></li>
+</ul>
+</div><section id="variant.NetBindService" class="variant"><a href="#variant.NetBindService" class="anchor">§</a><h3 class="code-header">NetBindService</h3></section><div class="docblock"><p>Bind a socket to Internet domain privileged ports (port numbers less
+than 1024).</p>
+</div><section id="variant.NetBroadcast" class="variant"><a href="#variant.NetBroadcast" class="anchor">§</a><h3 class="code-header">NetBroadcast</h3></section><div class="docblock"><p>(Unused) Make socket broadcasts, and listen to multicasts.</p>
+</div><section id="variant.NetRaw" class="variant"><a href="#variant.NetRaw" class="anchor">§</a><h3 class="code-header">NetRaw</h3></section><div class="docblock"><ul>
+<li>use RAW and PACKET sockets</li>
+<li>bind to any address for transparent proxying</li>
+</ul>
+</div><section id="variant.Perfmon" class="variant"><a href="#variant.Perfmon" class="anchor">§</a><h3 class="code-header">Perfmon</h3></section><div class="docblock"><p>Employ various performance-monitoring mechanisms, including:</p>
+<ul>
+<li>call
+<a href="https://man7.org/linux/man-pages/man2/perf_event_open.2.html">perf_event_open(2)</a></li>
+<li>employ various BPF operations that have performance implications</li>
+</ul>
+<p>This capability was added to separate out performance monitoring
+functionality from the overloaded <strong>CAP_SYS_ADMIN</strong> capability. See also
+the kernel source file <code>Documentation/admin-guide/perf-security.rst</code>.</p>
+<p><em>since Linux 5.8</em></p>
+</div><section id="variant.Setgid" class="variant"><a href="#variant.Setgid" class="anchor">§</a><h3 class="code-header">Setgid</h3></section><div class="docblock"><ul>
+<li>make arbitrary manipulations of process GIDs and supplementary GID list</li>
+<li>forge GID when passing socket credentials via UNIX domain sockets</li>
+<li>write a group ID mapping in a user namespace (see
+<a href="https://man7.org/linux/man-pages/man7/user_namespaces.7.html">user_namespaces(7)</a>)</li>
+</ul>
+</div><section id="variant.Setfcap" class="variant"><a href="#variant.Setfcap" class="anchor">§</a><h3 class="code-header">Setfcap</h3></section><div class="docblock"><p>Set arbitrary capabilities on a file.</p>
+<p><em>since Linux 2.6.24</em></p>
+</div><section id="variant.Setpcap" class="variant"><a href="#variant.Setpcap" class="anchor">§</a><h3 class="code-header">Setpcap</h3></section><div class="docblock"><p>If file capabilities are supported (i.e., since LinuxIDMapping 2.6.24):
+add any capability from the calling thread’s bounding set to its
+inheritable set; drop capabilities from the bounding set (via
+<a href="https://man7.org/linux/man-pages/man2/prctl.2.html">prctl(2)</a>
+<strong>PR_CAPBSET_DROP</strong>); make changes to the <code>securebits</code> flags.</p>
+<p>If file capabilities are not supported (i.e., kernels before Linux
+2.6.24): grant or remove any capability in the caller’s permitted
+capability set to or from any other process. (This property of
+<strong>CAP_SETPCAP</strong> is not available when the kernel is configured to
+support file capabilities, since <strong>CAP_SETPCAP</strong> has entirely different
+semantics for such kernels.)</p>
+</div><section id="variant.Setuid" class="variant"><a href="#variant.Setuid" class="anchor">§</a><h3 class="code-header">Setuid</h3></section><div class="docblock"><ul>
+<li>make arbitrary manipulations of process UIDs
+(<a href="https://man7.org/linux/man-pages/man2/setuid.2.html">setuid(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/setreuid.2.html">setreuid(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/setresuid.2.html">setresuid(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/setfsuid.2.html">setfsuid(2)</a>)</li>
+<li>forge UID when passing socket credentials via UNIX domain sockets</li>
+<li>write a user ID mapping in a user namespace (see
+<a href="https://man7.org/linux/man-pages/man7/user_namespaces.7.html">user_namespaces(7)</a>)</li>
+</ul>
+</div><section id="variant.SysAdmin" class="variant"><a href="#variant.SysAdmin" class="anchor">§</a><h3 class="code-header">SysAdmin</h3></section><div class="docblock"><ul>
+<li>perform a range of system administration operations including:
+<a href="https://man7.org/linux/man-pages/man2/quotactl.2.html">quotactl(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/mount.2.html">mount(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/umount.2.html">umount(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/pivot_root.2.html">pivot_root(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/swapon.2.html">swapon(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/swapoff.2.html">swapoff(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/sethostname.2.html">sethostname(2)</a>,
+and <a href="https://man7.org/linux/man-pages/man2/setdomainname.2.html">setdomainname(2)</a></li>
+<li>perform privileged
+<a href="https://man7.org/linux/man-pages/man2/syslog.2.html">syslog(2)</a>
+operations (since Linux 2.6.37, <strong>CAP_SYSLOG</strong> should be used to
+permit such operations)</li>
+<li>perform <strong>VM86_REQUEST_IRQ vm86</strong>(2) command</li>
+<li>access the same checkpoint/restore functionality that is governed by
+<strong>CAP_CHECKPOINT_RESTORE</strong> (but the latter, weaker capability is
+preferred for accessing that functionality)</li>
+<li>perform the same BPF operations as are governed by <strong>CAP_BPF</strong> (but
+the latter, weaker capability is preferred for accessing that
+functionality).</li>
+<li>employ the same performance monitoring mechanisms as are governed by
+<strong>CAP_PERFMON</strong> (but the latter, weaker capability is preferred for
+accessing that functionality).</li>
+<li>perform <strong>IPC_SET</strong> and <strong>IPC_RMID</strong> operations on arbitrary System V
+IPC objects</li>
+<li>override <strong>RLIMIT_NPROC</strong> resource limit</li>
+<li>perform operations on <code>trusted</code> and <code>security</code> extended attributes
+(see <a href="https://man7.org/linux/man-pages/man7/xattr.7.html">xattr(7)</a>)</li>
+<li>use
+<a href="https://man7.org/linux/man-pages/man2/lookup_dcookie.2.html">lookup_dcookie(2)</a></li>
+<li>use
+<a href="https://man7.org/linux/man-pages/man2/ioprio_set.2.html">ioprio_set(2)</a>
+to assign <strong>IOPRIO_CLASS_RT</strong> and (before Linux 2.6.25)
+<strong>IOPRIO_CLASS_IDLE</strong> I/O scheduling classes</li>
+<li>forge PID when passing socket credentials via UNIX domain sockets</li>
+<li>exceed <code>/proc/sys/fs/file-max</code>, the system-wide limit on the number of
+open files, in system calls that open files (e.g.,
+<a href="https://man7.org/linux/man-pages/man2/accept.2.html">accept(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/execve.2.html">execve(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/open.2.html">open(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/pipe.2.html">pipe(2)</a>)</li>
+<li>employ <strong>CLONE_</strong>* flags that create new namespaces with
+<a href="https://man7.org/linux/man-pages/man2/clone.2.html">clone(2)</a> and
+<a href="https://man7.org/linux/man-pages/man2/unshare.2.html">unshare(2)</a>
+(but, since Linux 3.8, creating user namespaces does not require any
+capability)</li>
+<li>access privileged <code>perf</code> event information</li>
+<li>call <a href="https://man7.org/linux/man-pages/man2/setns.2.html">setns(2)</a>
+(requires <strong>CAP_SYS_ADMIN</strong> in the <code>target</code> namespace)</li>
+<li>call
+<a href="https://man7.org/linux/man-pages/man2/fanotify_init.2.html">fanotify_init(2)</a></li>
+<li>perform privileged <strong>KEYCTL_CHOWN</strong> and <strong>KEYCTL_SETPERM</strong>
+<a href="https://man7.org/linux/man-pages/man2/keyctl.2.html">keyctl(2)</a>
+operations</li>
+<li>perform
+<a href="https://man7.org/linux/man-pages/man2/madvise.2.html">madvise(2)</a>
+<strong>MADV_HWPOISON</strong> operation</li>
+<li>employ the <strong>TIOCSTI ioctl</strong>(2) to insert characters into the input
+queue of a terminal other than the caller’s controlling terminal</li>
+<li>employ the obsolete
+<a href="https://man7.org/linux/man-pages/man2/nfsservctl.2.html">nfsservctl(2)</a>
+system call</li>
+<li>employ the obsolete
+<a href="https://man7.org/linux/man-pages/man2/bdflush.2.html">bdflush(2)</a>
+system call</li>
+<li>perform various privileged block-device
+<a href="https://man7.org/linux/man-pages/man2/ioctl.2.html">ioctl(2)</a>
+operations</li>
+<li>perform various privileged filesystem
+<a href="https://man7.org/linux/man-pages/man2/ioctl.2.html">ioctl(2)</a>
+operations</li>
+<li>perform privileged
+<a href="https://man7.org/linux/man-pages/man2/ioctl.2.html">ioctl(2)</a>
+operations on the <code>/dev/random</code> device (see
+<a href="https://man7.org/linux/man-pages/man4/random.4.html">random(4)</a>)</li>
+<li>install a
+<a href="https://man7.org/linux/man-pages/man2/seccomp.2.html">seccomp(2)</a>
+filter without first having to set the <code>no_new_privs</code> thread attribute</li>
+<li>modify allow/deny rules for device control groups</li>
+<li>employ the
+<a href="https://man7.org/linux/man-pages/man2/ptrace.2.html">ptrace(2)</a>
+<strong>PTRACE_SECCOMP_GET_FILTER</strong> operation to dump tracee’s seccomp
+filters</li>
+<li>employ the
+<a href="https://man7.org/linux/man-pages/man2/ptrace.2.html">ptrace(2)</a>
+<strong>PTRACE_SETOPTIONS</strong> operation to suspend the tracee’s seccomp
+protections (i.e., the <strong>PTRACE_O_SUSPEND_SECCOMP</strong> flag)</li>
+<li>perform administrative operations on many device drivers</li>
+<li>modify autogroup nice values by writing to <code>/proc/[pid]/autogroup</code>
+(see <a href="https://man7.org/linux/man-pages/man7/sched.7.html">sched(7)</a>)</li>
+</ul>
+</div><section id="variant.SysBoot" class="variant"><a href="#variant.SysBoot" class="anchor">§</a><h3 class="code-header">SysBoot</h3></section><div class="docblock"><p>Use <a href="https://man7.org/linux/man-pages/man2/reboot.2.html">reboot(2)</a> and
+<a href="https://man7.org/linux/man-pages/man2/kexec_load.2.html">kexec_load(2)</a>.</p>
+</div><section id="variant.SysChroot" class="variant"><a href="#variant.SysChroot" class="anchor">§</a><h3 class="code-header">SysChroot</h3></section><div class="docblock"><ul>
+<li>use <a href="https://man7.org/linux/man-pages/man2/chroot.2.html">chroot(2)</a></li>
+<li>change mount namespaces using
+<a href="https://man7.org/linux/man-pages/man2/setns.2.html">setns(2)</a></li>
+</ul>
+</div><section id="variant.SysModule" class="variant"><a href="#variant.SysModule" class="anchor">§</a><h3 class="code-header">SysModule</h3></section><div class="docblock"><ul>
+<li>load and unload kernel modules (see
+<a href="https://man7.org/linux/man-pages/man2/init_module.2.html">init_module(2)</a>
+and
+<a href="https://man7.org/linux/man-pages/man2/delete_module.2.html">delete_module(2)</a>)</li>
+<li>in kernels before 2.6.25: drop capabilities from the system-wide
+capability bounding set</li>
+</ul>
+</div><section id="variant.SysNice" class="variant"><a href="#variant.SysNice" class="anchor">§</a><h3 class="code-header">SysNice</h3></section><div class="docblock"><ul>
+<li>lower the process nice value
+(<a href="https://man7.org/linux/man-pages/man2/nice.2.html">nice(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/setpriority.2.html">setpriority(2)</a>)
+and change the nice value for arbitrary processes</li>
+<li>set real-time scheduling policies for calling process, and set
+scheduling policies and priorities for arbitrary processes
+(<a href="https://man7.org/linux/man-pages/man2/sched_setscheduler.2.html">sched_setscheduler(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/sched_setparam.2.html">sched_setparam(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/sched_setattr.2.html">sched_setattr(2)</a>)</li>
+<li>set CPU affinity for arbitrary processes
+(<a href="https://man7.org/linux/man-pages/man2/sched_setaffinity.2.html">sched_setaffinity(2)</a>)</li>
+<li>set I/O scheduling class and priority for arbitrary processes
+(<a href="https://man7.org/linux/man-pages/man2/ioprio_set.2.html">ioprio_set(2)</a>)</li>
+<li>apply
+<a href="https://man7.org/linux/man-pages/man2/migrate_pages.2.html">migrate_pages(2)</a>
+to arbitrary processes and allow processes to be migrated to arbitrary
+nodes</li>
+<li>apply
+<a href="https://man7.org/linux/man-pages/man2/move_pages.2.html">move_pages(2)</a>
+to arbitrary processes</li>
+<li>use the <strong>MPOL_MF_MOVE_ALL</strong> flag with
+<a href="https://man7.org/linux/man-pages/man2/mbind.2.html">mbind(2)</a> and
+<a href="https://man7.org/linux/man-pages/man2/move_pages.2.html">move_pages(2)</a></li>
+</ul>
+</div><section id="variant.SysPacct" class="variant"><a href="#variant.SysPacct" class="anchor">§</a><h3 class="code-header">SysPacct</h3></section><div class="docblock"><p>Use <a href="https://man7.org/linux/man-pages/man2/acct.2.html">acct(2)</a>.</p>
+</div><section id="variant.SysPtrace" class="variant"><a href="#variant.SysPtrace" class="anchor">§</a><h3 class="code-header">SysPtrace</h3></section><div class="docblock"><ul>
+<li>trace arbitrary processes using
+<a href="https://man7.org/linux/man-pages/man2/ptrace.2.html">ptrace(2)</a></li>
+<li>apply
+<a href="https://man7.org/linux/man-pages/man2/get_robust_list.2.html">get_robust_list(2)</a>
+to arbitrary processes</li>
+<li>transfer data to or from the memory of arbitrary processes using
+<a href="https://man7.org/linux/man-pages/man2/process_vm_readv.2.html">process_vm_readv(2)</a>
+and
+<a href="https://man7.org/linux/man-pages/man2/process_vm_writev.2.html">process_vm_writev(2)</a></li>
+<li>inspect processes using
+<a href="https://man7.org/linux/man-pages/man2/kcmp.2.html">kcmp(2)</a></li>
+</ul>
+</div><section id="variant.SysRawio" class="variant"><a href="#variant.SysRawio" class="anchor">§</a><h3 class="code-header">SysRawio</h3></section><div class="docblock"><ul>
+<li>perform I/O port operations
+(<a href="https://man7.org/linux/man-pages/man2/iopl.2.html">iopl(2)</a> and
+<a href="https://man7.org/linux/man-pages/man2/ioperm.2.html">ioperm(2)</a>);</li>
+<li>access <code>/proc/kcore</code></li>
+<li>employ the <strong>FIBMAP ioctl</strong>(2) operation</li>
+<li>open devices for accessing x86 model-specific registers (MSRs, see
+<a href="https://man7.org/linux/man-pages/man4/msr.4.html">msr(4)</a>)</li>
+<li>update <code>/proc/sys/vm/mmap_min_addr</code></li>
+<li>create memory mappings at addresses below the value specified by
+<code>/proc/sys/vm/mmap_min_addr</code></li>
+<li>map files in <code>/proc/bus/pci</code></li>
+<li>open <code>/dev/mem</code> and <code>/dev/kmem</code></li>
+<li>perform various SCSI device commands</li>
+<li>perform certain operations on
+<a href="https://man7.org/linux/man-pages/man4/hpsa.4.html">hpsa(4)</a> and
+<a href="https://man7.org/linux/man-pages/man4/cciss.4.html">cciss(4)</a> devices</li>
+<li>perform a range of device-specific operations on other devices</li>
+</ul>
+</div><section id="variant.SysResource" class="variant"><a href="#variant.SysResource" class="anchor">§</a><h3 class="code-header">SysResource</h3></section><div class="docblock"><ul>
+<li>use reserved space on ext2 filesystems</li>
+<li>make <a href="https://man7.org/linux/man-pages/man2/ioctl.2.html">ioctl(2)</a>
+calls controlling ext3 journaling</li>
+<li>override disk quota limits</li>
+<li>increase resource limits (see
+<a href="https://man7.org/linux/man-pages/man2/setrlimit.2.html">setrlimit(2)</a>)</li>
+<li>override <strong>RLIMIT_NPROC</strong> resource limit</li>
+<li>override maximum number of consoles on console allocation</li>
+<li>override maximum number of keymaps</li>
+<li>allow more than 64hz interrupts from the real-time clock</li>
+<li>raise <code>msg_qbytes</code> limit for a System V message queue above the limit
+in <code>/proc/sys/kernel/msgmnb</code> (see
+<a href="https://man7.org/linux/man-pages/man2/msgop.2.html">msgop(2)</a> and
+<a href="https://man7.org/linux/man-pages/man2/msgctl.2.html">msgctl(2)</a>)</li>
+<li>allow the <strong>RLIMIT_NOFILE</strong> resource limit on the number of
+“in-flight” file descriptors to be bypassed when passing file
+descriptors to another process via a UNIX domain socket (see
+<a href="https://man7.org/linux/man-pages/man7/unix.7.html">unix(7)</a>);</li>
+<li>override the <code>/proc/sys/fs/pipe-size-max</code> limit when setting the
+capacity of a pipe using the <strong>F_SETPIPE_SZ</strong>
+<a href="https://man7.org/linux/man-pages/man2/fcntl.2.html">fcntl(2)</a> command</li>
+<li>use <strong>F_SETPIPE_SZ</strong> to increase the capacity of a pipe above the
+limit specified by <code>/proc/sys/fs/pipe-max-size</code></li>
+<li>override <code>/proc/sys/fs/mqueue/queues_max</code>,
+<code>/proc/sys/fs/mqueue/msg_max</code> and <code>/proc/sys/fs/mqueue/msgsize_max</code>
+limits when creating POSIX message queues (see
+<a href="https://man7.org/linux/man-pages/man7/mq_overview.7.html">mq_overview(7)</a>)</li>
+<li>employ the
+<a href="https://man7.org/linux/man-pages/man2/prctl.2.html">prctl(2)</a>
+<strong>PR_SET_MM</strong> operation</li>
+<li>set <code>/proc/[pid]/oom_score_adj</code> to a value lower than the value last
+set by a process with <strong>CAP_SYS_RESOURCE</strong></li>
+</ul>
+</div><section id="variant.SysTime" class="variant"><a href="#variant.SysTime" class="anchor">§</a><h3 class="code-header">SysTime</h3></section><div class="docblock"><ul>
+<li>set system clock
+(<a href="https://man7.org/linux/man-pages/man2/settimeofday.2.html">settimeofday(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/stime.2.html">stime(2)</a>,
+<a href="https://man7.org/linux/man-pages/man2/adjtimex.2.html">adjtimex(2)</a>)</li>
+<li>set real-time (hardware) clock</li>
+</ul>
+</div><section id="variant.SysTtyConfig" class="variant"><a href="#variant.SysTtyConfig" class="anchor">§</a><h3 class="code-header">SysTtyConfig</h3></section><div class="docblock"><ul>
+<li>use
+<a href="https://man7.org/linux/man-pages/man2/vhangup.2.html">vhangup(2)</a></li>
+<li>employ various privileged
+<a href="https://man7.org/linux/man-pages/man2/ioctl.2.html">ioctl(2)</a>
+operations on virtual terminals</li>
+</ul>
+</div><section id="variant.Syslog" class="variant"><a href="#variant.Syslog" class="anchor">§</a><h3 class="code-header">Syslog</h3></section><div class="docblock"><ul>
+<li>perform privileged
+<a href="https://man7.org/linux/man-pages/man2/syslog.2.html">syslog(2)</a>
+operations. See
+<a href="https://man7.org/linux/man-pages/man2/syslog.2.html">syslog(2)</a> for
+information on which operations require privilege.</li>
+<li>view kernel addresses exposed via <code>/proc</code> and other interfaces when
+<code>/proc/sys/kernel/kptr_restrict</code> has the value 1. (See the discussion
+of the <code>kptr_restrict</code> in
+<a href="https://man7.org/linux/man-pages/man5/proc.5.html">proc(5)</a>.)</li>
+</ul>
+<p><em>since Linux 2.6.37</em></p>
+</div><section id="variant.WakeAlarm" class="variant"><a href="#variant.WakeAlarm" class="anchor">§</a><h3 class="code-header">WakeAlarm</h3></section><div class="docblock"><p>Trigger something that will wake up the system (set
+<strong>CLOCK_REALTIME_ALARM</strong> and <strong>CLOCK_BOOTTIME_ALARM</strong> timers).
+<em>since Linux 3.0</em></p>
+</div></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-Clone-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone" class="method trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#method.clone" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/clone/trait.Clone.html#tymethod.clone" class="fn">clone</a>(&amp;self) -&gt; <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h4></section></summary><div class='docblock'>Returns a copy of the value. <a href="https://doc.rust-lang.org/1.86.0/core/clone/trait.Clone.html#tymethod.clone">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_from" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.0.0">1.0.0</span> · <a class="src" href="https://doc.rust-lang.org/1.86.0/src/core/clone.rs.html#174">Source</a></span><a href="#method.clone_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/clone/trait.Clone.html#method.clone_from" class="fn">clone_from</a>(&amp;mut self, source: &amp;Self)</h4></section></summary><div class='docblock'>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/1.86.0/core/clone/trait.Clone.html#method.clone_from">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Debug-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-Debug-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fmt" class="method trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#method.fmt" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/fmt/trait.Debug.html#tymethod.fmt" class="fn">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/1.86.0/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/1.86.0/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></section></summary><div class='docblock'>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/1.86.0/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Deserialize%3C'de%3E-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#522-577">Source</a><a href="#impl-Deserialize%3C'de%3E-for-Capability" class="anchor">§</a><h3 class="code-header">impl&lt;'de&gt; <a class="trait" href="../../serde/de/trait.Deserialize.html" title="trait serde::de::Deserialize">Deserialize</a>&lt;'de&gt; for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.deserialize" class="method trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#523-576">Source</a><a href="#method.deserialize" class="anchor">§</a><h4 class="code-header">fn <a href="../../serde/de/trait.Deserialize.html#tymethod.deserialize" class="fn">deserialize</a>&lt;D&gt;(deserializer: D) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.86.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;Self, D::<a class="associatedtype" href="../../serde/de/trait.Deserializer.html#associatedtype.Error" title="type serde::de::Deserializer::Error">Error</a>&gt;<div class="where">where
+    D: <a class="trait" href="../../serde/de/trait.Deserializer.html" title="trait serde::de::Deserializer">Deserializer</a>&lt;'de&gt;,</div></h4></section></summary><div class='docblock'>Deserialize this value from the given Serde deserializer. <a href="../../serde/de/trait.Deserialize.html#tymethod.deserialize">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Display-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-Display-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/fmt/trait.Display.html" title="trait core::fmt::Display">Display</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fmt-1" class="method trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#method.fmt-1" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/fmt/trait.Display.html#tymethod.fmt" class="fn">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/1.86.0/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.86.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.unit.html">()</a>, <a class="struct" href="https://doc.rust-lang.org/1.86.0/core/fmt/struct.Error.html" title="struct core::fmt::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/1.86.0/core/fmt/trait.Display.html#tymethod.fmt">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-FromStr-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-FromStr-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/str/traits/trait.FromStr.html" title="trait core::str::traits::FromStr">FromStr</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Err" class="associatedtype trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#associatedtype.Err" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/1.86.0/core/str/traits/trait.FromStr.html#associatedtype.Err" class="associatedtype">Err</a> = <a class="enum" href="../../strum/enum.ParseError.html" title="enum strum::ParseError">ParseError</a></h4></section></summary><div class='docblock'>The associated error which can be returned from parsing.</div></details><details class="toggle method-toggle" open><summary><section id="method.from_str" class="method trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#method.from_str" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/str/traits/trait.FromStr.html#tymethod.from_str" class="fn">from_str</a>(s: &amp;<a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.str.html">str</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.86.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a>, &lt;Self as <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/str/traits/trait.FromStr.html" title="trait core::str::traits::FromStr">FromStr</a>&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/1.86.0/core/str/traits/trait.FromStr.html#associatedtype.Err" title="type core::str::traits::FromStr::Err">Err</a>&gt;</h4></section></summary><div class='docblock'>Parses a string <code>s</code> to return a value of this type. <a href="https://doc.rust-lang.org/1.86.0/core/str/traits/trait.FromStr.html#tymethod.from_str">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Hash-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-Hash-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.hash" class="method trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#method.hash" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/hash/trait.Hash.html#tymethod.hash" class="fn">hash</a>&lt;__H: <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/hash/trait.Hasher.html" title="trait core::hash::Hasher">Hasher</a>&gt;(&amp;self, state: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.reference.html">&amp;mut __H</a>)</h4></section></summary><div class='docblock'>Feeds this value into the given <a href="https://doc.rust-lang.org/1.86.0/core/hash/trait.Hasher.html" title="trait core::hash::Hasher"><code>Hasher</code></a>. <a href="https://doc.rust-lang.org/1.86.0/core/hash/trait.Hash.html#tymethod.hash">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.hash_slice" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.3.0">1.3.0</span> · <a class="src" href="https://doc.rust-lang.org/1.86.0/src/core/hash/mod.rs.html#235-237">Source</a></span><a href="#method.hash_slice" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/hash/trait.Hash.html#method.hash_slice" class="fn">hash_slice</a>&lt;H&gt;(data: &amp;[Self], state: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.reference.html">&amp;mut H</a>)<div class="where">where
+    H: <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/hash/trait.Hasher.html" title="trait core::hash::Hasher">Hasher</a>,
+    Self: <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h4></section></summary><div class='docblock'>Feeds a slice of this type into the given <a href="https://doc.rust-lang.org/1.86.0/core/hash/trait.Hasher.html" title="trait core::hash::Hasher"><code>Hasher</code></a>. <a href="https://doc.rust-lang.org/1.86.0/core/hash/trait.Hash.html#method.hash_slice">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-PartialEq-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-PartialEq-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.eq" class="method trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#method.eq" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/cmp/trait.PartialEq.html#tymethod.eq" class="fn">eq</a>(&amp;self, other: &amp;<a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.bool.html">bool</a></h4></section></summary><div class='docblock'>Tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>.</div></details><details class="toggle method-toggle" open><summary><section id="method.ne" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.0.0">1.0.0</span> · <a class="src" href="https://doc.rust-lang.org/1.86.0/src/core/cmp.rs.html#261">Source</a></span><a href="#method.ne" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/cmp/trait.PartialEq.html#method.ne" class="fn">ne</a>(&amp;self, other: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.reference.html">&amp;Rhs</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.bool.html">bool</a></h4></section></summary><div class='docblock'>Tests for <code>!=</code>. The default implementation is almost always sufficient,
+and should not be overridden without very good reason.</div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Serialize-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-Serialize-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="../../serde/ser/trait.Serialize.html" title="trait serde::ser::Serialize">Serialize</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.serialize" class="method trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#method.serialize" class="anchor">§</a><h4 class="code-header">fn <a href="../../serde/ser/trait.Serialize.html#tymethod.serialize" class="fn">serialize</a>&lt;__S&gt;(&amp;self, __serializer: __S) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.86.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;__S::<a class="associatedtype" href="../../serde/ser/trait.Serializer.html#associatedtype.Ok" title="type serde::ser::Serializer::Ok">Ok</a>, __S::<a class="associatedtype" href="../../serde/ser/trait.Serializer.html#associatedtype.Error" title="type serde::ser::Serializer::Error">Error</a>&gt;<div class="where">where
+    __S: <a class="trait" href="../../serde/ser/trait.Serializer.html" title="trait serde::ser::Serializer">Serializer</a>,</div></h4></section></summary><div class='docblock'>Serialize this value into the given Serde serializer. <a href="../../serde/ser/trait.Serialize.html#tymethod.serialize">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-TryFrom%3C%26str%3E-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-TryFrom%3C%26str%3E-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;&amp;<a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.str.html">str</a>&gt; for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error" class="associatedtype trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#associatedtype.Error" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html#associatedtype.Error" class="associatedtype">Error</a> = <a class="enum" href="../../strum/enum.ParseError.html" title="enum strum::ParseError">ParseError</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_from" class="method trait-impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#method.try_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html#tymethod.try_from" class="fn">try_from</a>(s: &amp;<a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.str.html">str</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.86.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a>, &lt;Self as <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;&amp;<a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.str.html">str</a>&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details><section id="impl-Copy-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-Copy-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section><section id="impl-Eq-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-Eq-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section><section id="impl-StructuralPartialEq-for-Capability" class="impl"><a class="src rightside" href="../../src/oci_spec/runtime/capability.rs.html#12">Source</a><a href="#impl-StructuralPartialEq-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.StructuralPartialEq.html" title="trait core::marker::StructuralPartialEq">StructuralPartialEq</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Freeze-for-Capability" class="impl"><a href="#impl-Freeze-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section><section id="impl-RefUnwindSafe-for-Capability" class="impl"><a href="#impl-RefUnwindSafe-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section><section id="impl-Send-for-Capability" class="impl"><a href="#impl-Send-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section><section id="impl-Sync-for-Capability" class="impl"><a href="#impl-Sync-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section><section id="impl-Unpin-for-Capability" class="impl"><a href="#impl-Unpin-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section><section id="impl-UnwindSafe-for-Capability" class="impl"><a href="#impl-UnwindSafe-for-Capability" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a> for <a class="enum" href="enum.Capability.html" title="enum oci_spec::runtime::Capability">Capability</a></h3></section></div><h2 id="blanket-implementations" class="section-header">Blanket Implementations<a href="#blanket-implementations" class="anchor">§</a></h2><div id="blanket-implementations-list"><details class="toggle implementors-toggle"><summary><section id="impl-Any-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/any.rs.html#138">Source</a><a href="#impl-Any-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/any/trait.Any.html" title="trait core::any::Any">Any</a> for T<div class="where">where
+    T: 'static + ?<a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.type_id" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/any.rs.html#139">Source</a><a href="#method.type_id" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/any/trait.Any.html#tymethod.type_id" class="fn">type_id</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/1.86.0/core/any/struct.TypeId.html" title="struct core::any::TypeId">TypeId</a></h4></section></summary><div class='docblock'>Gets the <code>TypeId</code> of <code>self</code>. <a href="https://doc.rust-lang.org/1.86.0/core/any/trait.Any.html#tymethod.type_id">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Borrow%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/borrow.rs.html#209">Source</a><a href="#impl-Borrow%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/borrow/trait.Borrow.html" title="trait core::borrow::Borrow">Borrow</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/borrow.rs.html#211">Source</a><a href="#method.borrow" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/borrow/trait.Borrow.html#tymethod.borrow" class="fn">borrow</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.reference.html">&amp;T</a></h4></section></summary><div class='docblock'>Immutably borrows from an owned value. <a href="https://doc.rust-lang.org/1.86.0/core/borrow/trait.Borrow.html#tymethod.borrow">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-BorrowMut%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/borrow.rs.html#217">Source</a><a href="#impl-BorrowMut%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/borrow/trait.BorrowMut.html" title="trait core::borrow::BorrowMut">BorrowMut</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow_mut" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/borrow.rs.html#218">Source</a><a href="#method.borrow_mut" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut" class="fn">borrow_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.reference.html">&amp;mut T</a></h4></section></summary><div class='docblock'>Mutably borrows from an owned value. <a href="https://doc.rust-lang.org/1.86.0/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-CloneToUninit-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/clone.rs.html#273">Source</a><a href="#impl-CloneToUninit-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/clone/trait.CloneToUninit.html" title="trait core::clone::CloneToUninit">CloneToUninit</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone_to_uninit" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/clone.rs.html#275">Source</a><a href="#method.clone_to_uninit" class="anchor">§</a><h4 class="code-header">unsafe fn <a href="https://doc.rust-lang.org/1.86.0/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit" class="fn">clone_to_uninit</a>(&amp;self, dst: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u8.html">u8</a>)</h4></section></summary><span class="item-info"><div class="stab unstable"><span class="emoji">🔬</span><span>This is a nightly-only experimental API. (<code>clone_to_uninit</code>)</span></div></span><div class='docblock'>Performs copy-assignment from <code>self</code> to <code>dst</code>. <a href="https://doc.rust-lang.org/1.86.0/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-From%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/convert/mod.rs.html#767">Source</a><a href="#impl-From%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for T</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/convert/mod.rs.html#770">Source</a><a href="#method.from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/convert/trait.From.html#tymethod.from" class="fn">from</a>(t: T) -&gt; T</h4></section></summary><div class="docblock"><p>Returns the argument unchanged.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Into%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/convert/mod.rs.html#750-752">Source</a><a href="#impl-Into%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/convert/mod.rs.html#760">Source</a><a href="#method.into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/convert/trait.Into.html#tymethod.into" class="fn">into</a>(self) -&gt; U</h4></section></summary><div class="docblock"><p>Calls <code>U::from(self)</code>.</p>
+<p>That is, this conversion is whatever the implementation of
+<code><a href="https://doc.rust-lang.org/1.86.0/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for U</code> chooses to do.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToOwned-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/alloc/borrow.rs.html#82-84">Source</a><a href="#impl-ToOwned-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/1.86.0/alloc/borrow/trait.ToOwned.html" title="trait alloc::borrow::ToOwned">ToOwned</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Owned" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/alloc/borrow.rs.html#86">Source</a><a href="#associatedtype.Owned" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/1.86.0/alloc/borrow/trait.ToOwned.html#associatedtype.Owned" class="associatedtype">Owned</a> = T</h4></section></summary><div class='docblock'>The resulting type after obtaining ownership.</div></details><details class="toggle method-toggle" open><summary><section id="method.to_owned" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/alloc/borrow.rs.html#87">Source</a><a href="#method.to_owned" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/alloc/borrow/trait.ToOwned.html#tymethod.to_owned" class="fn">to_owned</a>(&amp;self) -&gt; T</h4></section></summary><div class='docblock'>Creates owned data from borrowed data, usually by cloning. <a href="https://doc.rust-lang.org/1.86.0/alloc/borrow/trait.ToOwned.html#tymethod.to_owned">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/alloc/borrow.rs.html#91">Source</a><a href="#method.clone_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/alloc/borrow/trait.ToOwned.html#method.clone_into" class="fn">clone_into</a>(&amp;self, target: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.reference.html">&amp;mut T</a>)</h4></section></summary><div class='docblock'>Uses borrowed data to replace owned data, usually by cloning. <a href="https://doc.rust-lang.org/1.86.0/alloc/borrow/trait.ToOwned.html#method.clone_into">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToString-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/alloc/string.rs.html#2758">Source</a><a href="#impl-ToString-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/1.86.0/alloc/string/trait.ToString.html" title="trait alloc::string::ToString">ToString</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/fmt/trait.Display.html" title="trait core::fmt::Display">Display</a> + ?<a class="trait" href="https://doc.rust-lang.org/1.86.0/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.to_string" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/alloc/string.rs.html#2760">Source</a><a href="#method.to_string" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/alloc/string/trait.ToString.html#tymethod.to_string" class="fn">to_string</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/1.86.0/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></h4></section></summary><div class='docblock'>Converts the given value to a <code>String</code>. <a href="https://doc.rust-lang.org/1.86.0/alloc/string/trait.ToString.html#tymethod.to_string">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryFrom%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/convert/mod.rs.html#807-809">Source</a><a href="#impl-TryFrom%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error-2" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/convert/mod.rs.html#811">Source</a><a href="#associatedtype.Error-2" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html#associatedtype.Error" class="associatedtype">Error</a> = <a class="enum" href="https://doc.rust-lang.org/1.86.0/core/convert/enum.Infallible.html" title="enum core::convert::Infallible">Infallible</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_from-1" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/convert/mod.rs.html#814">Source</a><a href="#method.try_from-1" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html#tymethod.try_from" class="fn">try_from</a>(value: U) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.86.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;T, &lt;T as <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryInto%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/convert/mod.rs.html#792-794">Source</a><a href="#impl-TryInto%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryInto.html" title="trait core::convert::TryInto">TryInto</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error-1" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/convert/mod.rs.html#796">Source</a><a href="#associatedtype.Error-1" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryInto.html#associatedtype.Error" class="associatedtype">Error</a> = &lt;U as <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/1.86.0/src/core/convert/mod.rs.html#799">Source</a><a href="#method.try_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryInto.html#tymethod.try_into" class="fn">try_into</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.86.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;U, &lt;U as <a class="trait" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/1.86.0/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details><section id="impl-DeserializeOwned-for-T" class="impl"><a class="src rightside" href="../../src/serde/de/mod.rs.html#614">Source</a><a href="#impl-DeserializeOwned-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="../../serde/de/trait.DeserializeOwned.html" title="trait serde::de::DeserializeOwned">DeserializeOwned</a> for T<div class="where">where
+    T: for&lt;'de&gt; <a class="trait" href="../../serde/de/trait.Deserialize.html" title="trait serde::de::Deserialize">Deserialize</a>&lt;'de&gt;,</div></h3></section></div></section></div></main></body></html>
