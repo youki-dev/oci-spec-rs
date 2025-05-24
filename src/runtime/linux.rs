@@ -94,7 +94,7 @@ pub struct Linux {
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// TimeOffsets specifies the offset for supporting time namespaces.
-    time_offsets: Option<HashMap<String, String>>,
+    time_offsets: Option<HashMap<String, LinuxTimeOffset>>,
 }
 
 // Default impl for Linux (see functions for more info)
@@ -608,12 +608,18 @@ pub struct LinuxBlockIo {
     /// IO write rate limit per cgroup per device, bytes per second.
     throttle_write_bps_device: Option<Vec<LinuxThrottleDevice>>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        rename = "throttleReadIOPSDevice"
+    )]
     #[getset(get = "pub", set = "pub")]
     /// IO read rate limit per cgroup per device, IO per second.
     throttle_read_iops_device: Option<Vec<LinuxThrottleDevice>>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        rename = "throttleWriteIOPSDevice"
+    )]
     #[getset(get = "pub", set = "pub")]
     /// IO write rate limit per cgroup per device, IO per second.
     throttle_write_iops_device: Option<Vec<LinuxThrottleDevice>>,
@@ -1462,6 +1468,37 @@ impl Default for LinuxPersonalityDomain {
     fn default() -> Self {
         Self::PerLinux
     }
+}
+
+#[derive(
+    Builder,
+    Clone,
+    CopyGetters,
+    Debug,
+    Default,
+    Deserialize,
+    Eq,
+    Getters,
+    Setters,
+    PartialEq,
+    Serialize,
+)]
+#[builder(
+    default,
+    pattern = "owned",
+    setter(into, strip_option),
+    build_fn(error = "OciSpecError")
+)]
+/// LinuxTimeOffset specifies the offset for Time Namespace
+pub struct LinuxTimeOffset {
+    /// Secs is the offset of clock (in secs) in the container
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[getset(get_copy = "pub", set = "pub")]
+    secs: Option<i64>,
+    /// Nanosecs is the additional offset for Secs (in nanosecs)
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[getset(get_copy = "pub", set = "pub")]
+    nanosecs: Option<u32>,
 }
 
 #[cfg(feature = "proptests")]
