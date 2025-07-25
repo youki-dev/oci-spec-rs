@@ -8,6 +8,7 @@
 [![docs.rs](https://docs.rs/oci-spec/badge.svg)](https://docs.rs/oci-spec)
 [![dependencies](https://deps.rs/repo/github/containers/oci-spec-rs/status.svg)](https://deps.rs/repo/github/containers/oci-spec-rs)
 [![license](https://img.shields.io/github/license/containers/oci-spec-rs.svg)](https://github.com/containers/oci-spec-rs/blob/master/LICENSE)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fyouki-dev%2Foci-spec-rs.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fyouki-dev%2Foci-spec-rs?ref=badge_shield)
 
 ### Open Container Initiative (OCI) Specifications for Rust
 
@@ -132,3 +133,7 @@ let list = RepositoryListBuilder::default()
 # Contributing
 This project welcomes your PRs and issues. Should you wish to work on an issue, please claim it first by commenting on the 
 issue that you want to work on it. This is to prevent duplicated efforts from contributors on the same issue.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fyouki-dev%2Foci-spec-rs.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fyouki-dev%2Foci-spec-rs?ref=badge_large)
