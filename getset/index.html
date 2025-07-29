@@ -1,0 +1,240 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Getset, we’re ready to go!"><title>getset - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-1a91846b.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="getset" data-themes="" data-resource-suffix="" data-rustdoc-version="1.88.0 (6b00bc388 2025-06-23)" data-channel="1.88.0" data-search-js="search-f7877310.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-4e99c027.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-7ef8a74a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../getset/index.html">getset</a><span class="version">0.1.6</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#derives">Crate Items</a></h3><ul class="block"><li><a href="#derives" title="Derive Macros">Derive Macros</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>getset</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/getset/lib.rs.html#1-446">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Getset, we’re ready to go!</p>
+<p>A procedural macro for generating the most basic getters and setters on fields.</p>
+<p>Getters are generated as <code>fn field(&amp;self) -&gt; &amp;type</code>, while setters are generated as <code>fn field(&amp;mut self, val: type)</code>.</p>
+<p>These macros are not intended to be used on fields which require custom logic inside of their setters and getters. Just write your own in that case!</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::sync::Arc;
+
+<span class="kw">use </span>getset::{CloneGetters, CopyGetters, Getters, MutGetters, Setters, WithSetters};
+
+<span class="attr">#[derive(Getters, Setters, WithSetters, MutGetters, CopyGetters, CloneGetters, Default)]
+</span><span class="kw">pub struct </span>Foo&lt;T&gt;
+<span class="kw">where
+    </span>T: Copy + Clone + Default,
+{
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[getset(get, set, get_mut, set_with)]
+    </span>private: T,
+
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[getset(get_copy = <span class="string">"pub"</span>, set = <span class="string">"pub"</span>, get_mut = <span class="string">"pub"</span>, set_with = <span class="string">"pub"</span>)]
+    </span>public: T,
+
+    <span class="doccomment">/// Arc supported through CloneGetters
+    </span><span class="attr">#[getset(get_clone = <span class="string">"pub"</span>, set = <span class="string">"pub"</span>, get_mut = <span class="string">"pub"</span>, set_with = <span class="string">"pub"</span>)]
+    </span>arc: Arc&lt;u16&gt;,
+}</code></pre></div>
+<p>You can use <code>cargo-expand</code> to generate the output. Here are the functions that the above generates (Replicate with <code>cargo expand --example simple</code>):</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::sync::Arc;
+<span class="kw">use </span>getset::{CloneGetters, CopyGetters, Getters, MutGetters, Setters, WithSetters};
+<span class="kw">pub struct </span>Foo&lt;T&gt;
+<span class="kw">where
+    </span>T: Copy + Clone + Default,
+{
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[getset(get, set, get_mut, set_with)]
+    </span>private: T,
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[getset(get_copy = <span class="string">"pub"</span>, set = <span class="string">"pub"</span>, get_mut = <span class="string">"pub"</span>, set_with = <span class="string">"pub"</span>)]
+    </span>public: T,
+    <span class="doccomment">/// Arc supported through CloneGetters
+    </span><span class="attr">#[getset(get_clone = <span class="string">"pub"</span>, set = <span class="string">"pub"</span>, get_mut = <span class="string">"pub"</span>, set_with = <span class="string">"pub"</span>)]
+    </span>arc: Arc&lt;u16&gt;,
+}
+<span class="kw">impl</span>&lt;T&gt; Foo&lt;T&gt;
+<span class="kw">where
+    </span>T: Copy + Clone + Default,
+{
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">fn </span>private(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>T {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.private
+    }
+}
+<span class="kw">impl</span>&lt;T&gt; Foo&lt;T&gt;
+<span class="kw">where
+    </span>T: Copy + Clone + Default,
+{
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">fn </span>set_private(<span class="kw-2">&amp;mut </span><span class="self">self</span>, val: T) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
+        <span class="self">self</span>.private = val;
+        <span class="self">self
+    </span>}
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">pub fn </span>set_public(<span class="kw-2">&amp;mut </span><span class="self">self</span>, val: T) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
+        <span class="self">self</span>.public = val;
+        <span class="self">self
+    </span>}
+    <span class="doccomment">/// Arc supported through CloneGetters
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">pub fn </span>set_arc(<span class="kw-2">&amp;mut </span><span class="self">self</span>, val: Arc&lt;u16&gt;) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
+        <span class="self">self</span>.arc = val;
+        <span class="self">self
+    </span>}
+}
+<span class="kw">impl</span>&lt;T&gt; Foo&lt;T&gt;
+<span class="kw">where
+    </span>T: Copy + Clone + Default,
+{
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">fn </span>with_private(<span class="kw-2">mut </span><span class="self">self</span>, val: T) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.private = val;
+        <span class="self">self
+    </span>}
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">pub fn </span>with_public(<span class="kw-2">mut </span><span class="self">self</span>, val: T) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.public = val;
+        <span class="self">self
+    </span>}
+    <span class="doccomment">/// Arc supported through CloneGetters
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">pub fn </span>with_arc(<span class="kw-2">mut </span><span class="self">self</span>, val: Arc&lt;u16&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.arc = val;
+        <span class="self">self
+    </span>}
+}
+<span class="kw">impl</span>&lt;T&gt; Foo&lt;T&gt;
+<span class="kw">where
+    </span>T: Copy + Clone + Default,
+{
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">fn </span>private_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>T {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.private
+    }
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">pub fn </span>public_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>T {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.public
+    }
+    <span class="doccomment">/// Arc supported through CloneGetters
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">pub fn </span>arc_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>Arc&lt;u16&gt; {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.arc
+    }
+}
+<span class="kw">impl</span>&lt;T&gt; Foo&lt;T&gt;
+<span class="kw">where
+    </span>T: Copy + Clone + Default,
+{
+    <span class="doccomment">/// Doc comments are supported!
+    /// Multiline, even.
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">pub fn </span>public(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T {
+        <span class="self">self</span>.public
+    }
+}
+<span class="kw">impl</span>&lt;T&gt; Foo&lt;T&gt;
+<span class="kw">where
+    </span>T: Copy + Clone + Default,
+{
+    <span class="doccomment">/// Arc supported through CloneGetters
+    </span><span class="attr">#[inline(always)]
+    </span><span class="kw">pub fn </span>arc(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;u16&gt; {
+        <span class="self">self</span>.arc.clone()
+    }
+}</code></pre></div>
+<p>Attributes can be set on struct level for all fields in struct as well. Field level attributes take
+precedence.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">mod </span>submodule {
+    <span class="kw">use </span>getset::{Getters, MutGetters, CopyGetters, Setters, WithSetters};
+    <span class="attr">#[derive(Getters, CopyGetters, Default)]
+    #[getset(get_copy = <span class="string">"pub"</span>)] </span><span class="comment">// By default add a pub getting for all fields.
+    </span><span class="kw">pub struct </span>Foo {
+        public: i32,
+        <span class="attr">#[getset(get_copy)] </span><span class="comment">// Override as private
+        </span>private: i32,
+    }
+    <span class="kw">fn </span>demo() {
+        <span class="kw">let </span><span class="kw-2">mut </span>foo = Foo::default();
+        foo.private();
+    }
+}
+
+<span class="kw">let </span><span class="kw-2">mut </span>foo = submodule::Foo::default();
+foo.public();</code></pre></div>
+<p>For some purposes, it’s useful to have the <code>get_</code> prefix on the getters for
+either legacy of compatibility reasons. It is done with <code>with_prefix</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>getset::{Getters, MutGetters, CopyGetters, Setters, WithSetters};
+
+<span class="attr">#[derive(Getters, Default)]
+</span><span class="kw">pub struct </span>Foo {
+    <span class="attr">#[getset(get = <span class="string">"pub with_prefix"</span>)]
+    </span>field: bool,
+}
+
+
+<span class="kw">let </span><span class="kw-2">mut </span>foo = Foo::default();
+<span class="kw">let </span>val = foo.get_field();</code></pre></div>
+<p>Skipping setters and getters generation for a field when struct level attribute is used
+is possible with <code>#[getset(skip)]</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>getset::{CopyGetters, Setters, WithSetters};
+
+<span class="attr">#[derive(CopyGetters, Setters, WithSetters)]
+#[getset(get_copy, set, set_with)]
+</span><span class="kw">pub struct </span>Foo {
+    <span class="comment">// If the field was not skipped, the compiler would complain about moving
+    // a non-copyable type in copy getter.
+    </span><span class="attr">#[getset(skip)]
+    </span>skipped: String,
+
+    field1: usize,
+    field2: usize,
+}
+
+<span class="kw">impl </span>Foo {
+    <span class="comment">// It is possible to write getters and setters manually,
+    // possibly with a custom logic.
+    </span><span class="kw">fn </span>skipped(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.skipped
+    }
+
+    <span class="kw">fn </span>set_skipped(<span class="kw-2">&amp;mut </span><span class="self">self</span>, val: <span class="kw-2">&amp;</span>str) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
+        <span class="self">self</span>.skipped = val.to_string();
+        <span class="self">self
+    </span>}
+
+    <span class="kw">fn </span>with_skipped(<span class="kw-2">mut </span><span class="self">self</span>, val: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.skipped = val.to_string();
+        <span class="self">self
+    </span>}
+}</code></pre></div>
+<p>For a unary struct (a tuple struct with a single field),
+the macro generates the <code>get</code>, <code>get_mut</code>, and <code>set</code> functions to
+provide a getter, a mutable getter, and a setter, respectively.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>getset::{Getters, MutGetters, CopyGetters, Setters};
+
+<span class="attr">#[derive(Setters, Getters, MutGetters)]
+</span><span class="kw">struct </span>UnaryTuple(<span class="attr">#[getset(set, get, get_mut)] </span>i32);
+
+<span class="kw">let </span><span class="kw-2">mut </span>tup = UnaryTuple(<span class="number">42</span>);
+<span class="macro">assert_eq!</span>(tup.get(), <span class="kw-2">&amp;</span><span class="number">42</span>);
+<span class="macro">assert_eq!</span>(tup.get_mut(), <span class="kw-2">&amp;mut </span><span class="number">42</span>);
+tup.set(<span class="number">43</span>);
+<span class="macro">assert_eq!</span>(tup.get(), <span class="kw-2">&amp;</span><span class="number">43</span>);
+
+<span class="attr">#[derive(CopyGetters)]
+</span><span class="kw">struct </span>CopyUnaryTuple(<span class="attr">#[getset(get_copy)] </span>i32);
+
+<span class="kw">let </span>tup = CopyUnaryTuple(<span class="number">42</span>);</code></pre></div>
+</div></details><h2 id="derives" class="section-header">Derive Macros<a href="#derives" class="anchor">§</a></h2><dl class="item-table"><dt><a class="derive" href="derive.CloneGetters.html" title="derive getset::CloneGetters">Clone<wbr>Getters</a></dt><dt><a class="derive" href="derive.CopyGetters.html" title="derive getset::CopyGetters">Copy<wbr>Getters</a></dt><dt><a class="derive" href="derive.Getters.html" title="derive getset::Getters">Getters</a></dt><dt><a class="derive" href="derive.MutGetters.html" title="derive getset::MutGetters">MutGetters</a></dt><dt><a class="derive" href="derive.Setters.html" title="derive getset::Setters">Setters</a></dt><dt><a class="derive" href="derive.WithSetters.html" title="derive getset::WithSetters">With<wbr>Setters</a></dt></dl></section></div></main></body></html>
