@@ -94,8 +94,9 @@ pub struct ImageConfiguration {
     rootfs: RootFs,
     /// Describes the history of each layer. The array is ordered from first
     /// to last.
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get_mut = "pub", get = "pub", set = "pub")]
-    history: Vec<History>,
+    history: Option<Vec<History>>,
 }
 
 impl ImageConfiguration {
@@ -659,5 +660,56 @@ mod tests {
         // assert
         let expected = fs::read_to_string(get_config_path()).expect("read expected");
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn optional_history_field_absent() {
+        let json = r#"{
+            "architecture": "amd64",
+            "os": "linux",
+            "rootfs": {
+                "type": "layers",
+                "diff_ids": ["sha256:abc123"]
+            }
+        }"#;
+
+        let config: ImageConfiguration =
+            serde_json::from_str(json).expect("deserialize without history");
+        assert!(config.history().is_none());
+    }
+
+    #[test]
+    fn serialize_without_history() {
+        let config = ImageConfigurationBuilder::default()
+            .architecture(Arch::Amd64)
+            .os(Os::Linux)
+            .rootfs(
+                RootFsBuilder::default()
+                    .diff_ids(vec!["sha256:abc123".to_owned()])
+                    .build()
+                    .expect("build rootfs"),
+            )
+            .build()
+            .expect("build config");
+
+        let json = config.to_string().expect("serialize");
+        assert!(!json.contains("history"));
+    }
+
+    #[test]
+    fn builder_without_history() {
+        let config = ImageConfigurationBuilder::default()
+            .architecture(Arch::Amd64)
+            .os(Os::Linux)
+            .rootfs(
+                RootFsBuilder::default()
+                    .diff_ids(vec!["sha256:abc123".to_owned()])
+                    .build()
+                    .expect("build rootfs"),
+            )
+            .build()
+            .expect("build config");
+
+        assert!(config.history().is_none());
     }
 }
