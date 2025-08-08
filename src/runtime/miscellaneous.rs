@@ -1,4 +1,5 @@
 use crate::error::OciSpecError;
+use crate::runtime::LinuxIdMapping;
 use derive_builder::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
@@ -76,6 +77,14 @@ pub struct Mount {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// Options are fstab style mount options.
     options: Option<Vec<String>>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// UID mappings used for changing file owners w/o calling chown, fs should support it. Every mount point could have its own mapping.
+    uid_mappings: Option<Vec<LinuxIdMapping>>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// GID mappings used for changing file owners w/o calling chown, fs should support it. Every mount point could have its own mapping.
+    gid_mappings: Option<Vec<LinuxIdMapping>>,
 }
 
 /// utility function to generate default config for mounts.
@@ -86,6 +95,8 @@ pub fn get_default_mounts() -> Vec<Mount> {
             typ: "proc".to_string().into(),
             source: PathBuf::from("proc").into(),
             options: None,
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/dev"),
@@ -98,6 +109,8 @@ pub fn get_default_mounts() -> Vec<Mount> {
                 "size=65536k".into(),
             ]
             .into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/dev/pts"),
@@ -112,6 +125,8 @@ pub fn get_default_mounts() -> Vec<Mount> {
                 "gid=5".into(),
             ]
             .into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/dev/shm"),
@@ -125,12 +140,16 @@ pub fn get_default_mounts() -> Vec<Mount> {
                 "size=65536k".into(),
             ]
             .into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/dev/mqueue"),
             typ: "mqueue".to_string().into(),
             source: PathBuf::from("mqueue").into(),
             options: vec!["nosuid".into(), "noexec".into(), "nodev".into()].into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/sys"),
@@ -143,6 +162,8 @@ pub fn get_default_mounts() -> Vec<Mount> {
                 "ro".into(),
             ]
             .into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/sys/fs/cgroup"),
@@ -156,6 +177,8 @@ pub fn get_default_mounts() -> Vec<Mount> {
                 "ro".into(),
             ]
             .into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
     ]
 }
