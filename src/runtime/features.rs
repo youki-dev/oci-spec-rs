@@ -95,6 +95,8 @@ pub struct LinuxFeature {
     selinux: Option<Selinux>,
     /// The available features related to Intel RDT.
     intel_rdt: Option<IntelRdt>,
+    /// The available features related to memory policy.
+    memory_policy: Option<MemoryPolicy>,
     /// The available features related to mount extensions.
     mount_extensions: Option<MountExtensions>,
     /// The available features related to net devices.
@@ -275,6 +277,35 @@ pub struct IntelRdt {
     /// "enabled" field represents whether Intel RDT support is compiled in.
     /// Unrelated to whether the host supports Intel RDT or not.
     enabled: Option<bool>,
+}
+
+/// MemoryPolicy represents the "memoryPolicy" field.
+#[derive(
+    Builder,
+    Clone,
+    Debug,
+    Default,
+    Deserialize,
+    Eq,
+    MutGetters,
+    Getters,
+    Setters,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename_all = "camelCase")]
+#[builder(
+    default,
+    pattern = "owned",
+    setter(into, strip_option),
+    build_fn(error = "OciSpecError")
+)]
+#[getset(get_mut = "pub", get = "pub", set = "pub")]
+pub struct MemoryPolicy {
+    /// modes is the list of known memory policy modes, e.g., "MPOL_INTERLEAVE".
+    modes: Option<Vec<String>>,
+    /// flags is the list of known memory policy mode flags, e.g., "MPOL_F_STATIC_NODES".
+    flags: Option<Vec<String>>,
 }
 
 /// MountExtensions represents the "mountExtensions" field.

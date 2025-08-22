@@ -88,6 +88,10 @@ pub struct Linux {
     intel_rdt: Option<LinuxIntelRdt>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// MemoryPolicy contains NUMA memory policy for the container.
+    memory_policy: Option<LinuxMemoryPolicy>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     /// Personality contains configuration for the Linux personality
     /// syscall.
     personality: Option<LinuxPersonality>,
@@ -133,6 +137,7 @@ impl Default for Linux {
             mount_label: Default::default(),
             seccomp: None,
             intel_rdt: None,
+            memory_policy: None,
             personality: None,
             time_offsets: None,
         }
@@ -1468,6 +1473,95 @@ impl Default for LinuxPersonalityDomain {
     fn default() -> Self {
         Self::PerLinux
     }
+}
+
+#[derive(
+    Builder, Clone, Debug, Default, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
+)]
+#[serde(rename_all = "camelCase")]
+#[builder(
+    default,
+    pattern = "owned",
+    setter(into, strip_option),
+    build_fn(error = "OciSpecError")
+)]
+#[getset(get = "pub", set = "pub")]
+/// LinuxMemoryPolicy represents input for the set_mempolicy syscall.
+pub struct LinuxMemoryPolicy {
+    /// Mode for the set_mempolicy syscall.
+    mode: MemoryPolicyModeType,
+
+    /// Nodes representing the nodemask for the set_mempolicy syscall in comma separated ranges format.
+    /// Format: "<node0>-<node1>,<node2>,<node3>-<node4>,..."
+    nodes: String,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// Flags for the set_mempolicy syscall.
+    flags: Option<Vec<MemoryPolicyFlagType>>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
+/// MemoryPolicyModeType defines the memory policy mode.
+pub enum MemoryPolicyModeType {
+    #[serde(rename = "MPOL_DEFAULT")]
+    #[strum(serialize = "MPOL_DEFAULT")]
+    /// MpolDefault - Default NUMA policy.
+    MpolDefault,
+
+    #[serde(rename = "MPOL_BIND")]
+    #[strum(serialize = "MPOL_BIND")]
+    /// MpolBind - Bind memory allocation to specific nodes.
+    MpolBind,
+
+    #[serde(rename = "MPOL_INTERLEAVE")]
+    #[strum(serialize = "MPOL_INTERLEAVE")]
+    /// MpolInterleave - Interleave memory allocation across nodes.
+    MpolInterleave,
+
+    #[serde(rename = "MPOL_WEIGHTED_INTERLEAVE")]
+    #[strum(serialize = "MPOL_WEIGHTED_INTERLEAVE")]
+    /// MpolWeightedInterleave - Weighted interleave memory allocation across nodes.
+    MpolWeightedInterleave,
+
+    #[serde(rename = "MPOL_PREFERRED")]
+    #[strum(serialize = "MPOL_PREFERRED")]
+    /// MpolPreferred - Prefer memory allocation from specific nodes.
+    MpolPreferred,
+
+    #[serde(rename = "MPOL_PREFERRED_MANY")]
+    #[strum(serialize = "MPOL_PREFERRED_MANY")]
+    /// MpolPreferredMany - Prefer memory allocation from multiple nodes.
+    MpolPreferredMany,
+
+    #[serde(rename = "MPOL_LOCAL")]
+    #[strum(serialize = "MPOL_LOCAL")]
+    /// MpolLocal - Local node memory allocation.
+    MpolLocal,
+}
+
+impl Default for MemoryPolicyModeType {
+    fn default() -> Self {
+        Self::MpolDefault
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
+/// MemoryPolicyFlagType defines the memory policy flags.
+pub enum MemoryPolicyFlagType {
+    #[serde(rename = "MPOL_F_NUMA_BALANCING")]
+    #[strum(serialize = "MPOL_F_NUMA_BALANCING")]
+    /// MpolFNumaBalancing - Enable NUMA balancing.
+    MpolFNumaBalancing,
+
+    #[serde(rename = "MPOL_F_RELATIVE_NODES")]
+    #[strum(serialize = "MPOL_F_RELATIVE_NODES")]
+    /// MpolFRelativeNodes - Use relative node numbers.
+    MpolFRelativeNodes,
+
+    #[serde(rename = "MPOL_F_STATIC_NODES")]
+    #[strum(serialize = "MPOL_F_STATIC_NODES")]
+    /// MpolFStaticNodes - Use static node numbers.
+    MpolFStaticNodes,
 }
 
 #[derive(
