@@ -839,7 +839,72 @@ pub struct LinuxRdma {
     /// limit".
     hca_objects: Option<u32>,
 }
+#[derive(Builder, Clone, Debug, Default, Deserialize, Eq, MutGetters, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+#[builder(
+    default,
+    pattern = "owned",
+    setter(into, strip_option),
+    build_fn(error = "OciSpecError")
+)]
+#[getset(get_mut = "pub", get_copy = "pub", set = "pub")]
+/// Linux memory policy for NUMA based systems
+pub struct LinuxMemeryPolicy{
+    /// Mode to set for the task
+    modes: LinuxMemoryPolicyMode,
+    /// List of nodes list of memory nodes from which nodemask is
+    /// constructed to set_mempolicy(2). This is a comma-separated list,
+    /// with dashes to represent ranges. For example, `0-3,7` represents memory nodes 0,1,2,3, and 7.
+    nodes: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    /// Optional flags for memory policy
+    flags: Option<LinuxMemoryPolicyFlag>
 
+}
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+/// Memory policies to provide for set_mempolicy()
+pub enum LinuxMemoryPolicyMode {
+    /// Default- allocate memory on the node of the CPU that
+    /// triggered the allocation
+    MpolDefault,
+    /// Restricts memory allocation to the nodes specified in nodemask
+    MpolBind,
+    /// Interleaves page allocations across the nodes specified in nodemask
+    /// in numeric node ID order
+    MpolInterleave,
+    /// This mode interleaves page allocations across the nodes
+    /// specified in nodemask according to the weights
+    MpolWeightedInterleave,
+    /// Sets the preferred node for allocation.
+    MpolPreferred,
+    /// Set multiple preferred nodes for allocation
+    MpolPreferredMany,
+    /// The memory is allocated on the node of the CPU
+    /// that triggered the allocation
+    MpolLocal,
+}
+
+impl Default for LinuxMemoryPolicyMode {
+    fn default() -> Self {
+        Self::MpolDefault
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+/// Optional Memory policy flags
+pub enum LinuxMemoryPolicyFlag {
+    /// enable the kernel NUMA balancing
+    MpolFNumaBalancing,
+    /// A nonempty nodemask specifies node IDs that are relative to
+    /// the set of node IDs allowed by the process's current cpuset
+    MpolFRelativeNodes,
+    ///  A nonempty nodemask specifies physical node IDs.
+    MpolFStaiticNodes,
+}
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, Hash, StrumDisplay)]
 #[strum(serialize_all = "lowercase")]
 #[serde(rename_all = "snake_case")]
@@ -1782,5 +1847,29 @@ mod tests {
         let invalid_seccomp_operator_str = "x";
         let unknown_operator = invalid_seccomp_operator_str.parse::<LinuxSeccompOperator>();
         assert!(unknown_operator.is_err());
+    }
+
+    #[test]
+    fn mempolicy_modes_string_to_enum() {
+        let memory_policy= LinuxMemoryPolicyMode::MpolDefault;
+        assert_eq!(memory_policy.to_string(),"MPOL_DEFAULT");
+
+        let memory_policy= LinuxMemoryPolicyMode::MpolBind;
+        assert_eq!(memory_policy.to_string(),"MPOL_BIND");
+
+        let memory_policy= LinuxMemoryPolicyMode::MpolInterleave;
+        assert_eq!(memory_policy.to_string(),"MPOL_INTERLEAVE");
+
+        let memory_policy= LinuxMemoryPolicyMode::MpolWeightedInterleave;
+        assert_eq!(memory_policy.to_string(),"MPOL_WEIGHTED_INTERLEAVE");
+
+        let memory_policy= LinuxMemoryPolicyMode::MpolPreferred;
+        assert_eq!(memory_policy.to_string(),"MPOL_PREFERRED");
+
+        let memory_policy= LinuxMemoryPolicyMode::MpolPreferredMany;
+        assert_eq!(memory_policy.to_string(),"MPOL_PREFERRED_MANY");
+
+        let memory_policy= LinuxMemoryPolicyMode::MpolLocal;
+        assert_eq!(memory_policy.to_string(),"MPOL_LOCAL");
     }
 }
