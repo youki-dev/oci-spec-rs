@@ -1480,7 +1480,6 @@ impl Default for LinuxPersonalityDomain {
     Clone,
     CopyGetters,
     Debug,
-    Default,
     Deserialize,
     Eq,
     Getters,
@@ -1502,16 +1501,25 @@ pub struct LinuxMemoryPolicy {
     /// Mode for the set_mempolicy syscall.
     mode: MemoryPolicyModeType,
 
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[getset(get = "pub", get_mut = "pub", set = "pub")]
+    #[getset(get = "pub", set = "pub")]
     /// Nodes representing the nodemask for the set_mempolicy syscall in comma separated ranges format.
     /// Format: "<node0>-<node1>,<node2>,<node3>-<node4>,..."
-    nodes: Option<String>,
+    nodes: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", get_mut = "pub", set = "pub")]
     /// Flags for the set_mempolicy syscall.
     flags: Option<Vec<MemoryPolicyFlagType>>,
+}
+
+impl Default for LinuxMemoryPolicy {
+    fn default() -> Self {
+        Self {
+            mode: MemoryPolicyModeType::MpolDefault,
+            nodes: "0".to_string(), // Default to node 0
+            flags: None,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
@@ -1988,7 +1996,7 @@ mod tests {
     fn test_linux_memory_policy_serialization() {
         let memory_policy = LinuxMemoryPolicy {
             mode: MemoryPolicyModeType::MpolInterleave,
-            nodes: Some("0-3,7".to_string()),
+            nodes: "0-3,7".to_string(),
             flags: Some(vec![
                 MemoryPolicyFlagType::MpolFStaticNodes,
                 MemoryPolicyFlagType::MpolFRelativeNodes,
@@ -1999,7 +2007,7 @@ mod tests {
         let deserialized: LinuxMemoryPolicy = serde_json::from_str(&json).unwrap();
 
         assert_eq!(deserialized.mode, MemoryPolicyModeType::MpolInterleave);
-        assert_eq!(deserialized.nodes, Some("0-3,7".to_string()));
+        assert_eq!(deserialized.nodes, "0-3,7".to_string());
         assert_eq!(
             deserialized.flags,
             Some(vec![
@@ -2013,7 +2021,7 @@ mod tests {
     fn test_linux_memory_policy_default() {
         let memory_policy = LinuxMemoryPolicy::default();
         assert_eq!(memory_policy.mode, MemoryPolicyModeType::MpolDefault);
-        assert_eq!(memory_policy.nodes, None);
+        assert_eq!(memory_policy.nodes, "0".to_string());
         assert_eq!(memory_policy.flags, None);
     }
 }
