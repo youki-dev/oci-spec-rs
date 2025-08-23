@@ -60,6 +60,9 @@ pub struct Linux {
     devices: Option<Vec<LinuxDevice>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// sets the NUMA memory policy for the container. 
+    memory_policy: Option<LinuxMemoryPolicy>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     /// Seccomp specifies the seccomp security settings for the container.
     seccomp: Option<LinuxSeccomp>,
 
@@ -123,6 +126,7 @@ impl Default for Linux {
             // Defaults to None
             cgroups_path: Default::default(),
             namespaces: get_default_namespaces().into(),
+            memory_policy: None,
             // Empty Vec
             devices: Default::default(),
             // Empty String
@@ -849,7 +853,7 @@ pub struct LinuxRdma {
 )]
 #[getset(get_mut = "pub", get_copy = "pub", set = "pub")]
 /// Linux memory policy for NUMA based systems
-pub struct LinuxMemeryPolicy {
+pub struct LinuxMemoryPolicy {
     /// Mode to set for the task
     modes: LinuxMemoryPolicyMode,
     /// List of nodes list of memory nodes from which nodemask is
