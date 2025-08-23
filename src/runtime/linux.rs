@@ -1476,7 +1476,18 @@ impl Default for LinuxPersonalityDomain {
 }
 
 #[derive(
-    Builder, Clone, Debug, Default, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
+    Builder,
+    Clone,
+    CopyGetters,
+    Debug,
+    Default,
+    Deserialize,
+    Eq,
+    Getters,
+    MutGetters,
+    Setters,
+    PartialEq,
+    Serialize,
 )]
 #[serde(rename_all = "camelCase")]
 #[builder(
@@ -1485,17 +1496,20 @@ impl Default for LinuxPersonalityDomain {
     setter(into, strip_option),
     build_fn(error = "OciSpecError")
 )]
-#[getset(get = "pub", set = "pub")]
 /// LinuxMemoryPolicy represents input for the set_mempolicy syscall.
 pub struct LinuxMemoryPolicy {
+    #[getset(get_copy = "pub", set = "pub")]
     /// Mode for the set_mempolicy syscall.
     mode: MemoryPolicyModeType,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[getset(get = "pub", get_mut = "pub", set = "pub")]
     /// Nodes representing the nodemask for the set_mempolicy syscall in comma separated ranges format.
     /// Format: "<node0>-<node1>,<node2>,<node3>-<node4>,..."
-    nodes: String,
+    nodes: Option<String>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[getset(get = "pub", get_mut = "pub", set = "pub")]
     /// Flags for the set_mempolicy syscall.
     flags: Option<Vec<MemoryPolicyFlagType>>,
 }
