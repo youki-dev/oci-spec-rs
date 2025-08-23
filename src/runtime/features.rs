@@ -595,6 +595,22 @@ mod tests {
         "intelRdt": {
             "enabled": true
         },
+        "memoryPolicy": {
+            "modes": [
+                "MPOL_DEFAULT",
+                "MPOL_BIND",
+                "MPOL_INTERLEAVE",
+                "MPOL_WEIGHTED_INTERLEAVE",
+                "MPOL_PREFERRED",
+                "MPOL_PREFERRED_MANY",
+                "MPOL_LOCAL"
+            ],
+            "flags": [
+                "MPOL_F_NUMA_BALANCING",
+                "MPOL_F_RELATIVE_NODES",
+                "MPOL_F_STATIC_NODES"
+            ]
+        },
         "netDevices": {
             "enabled": true
         }
@@ -837,6 +853,26 @@ mod tests {
             linux.intel_rdt.as_ref().unwrap(),
             &IntelRdt {
                 enabled: Some(true)
+            }
+        );
+
+        assert_eq!(
+            linux.memory_policy.as_ref().unwrap(),
+            &MemoryPolicy {
+                modes: Some(vec![
+                    "MPOL_DEFAULT".to_string(),
+                    "MPOL_BIND".to_string(),
+                    "MPOL_INTERLEAVE".to_string(),
+                    "MPOL_WEIGHTED_INTERLEAVE".to_string(),
+                    "MPOL_PREFERRED".to_string(),
+                    "MPOL_PREFERRED_MANY".to_string(),
+                    "MPOL_LOCAL".to_string(),
+                ]),
+                flags: Some(vec![
+                    "MPOL_F_NUMA_BALANCING".to_string(),
+                    "MPOL_F_RELATIVE_NODES".to_string(),
+                    "MPOL_F_STATIC_NODES".to_string(),
+                ]),
             }
         );
 

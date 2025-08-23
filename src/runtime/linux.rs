@@ -1891,4 +1891,129 @@ mod tests {
         let unknown_operator = invalid_seccomp_operator_str.parse::<LinuxSeccompOperator>();
         assert!(unknown_operator.is_err());
     }
+
+    // MemoryPolicyModeType test cases
+    #[test]
+    fn memory_policy_mode_enum_to_string() {
+        let mode_a = MemoryPolicyModeType::MpolDefault;
+        assert_eq!(mode_a.to_string(), "MPOL_DEFAULT");
+
+        let mode_b = MemoryPolicyModeType::MpolBind;
+        assert_eq!(mode_b.to_string(), "MPOL_BIND");
+
+        let mode_c = MemoryPolicyModeType::MpolInterleave;
+        assert_eq!(mode_c.to_string(), "MPOL_INTERLEAVE");
+
+        let mode_d = MemoryPolicyModeType::MpolWeightedInterleave;
+        assert_eq!(mode_d.to_string(), "MPOL_WEIGHTED_INTERLEAVE");
+
+        let mode_e = MemoryPolicyModeType::MpolPreferred;
+        assert_eq!(mode_e.to_string(), "MPOL_PREFERRED");
+
+        let mode_f = MemoryPolicyModeType::MpolPreferredMany;
+        assert_eq!(mode_f.to_string(), "MPOL_PREFERRED_MANY");
+
+        let mode_g = MemoryPolicyModeType::MpolLocal;
+        assert_eq!(mode_g.to_string(), "MPOL_LOCAL");
+    }
+
+    #[test]
+    fn memory_policy_mode_string_to_enum() {
+        let mode_str = "MPOL_INTERLEAVE";
+        let mode_enum: MemoryPolicyModeType = mode_str.parse().unwrap();
+        assert_eq!(mode_enum, MemoryPolicyModeType::MpolInterleave);
+
+        let mode_str = "MPOL_BIND";
+        let mode_enum: MemoryPolicyModeType = mode_str.parse().unwrap();
+        assert_eq!(mode_enum, MemoryPolicyModeType::MpolBind);
+
+        let mode_str = "MPOL_DEFAULT";
+        let mode_enum: MemoryPolicyModeType = mode_str.parse().unwrap();
+        assert_eq!(mode_enum, MemoryPolicyModeType::MpolDefault);
+
+        let mode_str = "MPOL_WEIGHTED_INTERLEAVE";
+        let mode_enum: MemoryPolicyModeType = mode_str.parse().unwrap();
+        assert_eq!(mode_enum, MemoryPolicyModeType::MpolWeightedInterleave);
+
+        let mode_str = "MPOL_PREFERRED";
+        let mode_enum: MemoryPolicyModeType = mode_str.parse().unwrap();
+        assert_eq!(mode_enum, MemoryPolicyModeType::MpolPreferred);
+
+        let mode_str = "MPOL_PREFERRED_MANY";
+        let mode_enum: MemoryPolicyModeType = mode_str.parse().unwrap();
+        assert_eq!(mode_enum, MemoryPolicyModeType::MpolPreferredMany);
+
+        let mode_str = "MPOL_LOCAL";
+        let mode_enum: MemoryPolicyModeType = mode_str.parse().unwrap();
+        assert_eq!(mode_enum, MemoryPolicyModeType::MpolLocal);
+
+        let invalid_mode_str = "INVALID_MODE";
+        let unknown_mode = invalid_mode_str.parse::<MemoryPolicyModeType>();
+        assert!(unknown_mode.is_err());
+    }
+
+    // MemoryPolicyFlagType test cases
+    #[test]
+    fn memory_policy_flag_enum_to_string() {
+        let flag_a = MemoryPolicyFlagType::MpolFNumaBalancing;
+        assert_eq!(flag_a.to_string(), "MPOL_F_NUMA_BALANCING");
+
+        let flag_b = MemoryPolicyFlagType::MpolFRelativeNodes;
+        assert_eq!(flag_b.to_string(), "MPOL_F_RELATIVE_NODES");
+
+        let flag_c = MemoryPolicyFlagType::MpolFStaticNodes;
+        assert_eq!(flag_c.to_string(), "MPOL_F_STATIC_NODES");
+    }
+
+    #[test]
+    fn memory_policy_flag_string_to_enum() {
+        let flag_str = "MPOL_F_NUMA_BALANCING";
+        let flag_enum: MemoryPolicyFlagType = flag_str.parse().unwrap();
+        assert_eq!(flag_enum, MemoryPolicyFlagType::MpolFNumaBalancing);
+
+        let flag_str = "MPOL_F_RELATIVE_NODES";
+        let flag_enum: MemoryPolicyFlagType = flag_str.parse().unwrap();
+        assert_eq!(flag_enum, MemoryPolicyFlagType::MpolFRelativeNodes);
+
+        let flag_str = "MPOL_F_STATIC_NODES";
+        let flag_enum: MemoryPolicyFlagType = flag_str.parse().unwrap();
+        assert_eq!(flag_enum, MemoryPolicyFlagType::MpolFStaticNodes);
+
+        let invalid_flag_str = "INVALID_FLAG";
+        let unknown_flag = invalid_flag_str.parse::<MemoryPolicyFlagType>();
+        assert!(unknown_flag.is_err());
+    }
+
+    #[test]
+    fn test_linux_memory_policy_serialization() {
+        let memory_policy = LinuxMemoryPolicy {
+            mode: MemoryPolicyModeType::MpolInterleave,
+            nodes: Some("0-3,7".to_string()),
+            flags: Some(vec![
+                MemoryPolicyFlagType::MpolFStaticNodes,
+                MemoryPolicyFlagType::MpolFRelativeNodes,
+            ]),
+        };
+
+        let json = serde_json::to_string(&memory_policy).unwrap();
+        let deserialized: LinuxMemoryPolicy = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(deserialized.mode, MemoryPolicyModeType::MpolInterleave);
+        assert_eq!(deserialized.nodes, Some("0-3,7".to_string()));
+        assert_eq!(
+            deserialized.flags,
+            Some(vec![
+                MemoryPolicyFlagType::MpolFStaticNodes,
+                MemoryPolicyFlagType::MpolFRelativeNodes,
+            ])
+        );
+    }
+
+    #[test]
+    fn test_linux_memory_policy_default() {
+        let memory_policy = LinuxMemoryPolicy::default();
+        assert_eq!(memory_policy.mode, MemoryPolicyModeType::MpolDefault);
+        assert_eq!(memory_policy.nodes, None);
+        assert_eq!(memory_policy.flags, None);
+    }
 }
