@@ -849,7 +849,7 @@ pub struct LinuxRdma {
 )]
 #[getset(get_mut = "pub", get_copy = "pub", set = "pub")]
 /// Linux memory policy for NUMA based systems
-pub struct LinuxMemeryPolicy{
+pub struct LinuxMemeryPolicy {
     /// Mode to set for the task
     modes: LinuxMemoryPolicyMode,
     /// List of nodes list of memory nodes from which nodemask is
@@ -858,8 +858,7 @@ pub struct LinuxMemeryPolicy{
     nodes: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Optional flags for memory policy
-    flags: Option<LinuxMemoryPolicyFlag>
-
+    flags: Option<LinuxMemoryPolicyFlag>,
 }
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
@@ -1851,25 +1850,25 @@ mod tests {
 
     #[test]
     fn mempolicy_modes_string_to_enum() {
-        let memory_policy= LinuxMemoryPolicyMode::MpolDefault;
-        assert_eq!(memory_policy.to_string(),"MPOL_DEFAULT");
+        let memory_policy = LinuxMemoryPolicyMode::MpolDefault;
+        assert_eq!(memory_policy.to_string(), "MPOL_DEFAULT");
 
-        let memory_policy= LinuxMemoryPolicyMode::MpolBind;
-        assert_eq!(memory_policy.to_string(),"MPOL_BIND");
+        let memory_policy = LinuxMemoryPolicyMode::MpolBind;
+        assert_eq!(memory_policy.to_string(), "MPOL_BIND");
 
-        let memory_policy= LinuxMemoryPolicyMode::MpolInterleave;
-        assert_eq!(memory_policy.to_string(),"MPOL_INTERLEAVE");
+        let memory_policy = LinuxMemoryPolicyMode::MpolInterleave;
+        assert_eq!(memory_policy.to_string(), "MPOL_INTERLEAVE");
 
-        let memory_policy= LinuxMemoryPolicyMode::MpolWeightedInterleave;
-        assert_eq!(memory_policy.to_string(),"MPOL_WEIGHTED_INTERLEAVE");
+        let memory_policy = LinuxMemoryPolicyMode::MpolWeightedInterleave;
+        assert_eq!(memory_policy.to_string(), "MPOL_WEIGHTED_INTERLEAVE");
 
-        let memory_policy= LinuxMemoryPolicyMode::MpolPreferred;
-        assert_eq!(memory_policy.to_string(),"MPOL_PREFERRED");
+        let memory_policy = LinuxMemoryPolicyMode::MpolPreferred;
+        assert_eq!(memory_policy.to_string(), "MPOL_PREFERRED");
 
-        let memory_policy= LinuxMemoryPolicyMode::MpolPreferredMany;
-        assert_eq!(memory_policy.to_string(),"MPOL_PREFERRED_MANY");
+        let memory_policy = LinuxMemoryPolicyMode::MpolPreferredMany;
+        assert_eq!(memory_policy.to_string(), "MPOL_PREFERRED_MANY");
 
-        let memory_policy= LinuxMemoryPolicyMode::MpolLocal;
-        assert_eq!(memory_policy.to_string(),"MPOL_LOCAL");
+        let memory_policy = LinuxMemoryPolicyMode::MpolLocal;
+        assert_eq!(memory_policy.to_string(), "MPOL_LOCAL");
     }
 }
