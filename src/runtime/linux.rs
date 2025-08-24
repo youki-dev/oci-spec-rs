@@ -1503,7 +1503,7 @@ pub struct LinuxMemoryPolicy {
 
     #[getset(get = "pub", set = "pub")]
     /// Nodes representing the nodemask for the set_mempolicy syscall in comma separated ranges format.
-    /// Format: "<node0>-<node1>,<node2>,<node3>-<node4>,..."
+    /// Format: "&lt;node0&gt;-&lt;node1&gt;,&lt;node2&gt;,&lt;node3&gt;-&lt;node4&gt;,..."
     nodes: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
