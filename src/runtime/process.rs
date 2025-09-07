@@ -190,12 +190,15 @@ pub struct Box {
     width: u64,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString,
+)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 /// Available rlimit types (see <https://man7.org/linux/man-pages/man2/getrlimit.2.html>)
 pub enum PosixRlimitType {
     /// Limit in seconds of the amount of CPU time that the process can consume.
+    #[default]
     RlimitCpu,
 
     /// Maximum size in bytes of the files that the process creates.
@@ -248,12 +251,6 @@ pub enum PosixRlimitType {
     /// process scheduled under a real-time scheduling policy may consume
     /// without making a blocking system call.
     RlimitRttime,
-}
-
-impl Default for PosixRlimitType {
-    fn default() -> Self {
-        Self::RlimitCpu
-    }
 }
 
 #[derive(
@@ -406,7 +403,9 @@ pub struct LinuxIOPriority {
     priority: i64,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString,
+)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 /// IOPriorityClass represents an I/O scheduling class.
@@ -426,17 +425,12 @@ pub enum IOPriorityClass {
     /// to the cpu nice levels just more coarsely implemented. 0 is the highest
     /// BE prio level, 7 is the lowest. The mapping between cpu nice level and io
     /// nice level is determined as: io_nice = (cpu_nice + 20) / 5.
+    #[default]
     IoprioClassBe,
     /// This is the idle scheduling class, processes running at this
     /// level only get io time when no one else needs the disk. The idle class has no
     /// class data, since it doesn't really apply here.
     IoprioClassIdle,
-}
-
-impl Default for IOPriorityClass {
-    fn default() -> Self {
-        Self::IoprioClassBe
-    }
 }
 
 #[derive(Builder, Clone, Debug, Deserialize, Getters, Setters, Eq, PartialEq, Serialize)]
