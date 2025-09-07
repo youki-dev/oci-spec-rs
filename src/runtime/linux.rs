@@ -1490,7 +1490,6 @@ impl Default for LinuxPersonalityDomain {
 )]
 #[serde(rename_all = "camelCase")]
 #[builder(
-    default,
     pattern = "owned",
     setter(into, strip_option),
     build_fn(error = "OciSpecError")
@@ -1501,10 +1500,11 @@ pub struct LinuxMemoryPolicy {
     /// Mode for the set_mempolicy syscall.
     mode: MemoryPolicyModeType,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
     /// Nodes representing the nodemask for the set_mempolicy syscall in comma separated ranges format.
     /// Format: "&lt;node0&gt;-&lt;node1&gt;,&lt;node2&gt;,&lt;node3&gt;-&lt;node4&gt;,..."
-    nodes: String,
+    nodes: Option<String>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", get_mut = "pub", set = "pub")]
@@ -1516,7 +1516,7 @@ impl Default for LinuxMemoryPolicy {
     fn default() -> Self {
         Self {
             mode: MemoryPolicyModeType::MpolDefault,
-            nodes: "0".to_string(), // Default to node 0
+            nodes: None,
             flags: None,
         }
     }
@@ -1996,7 +1996,7 @@ mod tests {
     fn test_linux_memory_policy_serialization() {
         let memory_policy = LinuxMemoryPolicy {
             mode: MemoryPolicyModeType::MpolInterleave,
-            nodes: "0-3,7".to_string(),
+            nodes: Some("0-3,7".to_string()),
             flags: Some(vec![
                 MemoryPolicyFlagType::MpolFStaticNodes,
                 MemoryPolicyFlagType::MpolFRelativeNodes,
@@ -2007,7 +2007,7 @@ mod tests {
         let deserialized: LinuxMemoryPolicy = serde_json::from_str(&json).unwrap();
 
         assert_eq!(deserialized.mode, MemoryPolicyModeType::MpolInterleave);
-        assert_eq!(deserialized.nodes, "0-3,7".to_string());
+        assert_eq!(deserialized.nodes, Some("0-3,7".to_string()));
         assert_eq!(
             deserialized.flags,
             Some(vec![
@@ -2021,7 +2021,7 @@ mod tests {
     fn test_linux_memory_policy_default() {
         let memory_policy = LinuxMemoryPolicy::default();
         assert_eq!(memory_policy.mode, MemoryPolicyModeType::MpolDefault);
-        assert_eq!(memory_policy.nodes, "0".to_string());
+        assert_eq!(memory_policy.nodes, None);
         assert_eq!(memory_policy.flags, None);
     }
 }
