@@ -845,7 +845,9 @@ pub struct LinuxRdma {
     hca_objects: Option<u32>,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, Hash, StrumDisplay)]
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize, Hash, StrumDisplay,
+)]
 #[strum(serialize_all = "lowercase")]
 #[serde(rename_all = "snake_case")]
 /// Available Linux namespaces.
@@ -867,6 +869,7 @@ pub enum LinuxNamespaceType {
     User = 0x10000000,
 
     /// PID Namespace for isolating process ids
+    #[default]
     Pid = 0x20000000,
 
     #[strum(to_string = "net")]
@@ -894,12 +897,6 @@ impl TryFrom<&str> for LinuxNamespaceType {
                 "unknown namespace {namespace}, could not convert"
             ))),
         }
-    }
-}
-
-impl Default for LinuxNamespaceType {
-    fn default() -> Self {
-        Self::Pid
     }
 }
 
@@ -1095,7 +1092,9 @@ pub struct LinuxSeccomp {
     syscalls: Option<Vec<LinuxSyscall>>,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString,
+)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 /// Available seccomp actions.
@@ -1125,6 +1124,7 @@ pub enum LinuxSeccompAction {
     ScmpActLog,
 
     /// Allow the syscall to be executed.
+    #[default]
     ScmpActAllow,
 }
 
@@ -1141,12 +1141,6 @@ impl From<LinuxSeccompAction> for u32 {
             LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
             LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
         }
-    }
-}
-
-impl Default for LinuxSeccompAction {
-    fn default() -> Self {
-        Self::ScmpActAllow
     }
 }
 
@@ -1239,7 +1233,9 @@ pub enum LinuxSeccompFilterFlag {
     SeccompFilterFlagSpecAllow,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString,
+)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 #[repr(u32)]
@@ -1255,6 +1251,7 @@ pub enum LinuxSeccompOperator {
     ScmpCmpLe = 3,
 
     /// Refers to the SCMP_CMP_EQ operator (equal to).
+    #[default]
     ScmpCmpEq = 4,
 
     /// Refers to the SCMP_CMP_GE operator (greater equal).
@@ -1265,12 +1262,6 @@ pub enum LinuxSeccompOperator {
 
     /// Refers to the SCMP_CMP_MASKED_EQ operator (masked equal).
     ScmpCmpMaskedEq = 7,
-}
-
-impl Default for LinuxSeccompOperator {
-    fn default() -> Self {
-        Self::ScmpCmpEq
-    }
 }
 
 #[derive(
@@ -1455,24 +1446,21 @@ pub struct LinuxPersonality {
     flags: Option<Vec<String>>,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString,
+)]
 /// Define domain and flags for LinuxPersonality.
 pub enum LinuxPersonalityDomain {
     #[serde(rename = "LINUX")]
     #[strum(serialize = "LINUX")]
     /// PerLinux is the standard Linux personality.
+    #[default]
     PerLinux,
 
     #[serde(rename = "LINUX32")]
     #[strum(serialize = "LINUX32")]
     /// PerLinux32 sets personality to 32 bit.
     PerLinux32,
-}
-
-impl Default for LinuxPersonalityDomain {
-    fn default() -> Self {
-        Self::PerLinux
-    }
 }
 
 #[derive(
@@ -1522,12 +1510,15 @@ impl Default for LinuxMemoryPolicy {
     }
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString,
+)]
 /// MemoryPolicyModeType defines the memory policy mode.
 pub enum MemoryPolicyModeType {
     #[serde(rename = "MPOL_DEFAULT")]
     #[strum(serialize = "MPOL_DEFAULT")]
     /// MpolDefault - Default NUMA policy.
+    #[default]
     MpolDefault,
 
     #[serde(rename = "MPOL_BIND")]
@@ -1559,12 +1550,6 @@ pub enum MemoryPolicyModeType {
     #[strum(serialize = "MPOL_LOCAL")]
     /// MpolLocal - Local node memory allocation.
     MpolLocal,
-}
-
-impl Default for MemoryPolicyModeType {
-    fn default() -> Self {
-        Self::MpolDefault
-    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
