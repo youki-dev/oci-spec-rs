@@ -78,11 +78,19 @@ pub struct Mount {
     /// Options are fstab style mount options.
     options: Option<Vec<String>>,
 
-    #[serde(default, skip_serializing_if = "Option::is_none", rename = "uidMappings")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        rename = "uidMappings"
+    )]
     /// UID mappings used for changing file owners w/o calling chown, fs should support it. Every mount point could have its own mapping.
     uid_mappings: Option<Vec<LinuxIdMapping>>,
 
-    #[serde(default, skip_serializing_if = "Option::is_none", rename = "gidMappings")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        rename = "gidMappings"
+    )]
     /// GID mappings used for changing file owners w/o calling chown, fs should support it. Every mount point could have its own mapping.
     gid_mappings: Option<Vec<LinuxIdMapping>>,
 }
