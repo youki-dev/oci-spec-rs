@@ -183,37 +183,40 @@ impl Reference {
         }
     }
 
-    /// Returns the full repository name and path.
-    fn full_name(&self) -> String {
-        if self.registry() == "" {
-            self.repository().to_string()
-        } else {
-            format!("{}/{}", self.registry(), self.repository())
-        }
-    }
-
     /// Returns the whole reference.
     pub fn whole(&self) -> String {
-        let mut s = self.full_name();
-        if let Some(t) = self.tag() {
-            if !s.is_empty() {
-                s.push(':');
-            }
-            s.push_str(t);
-        }
-        if let Some(d) = self.digest() {
-            if !s.is_empty() {
-                s.push('@');
-            }
-            s.push_str(d);
-        }
-        s
+        self.to_string()
     }
 }
 
 impl fmt::Display for Reference {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.whole())
+        let mut not_empty = false;
+        if !self.registry().is_empty() {
+            write!(f, "{}", self.registry())?;
+            not_empty = true;
+        }
+        if !self.repository().is_empty() {
+            if not_empty {
+                write!(f, "/")?;
+            }
+            write!(f, "{}", self.repository())?;
+            not_empty = true;
+        }
+        if let Some(t) = self.tag() {
+            if not_empty {
+                write!(f, ":")?;
+            }
+            write!(f, "{t}")?;
+            not_empty = true;
+        }
+        if let Some(d) = self.digest() {
+            if not_empty {
+                write!(f, "@")?;
+            }
+            write!(f, "{d}")?;
+        }
+        Ok(())
     }
 }
 
