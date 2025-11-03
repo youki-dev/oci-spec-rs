@@ -526,8 +526,20 @@ impl<'de> Deserialize<'de> for Capability {
     {
         let input = String::deserialize(deserializer)?;
         let upper = input.to_uppercase();
-        let stripped = upper.strip_prefix("CAP_").unwrap_or(&upper);
-        match stripped {
+
+        // Extract the capability name from various input formats.
+        //
+        // This function strips all "CAP_" prefixes to normalize capability names.
+        // This ensures correct adaptation regardless of whether users specify
+        // CAP_XXX or XXX directly at the upper layer(Specially k8s), making the
+        // API more flexible and user-friendly.
+        // Examples: "CAP_SYS_ADMIN", "SYS_ADMIN"
+        //
+        let mut clean_cap = upper.as_str();
+        while let Some(stripped) = clean_cap.strip_prefix("CAP_") {
+            clean_cap = stripped;
+        }
+        match clean_cap {
             "AUDIT_CONTROL" => Ok(Self::AuditControl),
             "AUDIT_READ" => Ok(Self::AuditRead),
             "AUDIT_WRITE" => Ok(Self::AuditWrite),
