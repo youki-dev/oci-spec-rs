@@ -680,4 +680,13 @@ mod tests {
         let cap: Capability = serde_json::from_str(serialized).unwrap();
         assert_eq!(cap, Capability::SysAdmin);
     }
+
+    #[test]
+    fn deserialize_one_more_cap_prefix() -> Result<()> {
+        for case in &["SYS_ADMIN", "CAP_CAP_SYS_ADMIN", "cap_CAP_cap_SYS_ADMIN"] {
+            let res: Capability = serde_json::from_str(&format!("\"{case}\""))?;
+            assert_eq!(Capability::SysAdmin, res);
+        }
+        Ok(())
+    }
 }
