@@ -109,6 +109,23 @@ impl Reference {
     }
 
     /// Create a new instance of [`Reference`] with a registry, repository, tag and digest.
+    ///
+    /// This is useful when you need to reference an image by both its semantic version (tag)
+    /// and its content-addressable digest for immutability.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use oci_spec::distribution::Reference;
+    ///
+    /// let reference = Reference::with_tag_and_digest(
+    ///     "docker.io".to_string(),
+    ///     "library/nginx".to_string(),
+    ///     "1.21".to_string(),
+    ///     "sha256:abc123...".to_string(),
+    /// );
+    /// ```
+
     pub fn with_tag_and_digest(
         registry: String,
         repository: String,
@@ -459,11 +476,11 @@ mod test {
         #[rstest(
             expected, registry, repository, tag, digest,
             case(
-                "docker.io/foo/bar:1.2@@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 
+                "docker.io/foo/bar:1.2@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 
                 "docker.io", 
                 "foo/bar", 
                 "1.2", 
-                "@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
             )
         )]
         fn test_create_reference_from_tag_and_digest(
