@@ -125,7 +125,6 @@ impl Reference {
     ///     "sha256:abc123...".to_string(),
     /// );
     /// ```
-
     pub fn with_tag_and_digest(
         registry: String,
         repository: String,
