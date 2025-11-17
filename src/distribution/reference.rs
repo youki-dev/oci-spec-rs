@@ -108,6 +108,38 @@ impl Reference {
         }
     }
 
+    /// Create a new instance of [`Reference`] with a registry, repository, tag and digest.
+    ///
+    /// This is useful when you need to reference an image by both its semantic version (tag)
+    /// and its content-addressable digest for immutability.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use oci_spec::distribution::Reference;
+    ///
+    /// let reference = Reference::with_tag_and_digest(
+    ///     "docker.io".to_string(),
+    ///     "library/nginx".to_string(),
+    ///     "1.21".to_string(),
+    ///     "sha256:abc123...".to_string(),
+    /// );
+    /// ```
+    pub fn with_tag_and_digest(
+        registry: String,
+        repository: String,
+        tag: String,
+        digest: String,
+    ) -> Self {
+        Self {
+            registry,
+            mirror_registry: None,
+            repository,
+            tag: Some(tag),
+            digest: Some(digest),
+        }
+    }
+
     /// Clone the Reference for the same image with a new digest.
     pub fn clone_with_digest(&self, digest: String) -> Self {
         Self {
@@ -438,6 +470,32 @@ mod test {
             assert_eq!(registry, reference.registry());
             assert_eq!(Some(registry), reference.namespace());
             assert_eq!(whole, reference.whole());
+        }
+
+        #[rstest(
+            expected, registry, repository, tag, digest,
+            case(
+                "docker.io/foo/bar:1.2@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 
+                "docker.io", 
+                "foo/bar", 
+                "1.2", 
+                "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+            )
+        )]
+        fn test_create_reference_from_tag_and_digest(
+            expected: &str,
+            registry: &str,
+            repository: &str,
+            tag: &str,
+            digest: &str,
+        ) {
+            let reference = Reference::with_tag_and_digest(
+                registry.to_string(),
+                repository.to_string(),
+                tag.to_string(),
+                digest.to_string(),
+            );
+            assert_eq!(expected, reference.to_string());
         }
     }
 }
