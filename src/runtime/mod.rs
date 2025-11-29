@@ -26,6 +26,7 @@ mod test;
 mod version;
 mod vm;
 mod windows;
+mod zos;
 
 // re-export for ease of use
 pub use capability::*;
@@ -39,6 +40,7 @@ pub use state::*;
 pub use version::*;
 pub use vm::*;
 pub use windows::*;
+pub use zos::*;
 
 /// `config.json` file root object.
 #[derive(
@@ -151,6 +153,10 @@ pub struct Spec {
     vm: Option<VM>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// z/OS is platform-specific configuration for z/OS based containers.
+    zos: Option<ZOS>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     /// UID mappings used for changing file owners w/o calling chown, fs should support it.
     /// Every mount point could have its own mapping.
     uid_mappings: Option<Vec<LinuxIdMapping>>,
@@ -182,6 +188,7 @@ impl Default for Spec {
             solaris: None,
             windows: None,
             vm: None,
+            zos: None,
             uid_mappings: None,
             gid_mappings: None,
         }

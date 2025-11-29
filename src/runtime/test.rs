@@ -55,6 +55,14 @@ fn test_load_sample_windows_spec() {
 }
 
 #[test]
+fn test_load_sample_zos_spec() {
+    let fixture_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("src/runtime/test/fixture/sample_zos.json");
+    let err = Spec::load(fixture_path);
+    assert!(err.is_ok(), "failed to load spec: {err:?}");
+}
+
+#[test]
 fn test_linux_netdevice_lifecycle() {
     let fixture_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("src/runtime/test/fixture/sample.json");
