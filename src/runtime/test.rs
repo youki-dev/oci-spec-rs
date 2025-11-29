@@ -39,6 +39,14 @@ fn test_load_sample_spec() {
 }
 
 #[test]
+fn test_load_sample_state() {
+    let fixture_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("src/runtime/test/fixture/sample_state.json");
+    let err = State::load(fixture_path);
+    assert!(err.is_ok(), "failed to load state: {err:?}");
+}
+
+#[test]
 fn test_load_sample_windows_spec() {
     let fixture_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("src/runtime/test/fixture/sample_windows.json");
