@@ -21,6 +21,7 @@ mod linux;
 mod miscellaneous;
 mod process;
 mod solaris;
+mod state;
 mod test;
 mod version;
 mod vm;
@@ -34,6 +35,7 @@ pub use linux::*;
 pub use miscellaneous::*;
 pub use process::*;
 pub use solaris::*;
+pub use state::*;
 pub use version::*;
 pub use vm::*;
 pub use windows::*;
@@ -337,7 +339,7 @@ mod tests {
             ..Default::default()
         };
         let test_dir = tempfile::tempdir().expect("failed to create tmp test dir");
-        let spec_path = test_dir.keep().join("config.json");
+        let spec_path = test_dir.path().join("config.json");
 
         // Test first save the default config, and then load the saved config.
         // The before and after should be the same.
