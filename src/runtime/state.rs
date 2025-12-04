@@ -166,3 +166,26 @@ pub struct ContainerProcessState {
     #[serde(default)]
     state: State,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_load_save() {
+        let state = State {
+            ..Default::default()
+        };
+        let test_dir = tempfile::tempdir().expect("failed to create tmp test dir");
+        let state_path = test_dir.keep().join("state.json");
+
+        // Test first save the default config, and then load the saved config.
+        // The before and after should be the same.
+        state.save(&state_path).expect("failed to save state");
+        let loaded_state = State::load(&state_path).expect("failed to load state");
+        assert_eq!(
+            state, loaded_state,
+            "The saved state is not the same as the loaded state"
+        );
+    }
+}
