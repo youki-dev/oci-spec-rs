@@ -1,7 +1,10 @@
 use crate::error::OciSpecError;
 
-use std::fs;
-use std::path::PathBuf;
+use std::{
+    fs,
+    io::{BufReader, BufWriter, Write},
+    path::{Path, PathBuf},
+};
 
 use derive_builder::Builder;
 use getset::{Getters, MutGetters, Setters};
@@ -23,7 +26,7 @@ pub enum ContainerState {
     /// user-specified program but has not exited
     Running,
 
-    /// StateStopped indicates that the container process has exited,
+    /// Stopped indicates that the container process has exited,
     /// and does not have a created or running process.
     #[default]
     Stopped,
@@ -93,15 +96,29 @@ impl State {
     /// # Errors
     /// This function will return an [OciSpecError::Io] if the file does not exist or an
     /// [OciSpecError::SerDe] if the JSON is invalid.
-    pub fn load(path: PathBuf) -> Result<Self, OciSpecError> {
-        let file = fs::read_to_string(path)?;
-        let state: Self = serde_json::from_str(&file)?;
+    pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, OciSpecError> {
+        let path = path.as_ref();
+        let file = fs::File::open(path)?;
+        let reader = BufReader::new(file);
+        let state = serde_json::from_reader(reader)?;
         Ok(state)
+    }
+
+    /// Save a State to the provided JSON file path.
+    /// # Errors
+    /// This function will return an [OciSpecError::Io] if a file cannot be created at the provided
+    /// path or an [OciSpecError::SerDe] if the state cannot be serialized.
+    pub fn save<P: AsRef<Path>>(&self, path: P) -> Result<(), OciSpecError> {
+        let path = path.as_ref();
+        let file = fs::File::create(path)?;
+        let mut writer = BufWriter::new(file);
+        serde_json::to_writer(&mut writer, self)?;
+        writer.flush()?;
+        Ok(())
     }
 }
 
 /// SeccompFdName is the name of the seccomp notify file descriptor.
-#[allow(dead_code)]
 pub const SECCOMP_FD_NAME: &str = "seccompFd";
 
 /// ContainerProcessState holds information about the state of a container process.

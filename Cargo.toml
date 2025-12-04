@@ -36,6 +36,6 @@ strum_macros = "0.27.0"
 regex = "1"
 
 [dev-dependencies]
-tempfile = "3.2.0"
+tempfile = "3.23.0"
 rstest = "0.26.1"
 serde_json = { version = "1.0.66", features = ["preserve_order"] }
