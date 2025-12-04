@@ -339,7 +339,7 @@ mod tests {
             ..Default::default()
         };
         let test_dir = tempfile::tempdir().expect("failed to create tmp test dir");
-        let spec_path = test_dir.path().join("config.json");
+        let spec_path = test_dir.keep().join("config.json");
 
         // Test first save the default config, and then load the saved config.
         // The before and after should be the same.
