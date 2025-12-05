@@ -1,5 +1,5 @@
 {
-    "ociVersion": "0.2.0",
+    "ociVersion": "1.0.2",
     "id": "oci-container1",
     "status": "running",
     "pid": 4422,

@@ -119,6 +119,8 @@ impl State {
 }
 
 /// SeccompFdName is the name of the seccomp notify file descriptor.
+/// Used in ContainerProcessState.fds to identify seccomp listener file descriptors.
+/// See: <https://github.com/opencontainers/runtime-spec/blob/main/specs-go/state.go>
 pub const SECCOMP_FD_NAME: &str = "seccompFd";
 
 /// ContainerProcessState holds information about the state of a container process.
