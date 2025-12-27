@@ -1,4 +1,5 @@
 use crate::error::OciSpecError;
+use crate::runtime::LinuxIdMapping;
 use derive_builder::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
@@ -56,7 +57,7 @@ impl Default for Root {
     default,
     pattern = "owned",
     setter(into, strip_option),
-    build_fn(error = "OciSpecError")
+    build_fn(error = "OciSpecError", validate = "Self::validate")
 )]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 /// Mount specifies a mount for a container.
@@ -76,6 +77,38 @@ pub struct Mount {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// Options are fstab style mount options.
     options: Option<Vec<String>>,
+
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        rename = "uidMappings"
+    )]
+    /// UID mappings for ID-mapped mounts (Linux 5.12+).  
+    ///  
+    /// Specifies how to map UIDs from the source filesystem to the destination mount point.  
+    /// This allows changing file ownership without calling chown.  
+    ///  
+    /// **Important**: If specified, gid_mappings MUST also be specified.  
+    /// The mount options SHOULD include "idmap" or "ridmap".  
+    ///  
+    /// See: https://github.com/opencontainers/runtime-spec/blob/main/config.md#posix-platform-mounts
+    uid_mappings: Option<Vec<LinuxIdMapping>>,
+
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        rename = "gidMappings"
+    )]
+    /// GID mappings for ID-mapped mounts (Linux 5.12+).
+///
+/// Specifies how to map GIDs from the source filesystem to the destination mount point.
+/// This allows changing file group ownership without calling chown.
+///
+/// **Important**: If specified, `uid_mappings` MUST also be specified.
+/// The mount options SHOULD include `"idmap"` or `"ridmap"`.
+///
+/// See: https://github.com/opencontainers/runtime-spec/blob/main/config.md#posix-platform-mounts
+    gid_mappings: Option<Vec<LinuxIdMapping>>,
 }
 
 /// utility function to generate default config for mounts.
@@ -86,6 +119,8 @@ pub fn get_default_mounts() -> Vec<Mount> {
             typ: "proc".to_string().into(),
             source: PathBuf::from("proc").into(),
             options: None,
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/dev"),
@@ -98,6 +133,8 @@ pub fn get_default_mounts() -> Vec<Mount> {
                 "size=65536k".into(),
             ]
             .into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/dev/pts"),
@@ -112,6 +149,8 @@ pub fn get_default_mounts() -> Vec<Mount> {
                 "gid=5".into(),
             ]
             .into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/dev/shm"),
@@ -125,12 +164,16 @@ pub fn get_default_mounts() -> Vec<Mount> {
                 "size=65536k".into(),
             ]
             .into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/dev/mqueue"),
             typ: "mqueue".to_string().into(),
             source: PathBuf::from("mqueue").into(),
             options: vec!["nosuid".into(), "noexec".into(), "nodev".into()].into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/sys"),
@@ -143,6 +186,8 @@ pub fn get_default_mounts() -> Vec<Mount> {
                 "ro".into(),
             ]
             .into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
         Mount {
             destination: PathBuf::from("/sys/fs/cgroup"),
@@ -156,8 +201,36 @@ pub fn get_default_mounts() -> Vec<Mount> {
                 "ro".into(),
             ]
             .into(),
+            uid_mappings: None,
+            gid_mappings: None,
         },
     ]
+}
+
+impl MountBuilder {
+    fn validate(&self) -> Result<(), OciSpecError> {
+        let uid_specified = self
+            .uid_mappings
+            .as_ref()
+            .and_then(|v| v.as_ref())
+            .map(|v| !v.is_empty())
+            .unwrap_or(false);
+
+        let gid_specified = self
+            .gid_mappings
+            .as_ref()
+            .and_then(|v| v.as_ref())
+            .map(|v| !v.is_empty())
+            .unwrap_or(false);
+
+        if uid_specified ^ gid_specified {
+            return Err(OciSpecError::Other(
+                "Mount.uidMappings and Mount.gidMappings must be specified together".to_string(),
+            ));
+        }
+
+        Ok(())
+    }
 }
 
 /// utility function to generate default rootless config for mounts.
