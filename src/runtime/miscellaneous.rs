@@ -100,14 +100,14 @@ pub struct Mount {
         rename = "gidMappings"
     )]
     /// GID mappings for ID-mapped mounts (Linux 5.12+).
-///
-/// Specifies how to map GIDs from the source filesystem to the destination mount point.
-/// This allows changing file group ownership without calling chown.
-///
-/// **Important**: If specified, `uid_mappings` MUST also be specified.
-/// The mount options SHOULD include `"idmap"` or `"ridmap"`.
-///
-/// See: https://github.com/opencontainers/runtime-spec/blob/main/config.md#posix-platform-mounts
+    ///
+    /// Specifies how to map GIDs from the source filesystem to the destination mount point.
+    /// This allows changing file group ownership without calling chown.
+    ///
+    /// **Important**: If specified, `uid_mappings` MUST also be specified.
+    /// The mount options SHOULD include `"idmap"` or `"ridmap"`.
+    ///
+    /// See: https://github.com/opencontainers/runtime-spec/blob/main/config.md#posix-platform-mounts
     gid_mappings: Option<Vec<LinuxIdMapping>>,
 }
 
