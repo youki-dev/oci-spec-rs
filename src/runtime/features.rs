@@ -785,13 +785,13 @@ mod tests {
                 enabled: Some(true),
                 actions: Some(vec![
                     LinuxSeccompAction::ScmpActAllow,
-                    LinuxSeccompAction::ScmpActErrno,
+                    LinuxSeccompAction::ScmpActErrno(1u16),
                     LinuxSeccompAction::ScmpActKill,
                     LinuxSeccompAction::ScmpActKillProcess,
                     LinuxSeccompAction::ScmpActKillThread,
                     LinuxSeccompAction::ScmpActLog,
                     LinuxSeccompAction::ScmpActNotify,
-                    LinuxSeccompAction::ScmpActTrace,
+                    LinuxSeccompAction::ScmpActTrace(1u16),
                     LinuxSeccompAction::ScmpActTrap
                 ]),
                 operators: Some(vec![
