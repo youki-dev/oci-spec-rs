@@ -1112,13 +1112,13 @@ pub enum LinuxSeccompAction {
     ScmpActTrap,
 
     /// Return the specified error code.
-    ScmpActErrno,
+    ScmpActErrno(u16),
 
     /// Notifies userspace.
     ScmpActNotify,
 
     /// Notify a tracing process with the specified value.
-    ScmpActTrace,
+    ScmpActTrace(u16),
 
     /// Allow the syscall to be executed after the action has been logged.
     ScmpActLog,
@@ -1135,9 +1135,9 @@ impl From<LinuxSeccompAction> for u32 {
             LinuxSeccompAction::ScmpActKillThread => 0x00000000,
             LinuxSeccompAction::ScmpActKillProcess => 0x80000000,
             LinuxSeccompAction::ScmpActTrap => 0x00030000,
-            LinuxSeccompAction::ScmpActErrno => 0x00050001,
+            LinuxSeccompAction::ScmpActErrno(err_ret) => 0x00050000 | err_ret as u32,
             LinuxSeccompAction::ScmpActNotify => 0x7fc00000,
-            LinuxSeccompAction::ScmpActTrace => 0x7ff00001,
+            LinuxSeccompAction::ScmpActTrace(trace_code) => 0x7ff00000 | trace_code as u32,
             LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
             LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
         }
