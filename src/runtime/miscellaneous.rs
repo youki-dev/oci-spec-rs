@@ -91,7 +91,7 @@ pub struct Mount {
     /// **Important**: If specified, gid_mappings MUST also be specified.  
     /// The mount options SHOULD include "idmap" or "ridmap".  
     ///  
-    /// See: https://github.com/opencontainers/runtime-spec/blob/main/config.md#posix-platform-mounts
+    /// See: <https://github.com/opencontainers/runtime-spec/blob/main/config.md#posix-platform-mounts>
     uid_mappings: Option<Vec<LinuxIdMapping>>,
 
     #[serde(
@@ -107,7 +107,7 @@ pub struct Mount {
     /// **Important**: If specified, `uid_mappings` MUST also be specified.
     /// The mount options SHOULD include `"idmap"` or `"ridmap"`.
     ///
-    /// See: https://github.com/opencontainers/runtime-spec/blob/main/config.md#posix-platform-mounts
+    /// See: <https://github.com/opencontainers/runtime-spec/blob/main/config.md#posix-platform-mounts>
     gid_mappings: Option<Vec<LinuxIdMapping>>,
 }
 
