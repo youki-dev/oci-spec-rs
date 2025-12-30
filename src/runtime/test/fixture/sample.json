@@ -368,7 +368,7 @@
                         "getcwd",
                         "chmod"
                     ],
-                    "action": {"SCMP_ACT_ERRNO": 1}
+                    "action": "SCMP_ACT_ERRNO"
                 }
             ]
         },
