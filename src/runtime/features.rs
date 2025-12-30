@@ -538,13 +538,13 @@ mod tests {
             "enabled": true,
             "actions": [
                 "SCMP_ACT_ALLOW",
-                {"SCMP_ACT_ERRNO": 1},
+                "SCMP_ACT_ERRNO",
                 "SCMP_ACT_KILL",
                 "SCMP_ACT_KILL_PROCESS",
                 "SCMP_ACT_KILL_THREAD",
                 "SCMP_ACT_LOG",
                 "SCMP_ACT_NOTIFY",
-                {"SCMP_ACT_TRACE": 1},
+                "SCMP_ACT_TRACE",
                 "SCMP_ACT_TRAP"
             ],
             "operators": [
