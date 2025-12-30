@@ -1144,6 +1144,22 @@ impl From<LinuxSeccompAction> for u32 {
     }
 }
 
+impl LinuxSeccompAction {
+    fn from_action(action: LinuxSeccompAction, val: u16) -> u32 {
+        match action {
+            LinuxSeccompAction::ScmpActKill => 0x00000000,
+            LinuxSeccompAction::ScmpActKillThread => 0x00000000,
+            LinuxSeccompAction::ScmpActKillProcess => 0x80000000,
+            LinuxSeccompAction::ScmpActTrap => 0x00030000,
+            LinuxSeccompAction::ScmpActErrno => 0x00050000 | val as u32,
+            LinuxSeccompAction::ScmpActNotify => 0x7fc00000,
+            LinuxSeccompAction::ScmpActTrace => 0x7ff00000 | val as u32,
+            LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
+            LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -1864,6 +1880,15 @@ mod tests {
 
         let type_c = LinuxSeccompOperator::ScmpCmpGt;
         assert_eq!(type_c.to_string(), "SCMP_CMP_GT");
+    }
+
+    #[test]
+    fn seccomp_action_to_u32() {
+        let seccomp_act_errno = LinuxSeccompAction::from_action(LinuxSeccompAction::ScmpActErrno, 10);
+        assert_eq!(seccomp_act_errno, 0x00050000 | 10u32);
+
+        let seccomp_act_trace = LinuxSeccompAction::from_action(LinuxSeccompAction::ScmpActTrace, 10);
+        assert_eq!(seccomp_act_trace, 0x7ff00000 | 10u32);
     }
 
     #[test]
