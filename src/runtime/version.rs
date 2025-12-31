@@ -4,10 +4,10 @@ use const_format::formatcp;
 pub const VERSION_MAJOR: u32 = 1;
 
 /// Changing functionality in a backwards-compatible manner
-pub const VERSION_MINOR: u32 = 0;
+pub const VERSION_MINOR: u32 = 1;
 
 /// Backwards-compatible bug fixes.
-pub const VERSION_PATCH: u32 = 2;
+pub const VERSION_PATCH: u32 = 0;
 
 /// Indicates development branch. Releases will be empty string.
 pub const VERSION_DEV: &str = "-dev";
@@ -30,6 +30,6 @@ mod tests {
     #[test]
     #[allow(deprecated)]
     fn version_test() {
-        assert_eq!(version(), "1.0.2-dev".to_string())
+        assert_eq!(version(), "1.1.0-dev".to_string())
     }
 }
