@@ -1092,6 +1092,34 @@ pub struct LinuxSeccomp {
     syscalls: Option<Vec<LinuxSyscall>>,
 }
 
+impl From<LinuxSeccomp> for u32 {
+    fn from(seccomp: LinuxSeccomp) -> Self {
+        match seccomp.default_action {
+            LinuxSeccompAction::ScmpActKill => 0x00000000,
+            LinuxSeccompAction::ScmpActKillThread => 0x00000000,
+            LinuxSeccompAction::ScmpActKillProcess => 0x80000000,
+            LinuxSeccompAction::ScmpActTrap => 0x00030000,
+            LinuxSeccompAction::ScmpActErrno => {
+                if let Some(errno_ret) = seccomp.default_errno_ret {
+                    0x00050001 | errno_ret
+                } else {
+                    0x00050001
+                }
+            },
+            LinuxSeccompAction::ScmpActNotify => 0x7fc00000,
+            LinuxSeccompAction::ScmpActTrace => {
+                if let Some(errno_ret) = seccomp.default_errno_ret {
+                    0x7ff00001 | errno_ret
+                } else {
+                    0x7ff00001
+                }
+            },
+            LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
+            LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
+        }
+    }
+}
+
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString,
 )]
@@ -1319,6 +1347,34 @@ pub struct LinuxSyscall {
     #[getset(get = "pub", set = "pub")]
     /// The arguments for the syscalls.
     args: Option<Vec<LinuxSeccompArg>>,
+}
+
+impl From<LinuxSyscall> for u32 {
+    fn from(syscall: LinuxSyscall) -> Self {
+        match syscall.action {
+            LinuxSeccompAction::ScmpActKill => 0x00000000,
+            LinuxSeccompAction::ScmpActKillThread => 0x00000000,
+            LinuxSeccompAction::ScmpActKillProcess => 0x80000000,
+            LinuxSeccompAction::ScmpActTrap => 0x00030000,
+            LinuxSeccompAction::ScmpActErrno => {
+                if let Some(errno_ret) = syscall.errno_ret {
+                    0x00050001 | errno_ret
+                } else {
+                    0x00050001
+                }
+            },
+            LinuxSeccompAction::ScmpActNotify => 0x7fc00000,
+            LinuxSeccompAction::ScmpActTrace => {
+                if let Some(errno_ret) = syscall.errno_ret {
+                    0x7ff00001 | errno_ret
+                } else {
+                    0x7ff00001
+                }
+            },
+            LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
+            LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
+        }
+    }
 }
 
 #[derive(
