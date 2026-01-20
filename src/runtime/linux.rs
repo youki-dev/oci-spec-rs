@@ -1092,31 +1092,37 @@ pub struct LinuxSeccomp {
     syscalls: Option<Vec<LinuxSyscall>>,
 }
 
-impl From<LinuxSeccomp> for u32 {
-    fn from(seccomp: LinuxSeccomp) -> Self {
-        match seccomp.default_action {
+impl LinuxSeccompAction {
+    fn to_u32(action: LinuxSeccompAction, errno_ret: Option<u32>) -> u32 {
+        match action {
             LinuxSeccompAction::ScmpActKill => 0x00000000,
             LinuxSeccompAction::ScmpActKillThread => 0x00000000,
             LinuxSeccompAction::ScmpActKillProcess => 0x80000000,
             LinuxSeccompAction::ScmpActTrap => 0x00030000,
             LinuxSeccompAction::ScmpActErrno => {
-                if let Some(errno_ret) = seccomp.default_errno_ret {
+                if let Some(errno_ret) = errno_ret {
                     0x00050001 | errno_ret
                 } else {
                     0x00050001
                 }
-            },
+            }
             LinuxSeccompAction::ScmpActNotify => 0x7fc00000,
             LinuxSeccompAction::ScmpActTrace => {
-                if let Some(errno_ret) = seccomp.default_errno_ret {
+                if let Some(errno_ret) = errno_ret {
                     0x7ff00001 | errno_ret
                 } else {
                     0x7ff00001
                 }
-            },
+            }
             LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
             LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
         }
+    }
+}
+
+impl From<LinuxSeccomp> for u32 {
+    fn from(seccomp: LinuxSeccomp) -> Self {
+        LinuxSeccompAction::to_u32(seccomp.default_action(), seccomp.default_errno_ret)
     }
 }
 
@@ -1349,31 +1355,37 @@ pub struct LinuxSyscall {
     args: Option<Vec<LinuxSeccompArg>>,
 }
 
-impl From<LinuxSyscall> for u32 {
-    fn from(syscall: LinuxSyscall) -> Self {
-        match syscall.action {
+impl LinuxSyscall {
+    fn to_u32(action: LinuxSeccompAction, errno_ret: Option<u32>) -> u32 {
+        match action {
             LinuxSeccompAction::ScmpActKill => 0x00000000,
             LinuxSeccompAction::ScmpActKillThread => 0x00000000,
             LinuxSeccompAction::ScmpActKillProcess => 0x80000000,
             LinuxSeccompAction::ScmpActTrap => 0x00030000,
             LinuxSeccompAction::ScmpActErrno => {
-                if let Some(errno_ret) = syscall.errno_ret {
+                if let Some(errno_ret) = errno_ret {
                     0x00050001 | errno_ret
                 } else {
                     0x00050001
                 }
-            },
+            }
             LinuxSeccompAction::ScmpActNotify => 0x7fc00000,
             LinuxSeccompAction::ScmpActTrace => {
-                if let Some(errno_ret) = syscall.errno_ret {
+                if let Some(errno_ret) = errno_ret {
                     0x7ff00001 | errno_ret
                 } else {
                     0x7ff00001
                 }
-            },
+            }
             LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
             LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
         }
+    }
+}
+
+impl From<LinuxSyscall> for u32 {
+    fn from(syscall: LinuxSyscall) -> Self {
+        LinuxSyscall::to_u32(syscall.action, syscall.errno_ret)
     }
 }
 
@@ -1940,10 +1952,12 @@ mod tests {
 
     #[test]
     fn seccomp_action_to_u32() {
-        let seccomp_act_errno = LinuxSeccompAction::from_action(LinuxSeccompAction::ScmpActErrno, 10);
+        let seccomp_act_errno =
+            LinuxSeccompAction::from_action(LinuxSeccompAction::ScmpActErrno, 10);
         assert_eq!(seccomp_act_errno, 0x00050000 | 10u32);
 
-        let seccomp_act_trace = LinuxSeccompAction::from_action(LinuxSeccompAction::ScmpActTrace, 10);
+        let seccomp_act_trace =
+            LinuxSeccompAction::from_action(LinuxSeccompAction::ScmpActTrace, 10);
         assert_eq!(seccomp_act_trace, 0x7ff00000 | 10u32);
     }
 
