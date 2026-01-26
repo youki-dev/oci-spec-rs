@@ -1092,12 +1092,6 @@ pub struct LinuxSeccomp {
     syscalls: Option<Vec<LinuxSyscall>>,
 }
 
-impl From<LinuxSeccomp> for u32 {
-    fn from(seccomp: LinuxSeccomp) -> Self {
-        LinuxSeccompAction::to_u32(seccomp.default_action(), seccomp.default_errno_ret)
-    }
-}
-
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString,
 )]
@@ -1338,12 +1332,6 @@ pub struct LinuxSyscall {
     #[getset(get = "pub", set = "pub")]
     /// The arguments for the syscalls.
     args: Option<Vec<LinuxSeccompArg>>,
-}
-
-impl From<LinuxSyscall> for u32 {
-    fn from(syscall: LinuxSyscall) -> Self {
-        LinuxSyscall::to_u32(syscall.action, syscall.errno_ret)
-    }
 }
 
 #[derive(
