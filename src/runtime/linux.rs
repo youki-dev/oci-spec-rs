@@ -1178,6 +1178,34 @@ impl From<LinuxSeccompAction> for u32 {
     }
 }
 
+impl LinuxSeccompAction {
+    fn as_u32(&self, errno_ret: Option<u32>) -> u32 {
+        match self {
+            LinuxSeccompAction::ScmpActKill => 0x00000000,
+            LinuxSeccompAction::ScmpActKillThread => 0x00000000,
+            LinuxSeccompAction::ScmpActKillProcess => 0x80000000,
+            LinuxSeccompAction::ScmpActTrap => 0x00030000,
+            LinuxSeccompAction::ScmpActErrno => {
+                if let Some(errno_ret) = errno_ret {
+                    0x00050000 | errno_ret
+                } else {
+                    0x00050001
+                }
+            }
+            LinuxSeccompAction::ScmpActNotify => 0x7fc00000,
+            LinuxSeccompAction::ScmpActTrace => {
+                if let Some(errno_ret) = errno_ret {
+                    0x7ff00000 | errno_ret
+                } else {
+                    0x7ff00001
+                }
+            }
+            LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
+            LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -1934,34 +1962,20 @@ mod tests {
         assert_eq!(type_c.to_string(), "SCMP_CMP_GT");
     }
 
-    // LinuxSeccomp test cases
+    // LinuxSeccompAction test cases
     #[test]
-    fn seccomp_action_to_u32() {
-        let seccomp = LinuxSeccompBuilder::default()
-            .default_action(LinuxSeccompAction::ScmpActErrno)
-            .build()
-            .unwrap();
-        assert_eq!(u32::from(seccomp), 0x00050001);
+    fn seccomp_action_as_u32() {
+        let action = LinuxSeccompAction::ScmpActErrno;
+        assert_eq!(action.as_u32(Option::None), 0x00050001);
 
-        let seccomp = LinuxSeccompBuilder::default()
-            .default_action(LinuxSeccompAction::ScmpActErrno)
-            .default_errno_ret(10u32)
-            .build()
-            .unwrap();
-        assert_eq!(u32::from(seccomp), 0x00050000 | 10);
+        let action = LinuxSeccompAction::ScmpActErrno;
+        assert_eq!(action.as_u32(Option::Some(10)), 0x00050000 | 10);
 
-        let seccomp = LinuxSeccompBuilder::default()
-            .default_action(LinuxSeccompAction::ScmpActTrace)
-            .build()
-            .unwrap();
-        assert_eq!(u32::from(seccomp), 0x7ff00001);
+        let action = LinuxSeccompAction::ScmpActTrace;
+        assert_eq!(action.as_u32(Option::None), 0x7ff00001);
 
-        let seccomp = LinuxSeccompBuilder::default()
-            .default_action(LinuxSeccompAction::ScmpActTrace)
-            .default_errno_ret(10u32)
-            .build()
-            .unwrap();
-        assert_eq!(u32::from(seccomp), 0x7ff00000 | 10);
+        let action = LinuxSeccompAction::ScmpActTrace;
+        assert_eq!(action.as_u32(Option::Some(10)), 0x7ff00000 | 10);
     }
 
     // LinuxSyscall test cases
