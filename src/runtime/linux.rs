@@ -1134,6 +1134,7 @@ pub enum LinuxSeccompAction {
     ScmpActAllow,
 }
 
+#[deprecated(since = "0.9.0", note = "Use as_u32 instead of from")]
 impl From<LinuxSeccompAction> for u32 {
     fn from(action: LinuxSeccompAction) -> Self {
         match action {
