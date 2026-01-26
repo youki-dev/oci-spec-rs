@@ -1128,6 +1128,13 @@ pub enum LinuxSeccompAction {
     ScmpActAllow,
 }
 
+/// Converts [`LinuxSeccompAction`] to its `u32` representation.
+///
+/// # Deprecated
+///
+/// This implementation is deprecated and will be removed in a future version.
+/// Use [`LinuxSeccompAction::as_u32`] instead, which supports `errno_ret` parameter
+/// for `ScmpActErrno` and `ScmpActTrace` actions.
 impl From<LinuxSeccompAction> for u32 {
     fn from(action: LinuxSeccompAction) -> Self {
         match action {
@@ -1138,6 +1145,39 @@ impl From<LinuxSeccompAction> for u32 {
             LinuxSeccompAction::ScmpActErrno => 0x00050001,
             LinuxSeccompAction::ScmpActNotify => 0x7fc00000,
             LinuxSeccompAction::ScmpActTrace => 0x7ff00001,
+            LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
+            LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
+        }
+    }
+}
+
+impl LinuxSeccompAction {
+    /// Converts the seccomp action to its u32 representation.
+    ///
+    /// The `errno_ret` parameter is used for actions that return an errno value.
+    /// If the action is `ScmpActErrno` or `ScmpActTrace`, and `errno_ret` is provided,
+    /// it will be included in the returned value.
+    pub fn as_u32(&self, errno_ret: Option<u32>) -> u32 {
+        match self {
+            LinuxSeccompAction::ScmpActKill => 0x00000000,
+            LinuxSeccompAction::ScmpActKillThread => 0x00000000,
+            LinuxSeccompAction::ScmpActKillProcess => 0x80000000,
+            LinuxSeccompAction::ScmpActTrap => 0x00030000,
+            LinuxSeccompAction::ScmpActErrno => {
+                if let Some(errno_ret) = errno_ret {
+                    0x00050000 | errno_ret
+                } else {
+                    0x00050001
+                }
+            }
+            LinuxSeccompAction::ScmpActNotify => 0x7fc00000,
+            LinuxSeccompAction::ScmpActTrace => {
+                if let Some(errno_ret) = errno_ret {
+                    0x7ff00000 | errno_ret
+                } else {
+                    0x7ff00001
+                }
+            }
             LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
             LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
         }
@@ -1864,6 +1904,22 @@ mod tests {
 
         let type_c = LinuxSeccompOperator::ScmpCmpGt;
         assert_eq!(type_c.to_string(), "SCMP_CMP_GT");
+    }
+
+    // LinuxSeccompAction test cases
+    #[test]
+    fn seccomp_action_as_u32() {
+        let action = LinuxSeccompAction::ScmpActErrno;
+        assert_eq!(action.as_u32(Option::None), 0x00050001);
+
+        let action = LinuxSeccompAction::ScmpActErrno;
+        assert_eq!(action.as_u32(Option::Some(10)), 0x00050000 | 10);
+
+        let action = LinuxSeccompAction::ScmpActTrace;
+        assert_eq!(action.as_u32(Option::None), 0x7ff00001);
+
+        let action = LinuxSeccompAction::ScmpActTrace;
+        assert_eq!(action.as_u32(Option::Some(10)), 0x7ff00000 | 10);
     }
 
     #[test]
