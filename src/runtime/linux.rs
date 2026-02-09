@@ -1129,25 +1129,9 @@ pub enum LinuxSeccompAction {
 }
 
 /// Converts [`LinuxSeccompAction`] to its `u32` representation.
-///
-/// # Deprecated
-///
-/// This implementation is deprecated and will be removed in a future version.
-/// Use [`LinuxSeccompAction::as_u32`] instead, which supports `errno_ret` parameter
-/// for `ScmpActErrno` and `ScmpActTrace` actions.
 impl From<LinuxSeccompAction> for u32 {
     fn from(action: LinuxSeccompAction) -> Self {
-        match action {
-            LinuxSeccompAction::ScmpActKill => 0x00000000,
-            LinuxSeccompAction::ScmpActKillThread => 0x00000000,
-            LinuxSeccompAction::ScmpActKillProcess => 0x80000000,
-            LinuxSeccompAction::ScmpActTrap => 0x00030000,
-            LinuxSeccompAction::ScmpActErrno => 0x00050001,
-            LinuxSeccompAction::ScmpActNotify => 0x7fc00000,
-            LinuxSeccompAction::ScmpActTrace => 0x7ff00001,
-            LinuxSeccompAction::ScmpActLog => 0x7ffc0000,
-            LinuxSeccompAction::ScmpActAllow => 0x7fff0000,
-        }
+        action.as_u32(None)
     }
 }
 
