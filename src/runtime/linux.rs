@@ -1255,6 +1255,9 @@ pub enum LinuxSeccompFilterFlag {
 
     /// Disable Speculative Store Bypass mitigation. (since Linux 4.17)
     SeccompFilterFlagSpecAllow,
+
+    /// Ensures the process is killable while waiting for notifications. (since linux 5.19)
+    SeccompFilterFlagWaitKillableRecv
 }
 
 #[derive(
