@@ -1257,7 +1257,7 @@ pub enum LinuxSeccompFilterFlag {
     SeccompFilterFlagSpecAllow,
 
     /// Ensures the process is killable while waiting for notifications. (since linux 5.19)
-    SeccompFilterFlagWaitKillableRecv
+    SeccompFilterFlagWaitKillableRecv,
 }
 
 #[derive(
@@ -1850,6 +1850,9 @@ mod tests {
 
         let type_c = LinuxSeccompFilterFlag::SeccompFilterFlagSpecAllow;
         assert_eq!(type_c.to_string(), "SECCOMP_FILTER_FLAG_SPEC_ALLOW");
+
+        let type_d = LinuxSeccompFilterFlag::SeccompFilterFlagWaitKillableRecv;
+        assert_eq!(type_d.to_string(), "SECCOMP_FILTER_FLAG_WAIT_KILLABLE_RECV");
     }
 
     #[test]
@@ -1873,6 +1876,13 @@ mod tests {
         assert_eq!(
             filter_flag_type_enum,
             LinuxSeccompFilterFlag::SeccompFilterFlagSpecAllow
+        );
+
+        let filter_flag_type_str = "SECCOMP_FILTER_FLAG_WAIT_KILLABLE_RECV";
+        let filter_flag_type_enum: LinuxSeccompFilterFlag = filter_flag_type_str.parse().unwrap();
+        assert_eq!(
+            filter_flag_type_enum,
+            LinuxSeccompFilterFlag::SeccompFilterFlagWaitKillableRecv
         );
 
         let invalid_filter_flag_str = "x";
