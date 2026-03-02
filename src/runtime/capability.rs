@@ -1,7 +1,4 @@
-use serde::{
-    de::{Deserializer, Error},
-    Deserialize, Serialize,
-};
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
 use strum_macros::{Display, EnumString};
@@ -9,7 +6,7 @@ use strum_macros::{Display, EnumString};
 /// Capabilities is a unique set of Capability values.
 pub type Capabilities = HashSet<Capability>;
 
-#[derive(Clone, Copy, Debug, EnumString, Eq, Display, Hash, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, EnumString, Eq, Display, Hash, PartialEq, Serialize)]
 /// All available capabilities.
 ///
 /// For the purpose of performing permission checks, traditional UNIX
@@ -519,75 +516,6 @@ pub enum Capability {
     WakeAlarm,
 }
 
-impl<'de> Deserialize<'de> for Capability {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let input = String::deserialize(deserializer)?;
-        let upper = input.to_uppercase();
-
-        // Extract the capability name from various input formats.
-        //
-        // This function strips all "CAP_" prefixes to normalize capability names.
-        // This ensures correct adaptation regardless of whether users specify
-        // CAP_XXX or XXX directly at the upper layer(Specially k8s), making the
-        // API more flexible and user-friendly.
-        // Examples: "CAP_SYS_ADMIN", "SYS_ADMIN"
-        //
-        let mut clean_cap = upper.as_str();
-        while let Some(stripped) = clean_cap.strip_prefix("CAP_") {
-            clean_cap = stripped;
-        }
-        match clean_cap {
-            "AUDIT_CONTROL" => Ok(Self::AuditControl),
-            "AUDIT_READ" => Ok(Self::AuditRead),
-            "AUDIT_WRITE" => Ok(Self::AuditWrite),
-            "BLOCK_SUSPEND" => Ok(Self::BlockSuspend),
-            "BPF" => Ok(Self::Bpf),
-            "CHECKPOINT_RESTORE" => Ok(Self::CheckpointRestore),
-            "CHOWN" => Ok(Self::Chown),
-            "DAC_OVERRIDE" => Ok(Self::DacOverride),
-            "DAC_READ_SEARCH" => Ok(Self::DacReadSearch),
-            "FOWNER" => Ok(Self::Fowner),
-            "FSETID" => Ok(Self::Fsetid),
-            "IPC_LOCK" => Ok(Self::IpcLock),
-            "IPC_OWNER" => Ok(Self::IpcOwner),
-            "KILL" => Ok(Self::Kill),
-            "LEASE" => Ok(Self::Lease),
-            "LINUX_IMMUTABLE" => Ok(Self::LinuxImmutable),
-            "MAC_ADMIN" => Ok(Self::MacAdmin),
-            "MAC_OVERRIDE" => Ok(Self::MacOverride),
-            "MKNOD" => Ok(Self::Mknod),
-            "NET_ADMIN" => Ok(Self::NetAdmin),
-            "NET_BIND_SERVICE" => Ok(Self::NetBindService),
-            "NET_BROADCAST" => Ok(Self::NetBroadcast),
-            "NET_RAW" => Ok(Self::NetRaw),
-            "PERFMON" => Ok(Self::Perfmon),
-            "SETGID" => Ok(Self::Setgid),
-            "SETFCAP" => Ok(Self::Setfcap),
-            "SETPCAP" => Ok(Self::Setpcap),
-            "SETUID" => Ok(Self::Setuid),
-            "SYS_ADMIN" => Ok(Self::SysAdmin),
-            "SYS_BOOT" => Ok(Self::SysBoot),
-            "SYS_CHROOT" => Ok(Self::SysChroot),
-            "SYS_MODULE" => Ok(Self::SysModule),
-            "SYS_NICE" => Ok(Self::SysNice),
-            "SYS_PACCT" => Ok(Self::SysPacct),
-            "SYS_PTRACE" => Ok(Self::SysPtrace),
-            "SYS_RAWIO" => Ok(Self::SysRawio),
-            "SYS_RESOURCE" => Ok(Self::SysResource),
-            "SYS_TIME" => Ok(Self::SysTime),
-            "SYS_TTY_CONFIG" => Ok(Self::SysTtyConfig),
-            "SYSLOG" => Ok(Self::Syslog),
-            "WAKE_ALARM" => Ok(Self::WakeAlarm),
-            other => Err(Error::custom(format!(
-                "no variant for {input} (converted to {other})",
-            ))),
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -602,21 +530,34 @@ mod tests {
 
     #[test]
     fn deserialize() -> Result<()> {
-        for case in &["SYSLOG", "CAP_SYSLOG", "cap_SYSLOG", "sySloG"] {
-            let res: Capability = serde_json::from_str(&format!("\"{case}\""))?;
-            assert_eq!(Capability::Syslog, res);
-        }
+        let res: Capability = serde_json::from_str("\"CAP_SYSLOG\"")?;
+        assert_eq!(Capability::Syslog, res);
         Ok(())
+    }
+
+    #[test]
+    fn deserialize_rejects_non_canonical() {
+        for case in &[
+            "SYSLOG",
+            "cap_SYSLOG",
+            "sySloG",
+            "SYS_ADMIN",
+            "cap_sys_admin",
+        ] {
+            let res: std::result::Result<Capability, _> =
+                serde_json::from_str(&format!("\"{case}\""));
+            assert!(res.is_err(), "expected {case} to be rejected");
+        }
     }
 
     #[test]
     fn capabilities() -> Result<()> {
         let res: Capabilities = serde_json::from_str(
             r#"[
-                "syslog",
-                "SYSLOG",
-                "chown",
-                "cap_chown"
+                "CAP_SYSLOG",
+                "CAP_SYSLOG",
+                "CAP_CHOWN",
+                "CAP_CHOWN"
             ]"#,
         )?;
         assert_eq!(res.len(), 2);
@@ -682,11 +623,11 @@ mod tests {
     }
 
     #[test]
-    fn deserialize_one_more_cap_prefix() -> Result<()> {
-        for case in &["SYS_ADMIN", "CAP_CAP_SYS_ADMIN", "cap_CAP_cap_SYS_ADMIN"] {
-            let res: Capability = serde_json::from_str(&format!("\"{case}\""))?;
-            assert_eq!(Capability::SysAdmin, res);
+    fn deserialize_rejects_extra_cap_prefix() {
+        for case in &["CAP_CAP_SYS_ADMIN", "cap_CAP_cap_SYS_ADMIN"] {
+            let res: std::result::Result<Capability, _> =
+                serde_json::from_str(&format!("\"{case}\""));
+            assert!(res.is_err(), "expected {case} to be rejected");
         }
-        Ok(())
     }
 }
