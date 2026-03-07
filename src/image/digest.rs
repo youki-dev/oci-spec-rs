@@ -339,7 +339,7 @@ mod tests {
         let d = Digest::from_str(VALID_DIGEST_SHA256).unwrap();
         assert_eq!(d.algorithm(), &DigestAlgorithm::Sha256);
         assert_eq!(d.digest(), expected_value);
-        let base_digest = Digest::from(d.clone());
+        let base_digest = d.clone();
         assert_eq!(base_digest.digest(), expected_value);
     }
 
@@ -351,7 +351,7 @@ mod tests {
         assert_eq!(d.digest(), expected_value);
         // Verify we can cheaply coerce to a string
         assert_eq!(d.as_ref(), VALID_DIGEST_SHA384);
-        let base_digest = Digest::from(d.clone());
+        let base_digest = d.clone();
         assert_eq!(base_digest.digest(), expected_value);
     }
 
@@ -361,7 +361,7 @@ mod tests {
         let d = Digest::from_str(VALID_DIGEST_SHA512).unwrap();
         assert_eq!(d.algorithm(), &DigestAlgorithm::Sha512);
         assert_eq!(d.digest(), expected_value);
-        let base_digest = Digest::from(d.clone());
+        let base_digest = d.clone();
         assert_eq!(base_digest.digest(), expected_value);
     }
 
