@@ -1,6 +1,6 @@
 use crate::error::{oci_error, OciSpecError};
 
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fmt::Display, path::PathBuf, vec};
@@ -10,12 +10,7 @@ use strum_macros::{Display as StrumDisplay, EnumString};
     Builder, Clone, Debug, Deserialize, Eq, Getters, MutGetters, Setters, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 /// Linux contains platform-specific configuration for Linux based
 /// containers.
@@ -175,25 +170,23 @@ impl Linux {
     Builder, Clone, Copy, CopyGetters, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// LinuxIDMapping specifies UID/GID mappings.
 pub struct LinuxIdMapping {
     #[serde(default, rename = "hostID")]
+    #[builder(default)]
     /// HostID is the starting UID/GID on the host to be mapped to
     /// `container_id`.
     host_id: u32,
 
     #[serde(default, rename = "containerID")]
+    #[builder(default)]
     /// ContainerID is the starting UID/GID in the container.
     container_id: u32,
 
     #[serde(default)]
+    #[builder(default)]
     /// Size is the number of IDs to be mapped.
     size: u32,
 }
@@ -252,12 +245,7 @@ impl LinuxDeviceType {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxNetDevice represents a single network device to be added to the container's network namespace
 pub struct LinuxNetDevice {
     #[serde(default)]
@@ -280,17 +268,13 @@ pub struct LinuxNetDevice {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// Represents a device rule for the devices specified to the device
 /// controller
 pub struct LinuxDeviceCgroup {
     #[serde(default)]
     #[getset(get_mut = "pub", get_copy = "pub", set = "pub")]
+    #[builder(default)]
     /// Allow or deny
     allow: bool,
 
@@ -354,12 +338,7 @@ impl Display for LinuxDeviceCgroup {
     Setters,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// LinuxMemory for Linux cgroup 'memory' resource management.
 pub struct LinuxMemory {
@@ -424,12 +403,7 @@ pub struct LinuxMemory {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxCPU for Linux cgroup 'cpu' resource management.
 pub struct LinuxCpu {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -494,16 +468,12 @@ pub struct LinuxCpu {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// LinuxPids for Linux cgroup 'pids' resource management (Linux 4.3).
 pub struct LinuxPids {
     #[serde(default)]
+    #[builder(default)]
     /// Maximum number of PIDs. Default is "no limit".
     limit: i64,
 }
@@ -512,21 +482,18 @@ pub struct LinuxPids {
     Builder, Clone, Copy, CopyGetters, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// LinuxWeightDevice struct holds a `major:minor weight` pair for
 /// weightDevice.
 pub struct LinuxWeightDevice {
     #[serde(default)]
+    #[builder(default)]
     /// Major is the device's major number.
     major: i64,
 
     #[serde(default)]
+    #[builder(default)]
     /// Minor is the device's minor number.
     minor: i64,
 
@@ -543,24 +510,22 @@ pub struct LinuxWeightDevice {
 #[derive(
     Builder, Clone, Copy, CopyGetters, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// LinuxThrottleDevice struct holds a `major:minor rate_per_second` pair.
 pub struct LinuxThrottleDevice {
     #[serde(default)]
+    #[builder(default)]
     /// Major is the device's major number.
     major: i64,
 
     #[serde(default)]
+    #[builder(default)]
     /// Minor is the device's minor number.
     minor: i64,
 
     #[serde(default)]
+    #[builder(default)]
     /// Rate is the IO rate limit per cgroup per device.
     rate: u64,
 }
@@ -579,12 +544,7 @@ pub struct LinuxThrottleDevice {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxBlockIO for Linux cgroup 'blkio' resource management.
 pub struct LinuxBlockIo {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -644,12 +604,7 @@ pub struct LinuxBlockIo {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxHugepageLimit structure corresponds to limiting kernel hugepages.
 /// Default to reservation limits if supported. Otherwise fallback to page fault limits.
 pub struct LinuxHugepageLimit {
@@ -678,12 +633,7 @@ pub struct LinuxHugepageLimit {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxInterfacePriority for network interfaces.
 pub struct LinuxInterfacePriority {
     #[serde(default)]
@@ -721,12 +671,7 @@ impl Display for LinuxInterfacePriority {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxNetwork identification and priority configuration.
 pub struct LinuxNetwork {
     #[serde(skip_serializing_if = "Option::is_none", rename = "classID")]
@@ -755,12 +700,7 @@ pub struct LinuxNetwork {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// Resource constraints for container
 pub struct LinuxResources {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -825,12 +765,7 @@ pub struct LinuxResources {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get_copy = "pub", set = "pub")]
 /// LinuxRdma for Linux cgroup 'rdma' resource management (Linux 4.11).
 pub struct LinuxRdma {
@@ -913,12 +848,7 @@ impl TryFrom<&str> for LinuxNamespaceType {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxNamespace is the configuration for a Linux namespace.
 pub struct LinuxNamespace {
     #[serde(rename = "type")]
@@ -978,12 +908,7 @@ pub fn get_default_namespaces() -> Vec<LinuxNamespace> {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxDevice represents the mknod information for a Linux special device
 /// file.
 pub struct LinuxDevice {
@@ -1049,12 +974,7 @@ impl From<&LinuxDevice> for LinuxDeviceCgroup {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxSeccomp represents syscall restrictions.
 pub struct LinuxSeccomp {
     #[getset(get_copy = "pub", set = "pub")]
@@ -1305,12 +1225,7 @@ pub enum LinuxSeccompOperator {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxSyscall is used to match a syscall in seccomp.
 pub struct LinuxSyscall {
     #[getset(get = "pub", set = "pub")]
@@ -1336,12 +1251,7 @@ pub struct LinuxSyscall {
     Builder, Clone, Copy, CopyGetters, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// LinuxSeccompArg used for matching specific syscall arguments in seccomp.
 pub struct LinuxSeccompArg {
@@ -1403,12 +1313,7 @@ pub fn get_default_readonly_paths() -> Vec<String> {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 /// LinuxIntelRdt has container runtime resource constraints for Intel RDT CAT and MBA
 /// features and flags enabling Intel RDT CMT and MBM features.
@@ -1455,12 +1360,7 @@ pub struct LinuxIntelRdt {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxPersonality represents the Linux personality syscall input.
 pub struct LinuxPersonality {
     #[getset(get_copy = "pub", set = "pub")]
@@ -1504,11 +1404,7 @@ pub enum LinuxPersonalityDomain {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxMemoryPolicy represents input for the set_mempolicy syscall.
 pub struct LinuxMemoryPolicy {
     #[getset(get_copy = "pub", set = "pub")]
@@ -1611,12 +1507,7 @@ pub enum MemoryPolicyFlagType {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// LinuxTimeOffset specifies the offset for Time Namespace
 pub struct LinuxTimeOffset {
     /// Secs is the offset of clock (in secs) in the container

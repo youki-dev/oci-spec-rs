@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 
-use crate::{
-    error::OciSpecError,
-    runtime::{Arch, LinuxNamespaceType, LinuxSeccompAction},
-};
-use derive_builder::Builder;
+use crate::runtime::{Arch, LinuxNamespaceType, LinuxSeccompAction};
+use bon::Builder;
 use getset::{Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 
@@ -26,12 +23,7 @@ use serde::{Deserialize, Serialize};
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct Features {
     /// The minimum OCI Runtime Spec version recognized by the runtime, e.g., "1.0.0".
@@ -71,12 +63,7 @@ pub struct Features {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct LinuxFeature {
     /// The list of the recognized namespaces, e.g., "mount".
@@ -118,12 +105,7 @@ pub struct LinuxFeature {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct Cgroup {
     /// "v1" field represents whether Cgroup v1 support is compiled in.
@@ -163,12 +145,7 @@ pub struct Cgroup {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct Seccomp {
     /// "enabled" field represents whether seccomp support is compiled in.
@@ -208,12 +185,7 @@ pub struct Seccomp {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct Apparmor {
     /// "enabled" field represents whether AppArmor support is compiled in.
@@ -237,12 +209,7 @@ pub struct Apparmor {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct Selinux {
     /// "enabled" field represents whether SELinux support is compiled in.
@@ -266,12 +233,7 @@ pub struct Selinux {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct IntelRdt {
     /// "enabled" field represents whether Intel RDT support is compiled in.
@@ -294,12 +256,7 @@ pub struct IntelRdt {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct MemoryPolicy {
     /// modes is the list of known memory policy modes, e.g., "MPOL_INTERLEAVE".
@@ -323,12 +280,7 @@ pub struct MemoryPolicy {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct MountExtensions {
     /// "idMap" field represents the ID mapping support.
@@ -350,12 +302,7 @@ pub struct MountExtensions {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct NetDevices {
     /// "enabled" field represents whether Net Devices support is compiled in.
@@ -378,12 +325,7 @@ pub struct NetDevices {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct IDMap {
     /// "enabled" field represents whether idmap mounts supports is compiled in.

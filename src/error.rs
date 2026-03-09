@@ -27,10 +27,6 @@ pub enum OciSpecError {
     /// serialization or deserialization.
     #[error("serde failed")]
     SerDe(#[from] serde_json::Error),
-
-    /// Builder specific errors.
-    #[error("uninitialized field")]
-    Builder(#[from] derive_builder::UninitializedFieldError),
 }
 
 pub(crate) fn oci_error<'a, M>(message: M) -> OciSpecError
