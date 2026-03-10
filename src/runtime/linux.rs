@@ -1228,8 +1228,26 @@ pub enum Arch {
     /// The S390x architecture.
     ScmpArchS390x = 0x80000016,
 
+    /// The PA-RISC architecture.
+    ScmpArchParisc = 0x0000000f,
+
+    /// The PA-RISC64 architecture.
+    ScmpArchParisc64 = 0x8000000f,
+
     /// The RISCV64 architecture.
     ScmpArchRiscv64 = 0xc00000f3,
+
+    /// The LoongArch64 architecture.
+    ScmpArchLoongarch64 = 0xc0000102,
+
+    /// The Motorola 68000 (32-bit) architecture.
+    ScmpArchM68k = 0x00000004,
+
+    /// The SuperH (32-bit) architecture.
+    ScmpArchSh = 0x4000002a,
+
+    /// The SuperH (32-bit, big-endian) architecture.
+    ScmpArchSheb = 0x0000002a,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, StrumDisplay, EnumString)]
