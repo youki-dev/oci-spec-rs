@@ -1836,6 +1836,24 @@ mod tests {
 
         let type_c = Arch::ScmpArchPpc64le;
         assert_eq!(type_c.to_string(), "SCMP_ARCH_PPC64LE");
+
+        let type_d = Arch::ScmpArchParisc;
+        assert_eq!(type_d.to_string(), "SCMP_ARCH_PARISC");
+
+        let type_e = Arch::ScmpArchParisc64;
+        assert_eq!(type_e.to_string(), "SCMP_ARCH_PARISC64");
+
+        let type_f = Arch::ScmpArchLoongarch64;
+        assert_eq!(type_f.to_string(), "SCMP_ARCH_LOONGARCH64");
+
+        let type_g = Arch::ScmpArchM68k;
+        assert_eq!(type_g.to_string(), "SCMP_ARCH_M68K");
+
+        let type_h = Arch::ScmpArchSh;
+        assert_eq!(type_h.to_string(), "SCMP_ARCH_SH");
+
+        let type_i = Arch::ScmpArchSheb;
+        assert_eq!(type_i.to_string(), "SCMP_ARCH_SHEB");
     }
 
     #[test]
@@ -1851,6 +1869,30 @@ mod tests {
         let arch_type_str = "SCMP_ARCH_PPC64LE";
         let arch_type_enum: Arch = arch_type_str.parse().unwrap();
         assert_eq!(arch_type_enum, Arch::ScmpArchPpc64le);
+
+        let arch_type_str = "SCMP_ARCH_PARISC";
+        let arch_type_enum: Arch = arch_type_str.parse().unwrap();
+        assert_eq!(arch_type_enum, Arch::ScmpArchParisc);
+
+        let arch_type_str = "SCMP_ARCH_PARISC64";
+        let arch_type_enum: Arch = arch_type_str.parse().unwrap();
+        assert_eq!(arch_type_enum, Arch::ScmpArchParisc64);
+
+        let arch_type_str = "SCMP_ARCH_LOONGARCH64";
+        let arch_type_enum: Arch = arch_type_str.parse().unwrap();
+        assert_eq!(arch_type_enum, Arch::ScmpArchLoongarch64);
+
+        let arch_type_str = "SCMP_ARCH_M68K";
+        let arch_type_enum: Arch = arch_type_str.parse().unwrap();
+        assert_eq!(arch_type_enum, Arch::ScmpArchM68k);
+
+        let arch_type_str = "SCMP_ARCH_SH";
+        let arch_type_enum: Arch = arch_type_str.parse().unwrap();
+        assert_eq!(arch_type_enum, Arch::ScmpArchSh);
+
+        let arch_type_str = "SCMP_ARCH_SHEB";
+        let arch_type_enum: Arch = arch_type_str.parse().unwrap();
+        assert_eq!(arch_type_enum, Arch::ScmpArchSheb);
 
         let invalid_arch_str = "x";
         let unknown_arch = invalid_arch_str.parse::<Arch>();
