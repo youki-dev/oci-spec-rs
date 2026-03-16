@@ -420,12 +420,11 @@ mod tests {
         assert!(
             !mounts.iter().any(|m| {
                 if m.destination().to_string_lossy() == "/dev/pts" {
-                    return m
-                        .options()
+                    m.options()
                         .clone()
                         .expect("options should not be empty")
                         .iter()
-                        .any(|o| o == "gid=5");
+                        .any(|o| o == "gid=5")
                 } else {
                     false
                 }
