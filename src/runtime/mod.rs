@@ -156,14 +156,30 @@ pub struct Spec {
     /// z/OS is platform-specific configuration for z/OS based containers.
     zos: Option<ZOS>,
 
+    #[deprecated(
+        since = "0.10.0",
+        note = "uid_mappings on the top-level Spec struct has never existed in the OCI runtime spec. Use Linux::uid_mappings or Mount::uid_mappings instead."
+    )]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// UID mappings used for changing file owners w/o calling chown, fs should support it.
     /// Every mount point could have its own mapping.
+    ///
+    /// # Deprecated
+    /// This field has never existed on the top-level `Spec` struct in the OCI runtime spec.
+    /// Use [`Linux::uid_mappings`] or [`Mount::uid_mappings`] instead.
     uid_mappings: Option<Vec<LinuxIdMapping>>,
 
+    #[deprecated(
+        since = "0.10.0",
+        note = "gid_mappings on the top-level Spec struct has never existed in the OCI runtime spec. Use Linux::gid_mappings or Mount::gid_mappings instead."
+    )]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// GID mappings used for changing file owners w/o calling chown, fs should support it.
     /// Every mount point could have its own mapping.
+    ///
+    /// # Deprecated
+    /// This field has never existed on the top-level `Spec` struct in the OCI runtime spec.
+    /// Use [`Linux::gid_mappings`] or [`Mount::gid_mappings`] instead.
     gid_mappings: Option<Vec<LinuxIdMapping>>,
 }
 
@@ -171,6 +187,7 @@ pub struct Spec {
 // Default::default(). The values given are similar to the defaults seen in
 // docker and runc, it creates a containerized shell! (see respective types
 // default impl for more info)
+#[allow(deprecated)]
 impl Default for Spec {
     fn default() -> Self {
         Spec {
@@ -464,7 +481,5 @@ mod tests {
         assert!(spec.process == spec_rootless.process);
         assert!(spec.root == spec_rootless.root);
         assert!(spec.hooks == spec_rootless.hooks);
-        assert!(spec.uid_mappings == spec_rootless.uid_mappings);
-        assert!(spec.gid_mappings == spec_rootless.gid_mappings);
     }
 }
