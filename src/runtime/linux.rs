@@ -378,9 +378,17 @@ pub struct LinuxMemory {
     /// Total memory limit (memory + swap).
     swap: Option<i64>,
 
+    #[deprecated(
+        note = "kernel-memory limits are not supported in cgroups v2, and were obsoleted in kernel v5.4"
+    )]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get_copy = "pub", set = "pub")]
     /// Kernel memory limit (in bytes).
+    ///
+    /// # Deprecated
+    ///
+    /// kernel-memory limits are not supported in cgroups v2,
+    /// and were obsoleted in kernel v5.4.
     kernel: Option<i64>,
 
     #[serde(skip_serializing_if = "Option::is_none", rename = "kernelTCP")]
@@ -1688,6 +1696,7 @@ impl Arbitrary for LinuxDeviceCgroup {
 
 #[cfg(feature = "proptests")]
 impl Arbitrary for LinuxMemory {
+    #[allow(deprecated)]
     fn arbitrary(g: &mut Gen) -> LinuxMemory {
         LinuxMemory {
             kernel: some_none_generator_util::<i64>(g),
