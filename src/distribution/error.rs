@@ -1,7 +1,6 @@
 //! Error types of the distribution spec.
 
-use crate::error::OciSpecError;
-use derive_builder::Builder;
+use bon::Builder;
 use getset::Getters;
 use serde::{Deserialize, Serialize};
 use std::fmt::{self, Display, Formatter};
@@ -48,11 +47,7 @@ pub enum ErrorCode {
 }
 
 #[derive(Builder, Clone, Debug, Deserialize, Eq, Error, Getters, PartialEq, Serialize)]
-#[builder(
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub")]
 /// ErrorResponse is returned by a registry on an invalid request.
 pub struct ErrorResponse {
@@ -74,11 +69,7 @@ impl ErrorResponse {
 }
 
 #[derive(Builder, Clone, Debug, Deserialize, Eq, Getters, PartialEq, Serialize)]
-#[builder(
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub")]
 /// Describes a server error returned from a registry.
 pub struct ErrorInfo {
@@ -87,13 +78,11 @@ pub struct ErrorInfo {
     code: ErrorCode,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[builder(default = "None")]
     /// The message field is OPTIONAL, and if present, it SHOULD be a human readable string or
     /// MAY be empty.
     message: Option<String>,
 
     #[serde(default, skip_serializing_if = "Option::is_none", with = "json_string")]
-    #[builder(default = "None")]
     /// The detail field is OPTIONAL and MAY contain arbitrary JSON data providing information
     /// the client can use to resolve the issue.
     detail: Option<String>,
@@ -142,61 +131,44 @@ mod json_string {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::error::Result;
 
     #[test]
-    fn error_response_success() -> Result<()> {
-        let response = ErrorResponseBuilder::default().errors(vec![]).build()?;
+    fn error_response_success() {
+        let response = ErrorResponse::builder().errors(vec![]).build();
         assert!(response.detail().is_empty());
         assert_eq!(response.to_string(), ERR_REGISTRY);
-        Ok(())
     }
 
     #[test]
-    fn error_response_failure() {
-        assert!(ErrorResponseBuilder::default().build().is_err());
-    }
-
-    #[test]
-    fn error_info_success() -> Result<()> {
-        let info = ErrorInfoBuilder::default()
-            .code(ErrorCode::BlobUnknown)
-            .build()?;
+    fn error_info_success() {
+        let info = ErrorInfo::builder().code(ErrorCode::BlobUnknown).build();
         assert_eq!(info.code(), &ErrorCode::BlobUnknown);
         assert!(info.message().is_none());
         assert!(info.detail().is_none());
-        Ok(())
     }
 
     #[test]
-    fn error_info_failure() {
-        assert!(ErrorInfoBuilder::default().build().is_err());
-    }
-
-    #[test]
-    fn error_info_serialize_success() -> Result<()> {
-        let error_info = ErrorInfoBuilder::default()
+    fn error_info_serialize_success() {
+        let error_info = ErrorInfo::builder()
             .code(ErrorCode::Unauthorized)
             .detail(String::from("{ \"key\": \"value\" }"))
-            .build()?;
+            .build();
 
         assert!(serde_json::to_string(&error_info).is_ok());
-        Ok(())
     }
 
     #[test]
-    fn error_info_serialize_failure() -> Result<()> {
-        let error_info = ErrorInfoBuilder::default()
+    fn error_info_serialize_failure() {
+        let error_info = ErrorInfo::builder()
             .code(ErrorCode::Unauthorized)
             .detail(String::from("abcd"))
-            .build()?;
+            .build();
 
         assert!(serde_json::to_string(&error_info).is_err());
-        Ok(())
     }
 
     #[test]
-    fn error_info_deserialize_success() -> Result<()> {
+    fn error_info_deserialize_success() {
         let error_info_str = r#"
         {
             "code": "MANIFEST_UNKNOWN",
@@ -206,9 +178,7 @@ mod tests {
             }
         }"#;
 
-        let error_info: ErrorInfo = serde_json::from_str(error_info_str)?;
+        let error_info: ErrorInfo = serde_json::from_str(error_info_str).unwrap();
         assert_eq!(error_info.detail().as_ref().unwrap(), "{\"Tag\":\"lates\"}");
-
-        Ok(())
     }
 }

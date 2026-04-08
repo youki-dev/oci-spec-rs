@@ -6,7 +6,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fmt::Display};
@@ -58,12 +58,7 @@ impl Display for ContainerState {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct State {
     /// version is the version of the specification that is supported.
@@ -138,12 +133,7 @@ pub const SECCOMP_FD_NAME: &str = "seccompFd";
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct ContainerProcessState {
     /// version is the version of the specification that is supported.
