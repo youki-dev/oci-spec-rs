@@ -1,5 +1,5 @@
 use crate::error::OciSpecError;
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{CopyGetters, Getters, Setters};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -18,12 +18,7 @@ use strum_macros::Display as StrumDisplay;
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// ZOS contains information for z/OS based containers.
 pub struct ZOS {
@@ -79,12 +74,7 @@ impl TryFrom<&str> for ZOSNamespaceType {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// ZOSNamespace is the configuration for a z/OS namespace.
 pub struct ZOSNamespace {
     #[serde(rename = "type")]
