@@ -277,6 +277,17 @@ pub struct IntelRdt {
     /// "enabled" field represents whether Intel RDT support is compiled in.
     /// Unrelated to whether the host supports Intel RDT or not.
     enabled: Option<bool>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// Schemata is true if the "linux.intelRdt.schemata" field of the
+    /// spec is implemented.
+    schemata: Option<bool>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// Monitoring is true if the "linux.intelRdt.enableMonitoring" field of the
+    /// spec is implemented.
+    /// Nil value means "unknown", not "false".
+    monitoring: Option<bool>,
 }
 
 /// MemoryPolicy represents the "memoryPolicy" field.
@@ -852,7 +863,9 @@ mod tests {
         assert_eq!(
             linux.intel_rdt.as_ref().unwrap(),
             &IntelRdt {
-                enabled: Some(true)
+                enabled: Some(true),
+                schemata: None,
+                monitoring: None,
             }
         );
 
