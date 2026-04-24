@@ -1453,13 +1453,13 @@ pub struct LinuxIntelRdt {
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// The schema for L3 cache id and capacity bitmask (CBM).
-    /// Format: "L3:<cache_id0>=<cbm0>;<cache_id1>=<cbm1>;..."
+    /// Format: "L3:&lt;cache_id0&gt;=&lt;cbm0&gt;;&lt;cache_id1&gt;=&lt;cbm1&gt;;..."
     /// NOTE: Should not be specified if Schemata is non-empty.
     l3_cache_schema: Option<String>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// The schema of memory bandwidth per L3 cache id.
-    /// Format: "MB:<cache_id0>=bandwidth0;<cache_id1>=bandwidth1;..."
+    /// Format: "MB:&lt;cache_id0&gt;=bandwidth0;&lt;cache_id1&gt;=bandwidth1;..."
     /// The unit of memory bandwidth is specified in "percentages" by
     /// default, and in "MBps" if MBA Software Controller is
     /// enabled.
