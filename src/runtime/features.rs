@@ -287,7 +287,7 @@ pub struct IntelRdt {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// Monitoring is true if the "linux.intelRdt.enableMonitoring" field of the
     /// spec is implemented.
-    /// Nil value means "unknown", not "false".
+    /// None value means "unknown", not "false".
     monitoring: Option<bool>,
 }
 
