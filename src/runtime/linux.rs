@@ -1466,6 +1466,32 @@ pub struct LinuxIntelRdt {
     /// NOTE: Should not be specified if Schemata is non-empty.
     mem_bw_schema: Option<String>,
 
+    #[deprecated(
+        since = "0.10.0",
+        note = "enable_cmt is deprecated in runtime-spec v1.3.0. Use enable_monitoring instead."
+    )]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// EnableCMT is the flag to indicate if the Intel RDT CMT is enabled. CMT (Cache Monitoring Technology) supports monitoring of
+    /// the last-level cache (LLC) occupancy for the container.
+    ///
+    /// # Deprecated
+    /// This field is deprecated in runtime-spec v1.3.0.
+    /// Use `enable_monitoring` instead.
+    enable_cmt: Option<bool>,
+
+    #[deprecated(
+        since = "0.10.0",
+        note = "enable_mbm is deprecated in runtime-spec v1.3.0. Use enable_monitoring instead."
+    )]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// EnableMBM is the flag to indicate if the Intel RDT MBM is enabled. MBM (Memory Bandwidth Monitoring) supports monitoring of
+    /// total and local memory bandwidth for the container.
+    ///
+    /// # Deprecated
+    /// This field is deprecated in runtime-spec v1.3.0.
+    /// Use `enable_monitoring` instead.
+    enable_mbm: Option<bool>,
+
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// EnableMonitoring enables resctrl monitoring for the container. This will
     /// create a dedicated resctrl monitoring group for the container.
