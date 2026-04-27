@@ -65,7 +65,7 @@ fn to_string<T: Serialize>(item: &T, pretty: bool) -> Result<String> {
     })
 }
 
-// A generic helper for any Option containing a collection (Vec, HashMap, String ...etc).
+// A generic helper for any Option containing a collection whose reference implements `IntoIterator` (e.g., Vec, HashMap).
 fn is_none_or_empty<C>(opt: &Option<C>) -> bool
 where
     for<'a> &'a C: IntoIterator,
