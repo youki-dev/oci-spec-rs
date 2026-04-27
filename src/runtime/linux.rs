@@ -1,4 +1,5 @@
 use crate::error::{oci_error, OciSpecError};
+use crate::is_none_or_empty;
 
 use derive_builder::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
@@ -1444,7 +1445,7 @@ pub struct LinuxIntelRdt {
     /// The identity for RDT Class of Service.
     clos_id: Option<String>,
 
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "is_none_or_empty")]
     /// Schemata specifies the complete schemata to be written as is to the
     /// schemata file in resctrl fs. Each element represents a single line in the schemata file.
     /// NOTE: This will overwrite schemas specified in the L3CacheSchema and/or
