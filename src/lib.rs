@@ -64,3 +64,11 @@ fn to_string<T: Serialize>(item: &T, pretty: bool) -> Result<String> {
         false => serde_json::to_string(item)?,
     })
 }
+
+// A generic helper for any Option containing a collection (Vec, HashMap, String ...etc).
+fn is_none_or_empty<C>(opt: &Option<C>) -> bool
+where
+    for<'a> &'a C: IntoIterator,
+{
+    opt.as_ref().is_none_or(|c| c.into_iter().next().is_none())
+}
