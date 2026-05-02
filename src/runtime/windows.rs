@@ -1,5 +1,4 @@
-use crate::error::OciSpecError;
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{CopyGetters, Getters, Setters};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -18,12 +17,7 @@ use std::collections::HashMap;
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// Windows defines the runtime configuration for Windows based containers,
 /// including Hyper-V containers.
 pub struct Windows {
@@ -79,12 +73,7 @@ pub struct Windows {
     Builder, Clone, Debug, Default, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// WindowsDevice represents information about a host device to be mapped
 /// into the container.
@@ -99,12 +88,7 @@ pub struct WindowsDevice {
 #[derive(
     Builder, Clone, Copy, Debug, Default, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// Available windows resources.
 pub struct WindowsResources {
@@ -124,12 +108,7 @@ pub struct WindowsResources {
 #[derive(
     Builder, Clone, Copy, Debug, Default, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// WindowsMemoryResources contains memory resource management settings.
 pub struct WindowsMemoryResources {
@@ -141,12 +120,7 @@ pub struct WindowsMemoryResources {
 #[derive(
     Builder, Clone, Copy, Debug, Default, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// WindowsCPUResources contains CPU resource management settings.
 pub struct WindowsCPUResources {
@@ -168,12 +142,7 @@ pub struct WindowsCPUResources {
     Builder, Clone, Copy, Debug, Default, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// WindowsStorageResources contains storage resource management settings.
 pub struct WindowsStorageResources {
@@ -195,12 +164,7 @@ pub struct WindowsStorageResources {
     Builder, Clone, Debug, Default, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// WindowsHyperV contains information for configuring a container to run
 /// with Hyper-V isolation.
@@ -215,12 +179,7 @@ pub struct WindowsHyperV {
     Builder, Clone, Debug, Default, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// WindowsNetwork contains network settings for Windows containers.
 pub struct WindowsNetwork {
     #[serde(default, skip_serializing_if = "Option::is_none")]

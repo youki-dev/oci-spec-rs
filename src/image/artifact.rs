@@ -1,6 +1,6 @@
 use super::{Descriptor, MediaType};
-use crate::error::{OciSpecError, Result};
-use derive_builder::Builder;
+use crate::error::Result;
+use bon::Builder;
 use getset::{Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -13,19 +13,14 @@ use std::{
     Builder, Clone, Debug, Deserialize, Eq, Getters, MutGetters, Setters, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// The OCI Artifact manifest describes content addressable artifacts
 /// in order to store them along side container images in a registry.
 pub struct ArtifactManifest {
     /// This property MUST be used and contain the media type
     /// `application/vnd.oci.artifact.manifest.v1+json`.
     #[getset(get = "pub")]
-    #[builder(default = "MediaType::ArtifactManifest")]
-    #[builder(setter(skip))]
+    #[builder(skip = MediaType::ArtifactManifest)]
     media_type: MediaType,
 
     /// This property SHOULD be used and contain
@@ -49,7 +44,6 @@ pub struct ArtifactManifest {
     /// to the specified manifest.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     subject: Option<Descriptor>,
 
     /// This OPTIONAL property contains additional metadata for the artifact
@@ -58,7 +52,6 @@ pub struct ArtifactManifest {
     /// the response from the referrers API.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get_mut = "pub", get = "pub", set = "pub")]
-    #[builder(default)]
     annotations: Option<HashMap<String, String>>,
 }
 
@@ -216,7 +209,7 @@ impl ArtifactManifest {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::image::{DescriptorBuilder, Sha256Digest};
+    use crate::image::Sha256Digest;
     use std::{path::PathBuf, str::FromStr};
 
     fn get_manifest_path() -> PathBuf {
@@ -224,7 +217,7 @@ mod tests {
     }
 
     fn create_manifest() -> ArtifactManifest {
-        let blob = DescriptorBuilder::default()
+        let blob = Descriptor::builder()
             .media_type(MediaType::Other("application/gzip".to_string()))
             .size(123u64)
             .digest(
@@ -233,9 +226,8 @@ mod tests {
                 )
                 .unwrap(),
             )
-            .build()
-            .unwrap();
-        let subject = DescriptorBuilder::default()
+            .build();
+        let subject = Descriptor::builder()
             .media_type(MediaType::ImageManifest)
             .size(1234u64)
             .digest(
@@ -244,8 +236,7 @@ mod tests {
                 )
                 .unwrap(),
             )
-            .build()
-            .unwrap();
+            .build();
         let annotations = HashMap::from([
             (
                 "org.opencontainers.artifact.created".to_string(),
@@ -253,7 +244,7 @@ mod tests {
             ),
             ("org.example.sbom.format".to_string(), "json".to_string()),
         ]);
-        ArtifactManifestBuilder::default()
+        ArtifactManifest::builder()
             .artifact_type(MediaType::Other(
                 "application/vnd.example.sbom.v1".to_string(),
             ))
@@ -261,7 +252,6 @@ mod tests {
             .subject(subject)
             .annotations(annotations)
             .build()
-            .unwrap()
     }
 
     #[test]

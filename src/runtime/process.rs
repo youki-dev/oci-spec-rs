@@ -2,7 +2,7 @@ use crate::{
     error::OciSpecError,
     runtime::{Capabilities, Capability},
 };
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use regex::Regex;
 use serde::{de, Deserialize, Deserializer, Serialize};
@@ -24,12 +24,7 @@ use strum_macros::{Display as StrumDisplay, EnumString};
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// Process contains information to start a specific application inside the
 /// container.
 pub struct Process {
@@ -44,6 +39,7 @@ pub struct Process {
     console_size: Option<Box>,
 
     #[getset(get_mut = "pub", get = "pub", set = "pub")]
+    #[builder(default)]
     /// User specifies user information for the process.
     user: User,
 
@@ -171,21 +167,18 @@ impl Default for Process {
 #[derive(
     Builder, Clone, Copy, CopyGetters, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// Box specifies dimensions of a rectangle. Used for specifying the size of
 /// a console.
 pub struct Box {
     #[serde(default)]
+    #[builder(default)]
     /// Height is the vertical dimension of a box.
     height: u64,
 
     #[serde(default)]
+    #[builder(default)]
     /// Width is the horizontal dimension of a box.
     width: u64,
 }
@@ -256,12 +249,7 @@ pub enum PosixRlimitType {
 #[derive(
     Builder, Clone, Copy, CopyGetters, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// RLimit types and restrictions.
 pub struct PosixRlimit {
@@ -293,21 +281,18 @@ pub struct PosixRlimit {
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// User id (uid) and group id (gid) tracks file permissions.
 pub struct User {
     #[serde(default)]
     #[getset(get_mut = "pub", get_copy = "pub", set = "pub")]
+    #[builder(default)]
     /// UID is the user id.
     uid: u32,
 
     #[serde(default)]
     #[getset(get_mut = "pub", get_copy = "pub", set = "pub")]
+    #[builder(default)]
     /// GID is the group id.
     gid: u32,
 
@@ -329,12 +314,7 @@ pub struct User {
 }
 
 #[derive(Builder, Clone, Debug, Deserialize, Getters, Setters, Eq, PartialEq, Serialize)]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// LinuxCapabilities specifies the list of allowed capabilities that are
 /// kept for a process. <http://man7.org/linux/man-pages/man7/capabilities.7.html>
@@ -385,20 +365,17 @@ impl Default for LinuxCapabilities {
 #[derive(
     Builder, Clone, Copy, CopyGetters, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_copy = "pub", set = "pub")]
 /// RLimit types and restrictions.
 pub struct LinuxIOPriority {
     #[serde(default)]
+    #[builder(default)]
     /// Class represents an I/O scheduling class.
     class: IOPriorityClass,
 
     #[serde(default)]
+    #[builder(default)]
     /// Priority for the io operation
     priority: i64,
 }
@@ -434,16 +411,12 @@ pub enum IOPriorityClass {
 }
 
 #[derive(Builder, Clone, Debug, Deserialize, Getters, Setters, Eq, PartialEq, Serialize)]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// Scheduler represents the scheduling attributes for a process. It is based on
 /// the Linux sched_setattr(2) syscall.
 pub struct Scheduler {
+    #[builder(default)]
     /// Policy represents the scheduling policy (e.g., SCHED_FIFO, SCHED_RR, SCHED_OTHER).
     policy: LinuxSchedulerPolicy,
 
@@ -548,12 +521,7 @@ impl Default for LinuxSchedulerFlag {
 #[derive(
     Builder, Clone, Debug, Default, Deserialize, Getters, Setters, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(validate = "Self::validate", error = "OciSpecError")
-)]
+#[builder(on(_, into), finish_fn = __build)]
 #[getset(get = "pub", set = "pub")]
 /// ExecCPUAffinity specifies CPU affinity used to execute the process.
 /// This setting is not applicable to the container's init process.
@@ -582,17 +550,26 @@ pub struct ExecCPUAffinity {
     cpu_affinity_final: Option<String>,
 }
 
-impl ExecCPUAffinityBuilder {
+impl ExecCPUAffinity {
     fn validate(&self) -> Result<(), OciSpecError> {
-        if let Some(Some(ref s)) = self.initial {
+        if let Some(ref s) = self.initial {
             validate_cpu_affinity(s).map_err(|e| OciSpecError::Other(e.to_string()))?;
         }
 
-        if let Some(Some(ref s)) = self.cpu_affinity_final {
+        if let Some(ref s) = self.cpu_affinity_final {
             validate_cpu_affinity(s).map_err(|e| OciSpecError::Other(e.to_string()))?;
         }
 
         Ok(())
+    }
+}
+
+impl<S: exec_c_p_u_affinity_builder::IsComplete> ExecCPUAffinityBuilder<S> {
+    /// Finishes building and validates the CPU affinity fields.
+    pub fn build(self) -> Result<ExecCPUAffinity, OciSpecError> {
+        let result = self.__build();
+        result.validate()?;
+        Ok(result)
     }
 }
 
@@ -719,7 +696,7 @@ mod tests {
 
     #[test]
     fn test_build_valid_input() {
-        let affinity = ExecCPUAffinityBuilder::default()
+        let affinity = ExecCPUAffinity::builder()
             .initial("0-3,7,8,9,10".to_string())
             .cpu_affinity_final("4-6,8".to_string())
             .build();
@@ -731,14 +708,14 @@ mod tests {
 
     #[test]
     fn test_build_invalid_initial() {
-        let affinity = ExecCPUAffinityBuilder::default()
+        let affinity = ExecCPUAffinity::builder()
             .initial("0-3,i".to_string())
             .cpu_affinity_final("4-6,8".to_string())
             .build();
         let err = affinity.unwrap_err();
         assert_eq!(err.to_string(), "Invalid execCPUAffinity format: 0-3,i");
 
-        let affinity = ExecCPUAffinityBuilder::default()
+        let affinity = ExecCPUAffinity::builder()
             .initial("-".to_string())
             .cpu_affinity_final("4-6,8".to_string())
             .build();
@@ -748,14 +725,14 @@ mod tests {
 
     #[test]
     fn test_build_invalid_final() {
-        let affinity = ExecCPUAffinityBuilder::default()
+        let affinity = ExecCPUAffinity::builder()
             .initial("0-3,7".to_string())
             .cpu_affinity_final("0-l1".to_string())
             .build();
         let err = affinity.unwrap_err();
         assert_eq!(err.to_string(), "Invalid execCPUAffinity format: 0-l1");
 
-        let affinity = ExecCPUAffinityBuilder::default()
+        let affinity = ExecCPUAffinity::builder()
             .initial("0-3,7".to_string())
             .cpu_affinity_final(",1,2".to_string())
             .build();
@@ -765,7 +742,7 @@ mod tests {
 
     #[test]
     fn test_build_empty() {
-        let affinity = ExecCPUAffinityBuilder::default().build();
+        let affinity = ExecCPUAffinity::builder().build();
         let affinity = affinity.unwrap();
         assert!(affinity.initial.is_none());
         assert!(affinity.cpu_affinity_final.is_none());

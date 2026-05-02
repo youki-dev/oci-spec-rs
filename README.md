@@ -40,21 +40,18 @@ assert_eq!(image_manifest.layers().len(), 5);
 ```rust no_run
 use std::str::FromStr;
 use oci_spec::image::{
-    Descriptor, 
-    DescriptorBuilder, 
-    ImageManifest, 
-    ImageManifestBuilder, 
+    Descriptor,
+    ImageManifest,
     MediaType, 
     Sha256Digest,
     SCHEMA_VERSION
 };
 
-let config = DescriptorBuilder::default()
+let config = Descriptor::builder()
             .media_type(MediaType::ImageConfig)
             .size(7023u64)
             .digest(Sha256Digest::from_str("b5b2b2c507a0944348e0303114d8d93aaaa081732b86451d9bce1f432a537bc7").unwrap())
-            .build()
-            .expect("build config descriptor");
+            .build();
 
 let layers: Vec<Descriptor> = [
     (
@@ -72,21 +69,19 @@ let layers: Vec<Descriptor> = [
 ]
     .iter()
     .map(|l| {
-    DescriptorBuilder::default()
+    Descriptor::builder()
         .media_type(MediaType::ImageLayerGzip)
         .size(l.0)
         .digest(Sha256Digest::from_str(l.1).unwrap())
         .build()
-        .expect("build layer")
     })
     .collect();
 
-let image_manifest = ImageManifestBuilder::default()
+let image_manifest = ImageManifest::builder()
     .schema_version(SCHEMA_VERSION)
     .config(config)
     .layers(layers)
-    .build()
-    .expect("build image manifest");
+    .build();
 
 image_manifest.to_file_pretty("my-manifest.json").unwrap();
 ```
@@ -123,11 +118,11 @@ image_manifest.to_file_pretty("my-manifest.json").unwrap();
 ## Distribution Spec Examples
 - Create a list of repositories 
 ```rust
-use oci_spec::distribution::RepositoryListBuilder;
+use oci_spec::distribution::RepositoryList;
 
-let list = RepositoryListBuilder::default()
+let list = RepositoryList::builder()
             .repositories(vec!["busybox".to_owned()])
-            .build().unwrap();
+            .build();
 ```
 
 # Contributing

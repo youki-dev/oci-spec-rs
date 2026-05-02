@@ -1,6 +1,5 @@
 use super::{Arch, Digest, MediaType, Os};
-use crate::error::OciSpecError;
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{CopyGetters, Getters, Setters};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -9,11 +8,7 @@ use std::collections::HashMap;
     Builder, Clone, CopyGetters, Debug, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// A Content Descriptor (or simply Descriptor) describes the disposition of
 /// the targeted content. It includes the type of the content, a content
 /// identifier (digest), and the byte-size of the raw content.
@@ -44,21 +39,18 @@ pub struct Descriptor {
     /// in [RFC 7230](https://tools.ietf.org/html/rfc7230#section-2.7).
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     urls: Option<Vec<String>>,
     /// This OPTIONAL property contains arbitrary metadata for this
     /// descriptor. This OPTIONAL property MUST use the annotation
     /// rules.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     annotations: Option<HashMap<String, String>>,
     /// This OPTIONAL property describes the minimum runtime requirements of
     /// the image. This property SHOULD be present if its target is
     /// platform-specific.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     platform: Option<Platform>,
     /// This OPTIONAL property contains the type of an artifact when the descriptor points to an
     /// artifact. This is the value of the config descriptor mediaType when the descriptor
@@ -66,7 +58,6 @@ pub struct Descriptor {
     /// the naming requirements in its section 4.2, and MAY be registered with IANA.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     artifact_type: Option<MediaType>,
     /// This OPTIONAL property contains an embedded representation of the referenced content.
     /// Values MUST conform to the Base 64 encoding, as defined in RFC 4648. The decoded data MUST
@@ -74,18 +65,13 @@ pub struct Descriptor {
     /// fields by content consumers. See Embedded Content for when this is appropriate.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     data: Option<String>,
 }
 
 #[derive(
     Builder, Clone, Debug, Default, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
-#[builder(
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// Describes the minimum runtime requirements of the image.
 pub struct Platform {
@@ -103,7 +89,6 @@ pub struct Platform {
     /// version. Valid values are implementation-defined. e.g.
     /// 10.0.14393.1066 on windows.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[builder(default)]
     os_version: Option<String>,
     /// This OPTIONAL property specifies an array of strings, each
     /// specifying a mandatory OS feature. When os is windows, image
@@ -115,7 +100,6 @@ pub struct Platform {
     /// When os is not windows, values are implementation-defined and SHOULD
     /// be submitted to this specification for standardization.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[builder(default)]
     os_features: Option<Vec<String>>,
     /// This OPTIONAL property specifies the variant of the CPU.
     /// Image indexes SHOULD use, and implementations SHOULD understand,
@@ -123,11 +107,9 @@ pub struct Platform {
     /// (<https://github.com/opencontainers/image-spec/blob/main/image-index.md#platform-variants>)
     /// table.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[builder(default)]
     variant: Option<String>,
     /// This property is RESERVED for future versions of the specification.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[builder(default)]
     features: Option<Vec<String>>,
 }
 
