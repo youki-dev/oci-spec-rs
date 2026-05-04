@@ -102,7 +102,7 @@ pub struct Platform {
     /// manifests where os.version is not known to work with the host OS
     /// version. Valid values are implementation-defined. e.g.
     /// 10.0.14393.1066 on windows.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "os.version", skip_serializing_if = "Option::is_none")]
     #[builder(default)]
     os_version: Option<String>,
     /// This OPTIONAL property specifies an array of strings, each
