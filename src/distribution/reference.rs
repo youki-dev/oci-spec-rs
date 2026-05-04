@@ -1,8 +1,6 @@
 use std::fmt;
 use std::str::FromStr;
-use std::{convert::TryFrom, sync::OnceLock};
 
-use regex::{Regex, RegexBuilder};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -13,19 +11,6 @@ const DOCKER_HUB_DOMAIN_LEGACY: &str = "index.docker.io";
 const DOCKER_HUB_DOMAIN: &str = "docker.io";
 const DOCKER_HUB_OFFICIAL_REPO_NAME: &str = "library";
 const DEFAULT_TAG: &str = "latest";
-/// REFERENCE_REGEXP is the full supported format of a reference. The regexp
-/// is anchored and has capturing groups for name, tag, and digest components.
-const REFERENCE_REGEXP: &str = r"^((?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])(?:(?:\.(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]))+)?(?::[0-9]+)?/)?[a-z0-9]+(?:(?:(?:[._]|__|[-]*)[a-z0-9]+)+)?(?:(?:/[a-z0-9]+(?:(?:(?:[._]|__|[-]*)[a-z0-9]+)+)?)+)?)(?::([\w][\w.-]{0,127}))?(?:@([A-Za-z][A-Za-z0-9]*(?:[-_+.][A-Za-z][A-Za-z0-9]*)*[:][[:xdigit:]]{32,}))?$";
-
-fn reference_regexp() -> &'static Regex {
-    static RE: OnceLock<Regex> = OnceLock::new();
-    RE.get_or_init(|| {
-        RegexBuilder::new(REFERENCE_REGEXP)
-            .size_limit(10 * (1 << 21))
-            .build()
-            .unwrap()
-    })
-}
 
 /// Reasons that parsing a string as a Reference can fail.
 #[derive(Debug, Error, PartialEq, Eq)]
@@ -267,52 +252,42 @@ impl TryFrom<&str> for Reference {
         if s.is_empty() {
             return Err(ParseError::NameEmpty);
         }
-        let captures = match reference_regexp().captures(s) {
-            Some(caps) => caps,
-            None => {
-                return Err(ParseError::ReferenceInvalidFormat);
-            }
-        };
-        let name = &captures[1];
-        let mut tag = captures.get(2).map(|m| m.as_str().to_owned());
-        let digest = captures.get(3).map(|m| m.as_str().to_owned());
-        if tag.is_none() && digest.is_none() {
-            tag = Some(DEFAULT_TAG.into());
+        // A bare ':' or '@' prefix has no name component.
+        if s.starts_with(':') || s.starts_with('@') {
+            return Err(ParseError::ReferenceInvalidFormat);
         }
-        let (registry, repository) = split_domain(name);
-        let reference = Reference {
-            registry,
-            mirror_registry: None,
-            repository,
-            tag,
-            digest,
+
+        // Extract the digest (`@<algo>:<hex>`).
+        let (name_and_tag, digest) = match s.split_once('@') {
+            Some((n, d)) => (n, Some(d)),
+            None => (s, None),
         };
-        if reference.repository().len() > NAME_TOTAL_LENGTH_MAX {
+
+        // Extract the tag.
+        let (name, tag) = split_name_tag(name_and_tag);
+
+        // Get registry / repository.
+        let (registry, repository) = split_domain(name);
+
+        // Length check (repository only).
+        if repository.len() > NAME_TOTAL_LENGTH_MAX {
             return Err(ParseError::NameTooLong);
         }
-        // Digests much always be hex-encoded, ensuring that their hex portion will always be
-        // size*2
-        if let Some(digest) = reference.digest() {
-            match digest.split_once(':') {
-                None => return Err(ParseError::DigestInvalidFormat),
-                Some(("sha256", digest)) => {
-                    if digest.len() != 64 {
-                        return Err(ParseError::DigestInvalidLength);
-                    }
-                }
-                Some(("sha384", digest)) => {
-                    if digest.len() != 96 {
-                        return Err(ParseError::DigestInvalidLength);
-                    }
-                }
-                Some(("sha512", digest)) => {
-                    if digest.len() != 128 {
-                        return Err(ParseError::DigestInvalidLength);
-                    }
-                }
-                Some((_, _)) => return Err(ParseError::DigestUnsupported),
-            }
+
+        // Character validation.
+        validate_repository(&repository)?;
+        if let Some(d) = digest {
+            validate_digest(d)?;
         }
+
+        let reference = match (tag, digest) {
+            (Some(t), Some(d)) => {
+                Reference::with_tag_and_digest(registry, repository, t.to_owned(), d.to_owned())
+            }
+            (Some(t), None) => Reference::with_tag(registry, repository, t.to_owned()),
+            (None, Some(d)) => Reference::with_digest(registry, repository, d.to_owned()),
+            (None, None) => Reference::with_tag(registry, repository, DEFAULT_TAG.to_owned()),
+        };
         Ok(reference)
     }
 }
@@ -363,6 +338,55 @@ fn split_domain(name: &str) -> (String, String) {
     }
 
     (domain, remainder)
+}
+
+/// Split `name[:tag]` into `(name, Option<tag>)`.
+///
+/// A `:` is treated as a tag separator only when it appears after the last `/`
+/// (or when there is no `/`), so that `host:port/repo` is parsed correctly.
+fn split_name_tag(s: &str) -> (&str, Option<&str>) {
+    let last_slash = s.rfind('/');
+    let last_colon = s.rfind(':');
+    match (last_slash, last_colon) {
+        (_, None) => (s, None),
+        (None, Some(c)) => (&s[..c], Some(&s[c + 1..])),
+        (Some(sl), Some(c)) if c > sl => (&s[..c], Some(&s[c + 1..])),
+        _ => (s, None), // colon belongs to host:port — not a tag
+    }
+}
+
+/// Validate that every path component of the repository contains only `[a-z0-9._-]`.
+fn validate_repository(repo: &str) -> Result<(), ParseError> {
+    repo.split('/').try_for_each(|component| {
+        if !component.is_empty() {
+            component.chars().try_for_each(validate_component_char)
+        } else {
+            Err(ParseError::ReferenceInvalidFormat)
+        }
+    })
+}
+
+fn validate_component_char(c: char) -> Result<(), ParseError> {
+    if c.is_ascii_uppercase() {
+        Err(ParseError::NameContainsUppercase)
+    } else if !c.is_ascii_alphanumeric() && c != '.' && c != '_' && c != '-' {
+        Err(ParseError::ReferenceInvalidFormat)
+    } else {
+        Ok(())
+    }
+}
+
+/// Validate a digest string of the form `<algorithm>:<hex>`.
+fn validate_digest(digest: &str) -> Result<(), ParseError> {
+    use ParseError::*;
+    match digest.split_once(':') {
+        Some(("sha256", hex)) if hex.len() == 64 => Ok(()),
+        Some(("sha384", hex)) if hex.len() == 96 => Ok(()),
+        Some(("sha512", hex)) if hex.len() == 128 => Ok(()),
+        Some(("sha256", _)) | Some(("sha384", _)) | Some(("sha512", _)) => Err(DigestInvalidLength),
+        Some(_) => Err(DigestUnsupported),
+        None => Err(DigestInvalidFormat),
+    }
 }
 
 #[cfg(test)]
@@ -418,13 +442,11 @@ mod test {
             case("@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", ParseError::ReferenceInvalidFormat),
             case("repo@sha256:ffffffffffffffffffffffffffffffffff", ParseError::DigestInvalidLength),
             case("validname@invaliddigest:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", ParseError::DigestUnsupported),
-            // FIXME: should really pass a ParseError::NameContainsUppercase, but "invalid format" is good enough for now.
-            case("Uppercase:tag", ParseError::ReferenceInvalidFormat),
+            case("Uppercase:tag", ParseError::NameContainsUppercase),
             // FIXME: "Uppercase" is incorrectly handled as a domain-name here, and therefore passes.
             // https://github.com/docker/distribution/blob/master/reference/reference_test.go#L104-L109
             // case("Uppercase/lowercase:tag", ParseError::NameContainsUppercase),
-            // FIXME: should really pass a ParseError::NameContainsUppercase, but "invalid format" is good enough for now.
-            case("test:5000/Uppercase/lowercase:tag", ParseError::ReferenceInvalidFormat),
+            case("test:5000/Uppercase/lowercase:tag", ParseError::NameContainsUppercase),
             case("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ParseError::NameTooLong),
             case("aa/asdf$$^/aa", ParseError::ReferenceInvalidFormat)
         )]
