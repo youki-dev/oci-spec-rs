@@ -333,10 +333,10 @@ impl Display for LinuxDeviceCgroup {
         write!(
             f,
             "{} {}:{} {}",
-            &self.typ.unwrap_or_default().as_str(),
-            &major,
-            &minor,
-            &access
+            self.typ.unwrap_or_default().as_str(),
+            major,
+            minor,
+            access
         )
     }
 }
