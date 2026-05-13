@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["and_then","err","map","map_err","ok","or_else","unwrap_ctx","unwrap_err_or_else","unwrap_or","unwrap_or_else"]};

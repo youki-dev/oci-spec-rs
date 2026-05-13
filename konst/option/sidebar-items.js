@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["copied"],"macro":["and_then","filter","flatten","map","ok_or","ok_or_else","or_else","unwrap","unwrap_or","unwrap_or_else"],"struct":["NONE"]};
