@@ -40,6 +40,21 @@ impl Default for Root {
     }
 }
 
+#[bon::bon]
+impl Root {
+    #[builder(finish_fn(name=build_root))]
+    /// Root Builder using bon
+    pub fn root_builder<P>(path: P, readonly: Option<bool>) -> Self
+    where
+        P: Into<std::path::PathBuf>,
+    {
+        Self {
+            path: path.into(),
+            readonly,
+        }
+    }
+}
+
 #[derive(
     Builder,
     Clone,
@@ -109,6 +124,167 @@ pub struct Mount {
     ///
     /// See: <https://github.com/opencontainers/runtime-spec/blob/main/config.md#posix-platform-mounts>
     gid_mappings: Option<Vec<LinuxIdMapping>>,
+}
+
+#[bon::bon]
+impl Mount {
+    #[builder]
+    /// Mount Builder using bon
+    pub fn mount_builder(
+        #[builder(field)] options: Option<Vec<String>>,
+        #[builder(field)] uid_mappings: Option<Vec<LinuxIdMapping>>,
+        #[builder(field)] gid_mappings: Option<Vec<LinuxIdMapping>>,
+        #[builder(into)] destination: PathBuf,
+        #[builder(into)] typ: Option<String>,
+        #[builder(into)] source: Option<PathBuf>,
+    ) -> Self {
+        Self {
+            destination,
+            typ,
+            source,
+            options,
+            uid_mappings,
+            gid_mappings,
+        }
+    }
+}
+
+#[bon::bon]
+impl MountMountBuilderBuilder {
+    #[builder(finish_fn(name = build_options))]
+    /// Mount Options builder using bon
+    pub fn options_builder(mut self, #[builder(field)] options: Vec<String>) -> Self {
+        self.options = Some(options);
+        self
+    }
+
+    #[builder(finish_fn(name = build_uid_mappings))]
+    /// Mount UID Mappings builder using bon
+    pub fn uid_mappings_builder(
+        mut self,
+        #[builder(field)] uid_mappings: Vec<LinuxIdMapping>,
+    ) -> Self {
+        self.uid_mappings = Some(uid_mappings);
+        self
+    }
+
+    #[builder(finish_fn(name = build_gid_mappings))]
+    /// Mount GID Mappings builder using bon
+    pub fn gid_mappings_builder(
+        mut self,
+        #[builder(field)] gid_mappings: Vec<LinuxIdMapping>,
+    ) -> Self {
+        self.gid_mappings = Some(gid_mappings);
+        self
+    }
+
+    /// Set options directly with no builder
+    pub fn options(mut self, options: impl IntoIterator<Item: Into<String>>) -> Self {
+        self.options = Some(options.into_iter().map(Into::into).collect());
+        self
+    }
+
+    /// Set uid mappings directly with no builder
+    pub fn uid_mappings(
+        mut self,
+        uid_mappings: impl IntoIterator<Item: Into<LinuxIdMapping>>,
+    ) -> Self {
+        self.uid_mappings = Some(uid_mappings.into_iter().map(Into::into).collect());
+        self
+    }
+
+    /// Set gid mappings directly with no builder
+    pub fn gid_mappings(
+        mut self,
+        gid_mappings: impl IntoIterator<Item: Into<LinuxIdMapping>>,
+    ) -> Self {
+        self.gid_mappings = Some(gid_mappings.into_iter().map(Into::into).collect());
+        self
+    }
+}
+
+impl MountMountBuilderBuilderOptionsBuilderBuilder {
+    /// Mount builder fn to add just one option to the vec of options
+    pub fn add_option(mut self, option: impl Into<String>) -> Self {
+        self.options.push(option.into());
+        self
+    }
+
+    /// Mount builder fn to add vec of options together
+    pub fn add_options(mut self, options: impl IntoIterator<Item: Into<String>>) -> Self {
+        self.options.extend(options.into_iter().map(Into::into));
+        self
+    }
+}
+
+impl MountMountBuilderBuilderUidMappingsBuilderBuilder {
+    /// UidMappingsBuilder with direct host_id container_id and size values
+    pub fn with_hostid_containerid_and_size(
+        mut self,
+        host_id: u32,
+        container_id: u32,
+        size: u32,
+    ) -> Self {
+        self.uid_mappings.push(
+            LinuxIdMapping::idmapping_builder()
+                .host_id(host_id)
+                .container_id(container_id)
+                .size(size)
+                .build_idmapping(),
+        );
+        self
+    }
+
+    /// UidMappingBuilder to add just one option to vec of uid mappings
+    pub fn add_id_mapping(mut self, id_mapping: impl Into<LinuxIdMapping>) -> Self {
+        self.uid_mappings.push(id_mapping.into());
+        self
+    }
+
+    /// UidMappingBuilder to add vec of uid mappings together
+    pub fn add_id_mappings(
+        mut self,
+        id_mappings: impl IntoIterator<Item: Into<LinuxIdMapping>>,
+    ) -> Self {
+        self.uid_mappings
+            .extend(id_mappings.into_iter().map(Into::into));
+        self
+    }
+}
+
+impl MountMountBuilderBuilderGidMappingsBuilderBuilder {
+    /// GidMappingsBuilder with direct host_id container_id and size values
+    pub fn with_hostid_containerid_and_size(
+        mut self,
+        host_id: u32,
+        container_id: u32,
+        size: u32,
+    ) -> Self {
+        self.gid_mappings.push(
+            LinuxIdMapping::idmapping_builder()
+                .host_id(host_id)
+                .container_id(container_id)
+                .size(size)
+                .build_idmapping(),
+        );
+        self
+    }
+
+    /// GidMappingBuilder to add just one option to vec of uid mappings
+    pub fn add_id_mapping(mut self, id_mapping: impl Into<LinuxIdMapping>) -> Self {
+        self.gid_mappings.push(id_mapping.into());
+        self
+    }
+
+    /// GidMappingBuilder to add vec of gid mappings together
+    pub fn add_id_mappings(
+        mut self,
+        id_mappings: impl IntoIterator<Item: Into<LinuxIdMapping>>,
+    ) -> Self {
+        self.gid_mappings
+            .extend(id_mappings.into_iter().map(Into::into));
+        self
+    }
 }
 
 /// utility function to generate default config for mounts.

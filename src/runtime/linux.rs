@@ -199,6 +199,19 @@ pub struct LinuxIdMapping {
     size: u32,
 }
 
+#[bon::bon]
+impl LinuxIdMapping {
+    #[builder(finish_fn(name=build_idmapping))]
+    /// Linux Id Mapping builder with bon
+    pub fn idmapping_builder(host_id: u32, container_id: u32, size: u32) -> Self {
+        LinuxIdMapping {
+            host_id,
+            container_id,
+            size,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, EnumString)]
 #[strum(serialize_all = "lowercase")]
 #[serde(rename_all = "lowercase")]

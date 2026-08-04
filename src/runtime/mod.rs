@@ -212,6 +212,87 @@ impl Default for Spec {
     }
 }
 
+#[bon::bon]
+impl Spec {
+    #[builder(finish_fn(name = build_spec))]
+    /// Spec Builder using bon
+    pub fn spec_builder(
+        #[builder(field)] root: Option<Root>,
+        #[builder(field)] mounts: Option<Vec<crate::runtime::Mount>>,
+        process: Option<crate::runtime::Process>,
+        hooks: Option<crate::runtime::Hooks>,
+        annotations: Option<HashMap<String, String>>,
+        linux: Option<crate::runtime::Linux>,
+        solaris: Option<crate::runtime::Solaris>,
+        windows: Option<crate::runtime::Windows>,
+        vm: Option<crate::runtime::VM>,
+        zos: Option<crate::runtime::ZOS>,
+        #[builder(into)] version: String,
+        #[builder(into)] hostname: Option<String>,
+        #[builder(into)] domainname: Option<String>,
+    ) -> Self {
+        Self {
+            version,
+            root,
+            mounts,
+            process,
+            hostname,
+            domainname,
+            hooks,
+            annotations,
+            linux,
+            solaris,
+            windows,
+            vm,
+            zos,
+            ..Default::default()
+        }
+    }
+}
+
+#[bon::bon]
+impl<S: spec_spec_builder_builder::State> SpecSpecBuilderBuilder<S> {
+    #[builder(finish_fn(name = build_root))]
+    /// Bon Root builder for spec
+    pub fn root_builder(
+        mut self,
+        path: impl Into<std::path::PathBuf>,
+        readonly: Option<bool>,
+    ) -> Self {
+        self.root = Some(
+            Root::root_builder()
+                .path(path)
+                .maybe_readonly(readonly)
+                .build_root(),
+        );
+        self
+    }
+
+    /// Directly set root with Into<Root> value
+    pub fn root(mut self, root: impl Into<Root>) -> Self {
+        self.root = Some(root.into());
+        self
+    }
+
+    /// Set non-readonly root with given root folder path
+    pub fn with_root_folder_path(mut self, path: impl Into<std::path::PathBuf>) -> Self {
+        self.root = Some(Root::root_builder().path(path).build_root());
+        self
+    }
+
+    /// Set readonly root path with given path
+    pub fn with_readonly_root_folder_path(mut self, path: impl Into<std::path::PathBuf>) -> Self {
+        self.root = Some(Root::root_builder().path(path).readonly(true).build_root());
+        self
+    }
+
+    /// Set Mounts with any value that implements the Into trait
+    pub fn mounts(mut self, mounts: impl IntoIterator<Item: Into<Mount>>) -> Self {
+        self.mounts = Some(mounts.into_iter().map(Into::into).collect());
+        self
+    }
+}
+
 impl Spec {
     /// Load a new `Spec` from the provided JSON file `path`.
     /// # Errors
