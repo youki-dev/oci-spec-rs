@@ -1,8 +1,5 @@
-use crate::{
-    error::{OciSpecError, Result},
-    from_file, from_reader, to_file, to_string, to_writer,
-};
-use derive_builder::Builder;
+use crate::{error::Result, from_file, from_reader, to_file, to_string, to_writer};
+use bon::Builder;
 use getset::{Getters, Setters};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -12,11 +9,7 @@ use std::{
 
 #[derive(Builder, Clone, Debug, Deserialize, Eq, Getters, Setters, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// The oci layout JSON object serves as a marker for the base of an Open Container Image Layout
 /// and to provide the version of the image-layout in use. The imageLayoutVersion value will align
 /// with the OCI Image Specification version at the time changes to the layout are made, and will
@@ -162,10 +155,9 @@ mod tests {
     use super::*;
 
     fn create_oci_layout() -> OciLayout {
-        OciLayoutBuilder::default()
+        OciLayout::builder()
             .image_layout_version("lorem ipsum")
             .build()
-            .expect("build oci layout")
     }
 
     fn get_oci_layout_path() -> PathBuf {
