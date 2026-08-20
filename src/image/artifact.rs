@@ -60,8 +60,8 @@ impl ArtifactManifest {
     ///
     /// # Errors
     ///
-    /// - [OciSpecError::Io] if the file does not exist
-    /// - [OciSpecError::SerDe] if the image manifest cannot be deserialized.
+    /// - [crate::OciSpecError::Io] if the file does not exist
+    /// - [crate::OciSpecError::SerDe] if the image manifest cannot be deserialized.
     ///
     /// # Example
     ///

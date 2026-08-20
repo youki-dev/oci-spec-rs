@@ -1,4 +1,7 @@
-use crate::runtime::{Capabilities, Capability};
+use crate::{
+    runtime::{Capabilities, Capability},
+    OciSpecError,
+};
 use bon::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use regex::Regex;
@@ -510,7 +513,7 @@ impl Default for LinuxSchedulerFlag {
 #[derive(
     Builder, Clone, Debug, Default, Deserialize, Getters, Setters, Eq, PartialEq, Serialize,
 )]
-#[builder(on(_, into))]
+#[builder(on(_, into),finish_fn(vis = "", name = build_internal))]
 #[getset(get = "pub", set = "pub")]
 /// ExecCPUAffinity specifies CPU affinity used to execute the process.
 /// This setting is not applicable to the container's init process.
@@ -537,6 +540,26 @@ pub struct ExecCPUAffinity {
     /// runtime SHOULD NOT change process' CPU affinity after the process is moved to
     /// container's cgroup, and the final affinity is determined by the Linux kernel.
     cpu_affinity_final: Option<String>,
+}
+
+impl<S: exec_c_p_u_affinity_builder::IsComplete> ExecCPUAffinityBuilder<S> {
+    /// Validate ExecCPUAffinity string format
+    /// # Errors
+    /// Returns `crate::OciSpecError::Other` when provided `ExecCpuAffinity` string values are
+    /// not in correct format
+    pub fn build(self) -> Result<ExecCPUAffinity, crate::OciSpecError> {
+        let exec_cpu_affinity = self.build_internal();
+
+        if let Some(ref s) = exec_cpu_affinity.initial {
+            validate_cpu_affinity(s).map_err(|e| OciSpecError::Other(e.to_string()))?;
+        }
+
+        if let Some(ref s) = exec_cpu_affinity.cpu_affinity_final {
+            validate_cpu_affinity(s).map_err(|e| OciSpecError::Other(e.to_string()))?;
+        }
+
+        Ok(exec_cpu_affinity)
+    }
 }
 
 fn deserialize<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>

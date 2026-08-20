@@ -210,8 +210,8 @@ impl Default for Spec {
 impl Spec {
     /// Load a new `Spec` from the provided JSON file `path`.
     /// # Errors
-    /// This function will return an [OciSpecError::Io] if the spec does not exist or an
-    /// [OciSpecError::SerDe] if it is invalid.
+    /// This function will return an [crate::OciSpecError::Io] if the spec does not exist or an
+    /// [crate::OciSpecError::SerDe] if it is invalid.
     /// # Example
     /// ``` no_run
     /// use oci_spec::runtime::Spec;
@@ -228,8 +228,8 @@ impl Spec {
 
     /// Save a `Spec` to the provided JSON file `path`.
     /// # Errors
-    /// This function will return an [OciSpecError::Io] if a file cannot be created at the provided
-    /// path or an [OciSpecError::SerDe] if the spec cannot be serialized.
+    /// This function will return an [crate::OciSpecError::Io] if a file cannot be created at the provided
+    /// path or an [crate::OciSpecError::SerDe] if the spec cannot be serialized.
     /// # Example
     /// ``` no_run
     /// use oci_spec::runtime::Spec;
