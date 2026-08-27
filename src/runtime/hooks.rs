@@ -1,5 +1,4 @@
-use crate::error::OciSpecError;
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -18,12 +17,7 @@ use std::path::PathBuf;
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 /// Hooks specifies a command that is run in the container at a particular
 /// event in the lifecycle (setup and teardown) of a container.
@@ -90,12 +84,7 @@ pub struct Hooks {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// Hook specifies a command that is run at a particular event in the
 /// lifecycle of a container.
 pub struct Hook {

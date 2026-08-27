@@ -1,6 +1,5 @@
-use crate::error::OciSpecError;
-use crate::runtime::LinuxIdMapping;
-use derive_builder::Builder;
+use crate::{runtime::LinuxIdMapping, OciSpecError};
+use bon::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -8,12 +7,7 @@ use std::path::PathBuf;
 #[derive(
     Builder, Clone, CopyGetters, Debug, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// Root contains information about the container's root filesystem on the
 /// host.
 pub struct Root {
@@ -53,13 +47,8 @@ impl Default for Root {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError", validate = "Self::validate")
-)]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
+#[builder(on(_, into),finish_fn(vis = "", name = build_internal))]
 /// Mount specifies a mount for a container.
 pub struct Mount {
     /// Destination is the absolute path where the mount will be placed in
@@ -109,6 +98,36 @@ pub struct Mount {
     ///
     /// See: <https://github.com/opencontainers/runtime-spec/blob/main/config.md#posix-platform-mounts>
     gid_mappings: Option<Vec<LinuxIdMapping>>,
+}
+
+impl<S: mount_builder::IsComplete> MountBuilder<S> {
+    /// Validated build logic for `Mount`.
+    /// `Mount.uidMappings` and `Mount.gidMappings` must be specified together
+    /// # Errors
+    /// Returns `crate::OciSpecError::Other` if `Mount.uidMappings` `Mount.gidMappings` is not specified together
+    pub fn build(self) -> Result<Mount, crate::OciSpecError> {
+        let mount = self.build_internal();
+
+        let uid_specified = mount
+            .uid_mappings
+            .as_ref()
+            .map(|v| !v.is_empty())
+            .unwrap_or(false);
+
+        let gid_specified = mount
+            .gid_mappings
+            .as_ref()
+            .map(|v| !v.is_empty())
+            .unwrap_or(false);
+
+        if uid_specified ^ gid_specified {
+            return Err(OciSpecError::Other(
+                "Mount.uidMappings and Mount.gidMappings must be specified together".to_string(),
+            ));
+        }
+
+        Ok(mount)
+    }
 }
 
 /// utility function to generate default config for mounts.
@@ -207,31 +226,31 @@ pub fn get_default_mounts() -> Vec<Mount> {
     ]
 }
 
-impl MountBuilder {
-    fn validate(&self) -> Result<(), OciSpecError> {
-        let uid_specified = self
-            .uid_mappings
-            .as_ref()
-            .and_then(|v| v.as_ref())
-            .map(|v| !v.is_empty())
-            .unwrap_or(false);
+// impl MountBuilder {
+//     fn validate(&self) -> Result<(), OciSpecError> {
+//         let uid_specified = self
+//             .uid_mappings
+//             .as_ref()
+//             .and_then(|v| v.as_ref())
+//             .map(|v| !v.is_empty())
+//             .unwrap_or(false);
 
-        let gid_specified = self
-            .gid_mappings
-            .as_ref()
-            .and_then(|v| v.as_ref())
-            .map(|v| !v.is_empty())
-            .unwrap_or(false);
+//         let gid_specified = self
+//             .gid_mappings
+//             .as_ref()
+//             .and_then(|v| v.as_ref())
+//             .map(|v| !v.is_empty())
+//             .unwrap_or(false);
 
-        if uid_specified ^ gid_specified {
-            return Err(OciSpecError::Other(
-                "Mount.uidMappings and Mount.gidMappings must be specified together".to_string(),
-            ));
-        }
+//         if uid_specified ^ gid_specified {
+//             return Err(OciSpecError::Other(
+//                 "Mount.uidMappings and Mount.gidMappings must be specified together".to_string(),
+//             ));
+//         }
 
-        Ok(())
-    }
-}
+//         Ok(())
+//     }
+// }
 
 /// utility function to generate default rootless config for mounts.
 // TODO(saschagrunert): remove once clippy does not report this false positive any more. We cannot
