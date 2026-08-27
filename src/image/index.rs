@@ -1,9 +1,6 @@
 use super::{Descriptor, MediaType};
-use crate::{
-    error::{OciSpecError, Result},
-    from_file, from_reader, to_file, to_string, to_writer,
-};
-use derive_builder::Builder;
+use crate::{error::Result, from_file, from_reader, to_file, to_string, to_writer};
+use bon::Builder;
 use getset::{CopyGetters, Getters, Setters};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -20,11 +17,7 @@ pub const SCHEMA_VERSION: u32 = 2;
     Builder, Clone, CopyGetters, Debug, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// The image index is a higher-level manifest which points to specific
 /// image manifests, ideal for one or more platforms. While the use of
 /// an image index is OPTIONAL for image providers, image consumers
@@ -42,14 +35,12 @@ pub struct ImageIndex {
     /// which differs from the descriptor use of mediaType.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     media_type: Option<MediaType>,
     /// This OPTIONAL property contains the type of an artifact when the manifest is used for an
     /// artifact. If defined, the value MUST comply with RFC 6838, including the naming
     /// requirements in its section 4.2, and MAY be registered with IANA.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     artifact_type: Option<MediaType>,
     /// This REQUIRED property contains a list of manifests for specific
     /// platforms. While this property MUST be present, the size of
@@ -60,13 +51,11 @@ pub struct ImageIndex {
     /// referrers API, indicates a relationship to the specified manifest.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     subject: Option<Descriptor>,
     /// This OPTIONAL property contains arbitrary metadata for the image
     /// index. This OPTIONAL property MUST use the annotation rules.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get_mut = "pub", get = "pub", set = "pub")]
-    #[builder(default)]
     annotations: Option<HashMap<String, String>>,
 }
 
@@ -234,10 +223,10 @@ mod tests {
 
     use super::*;
     use crate::image::{Arch, Os, Sha256Digest};
-    use crate::image::{DescriptorBuilder, PlatformBuilder};
+    use crate::image::{Descriptor, Platform};
 
     fn create_index() -> ImageIndex {
-        let ppc_manifest = DescriptorBuilder::default()
+        let ppc_manifest = Descriptor::builder()
             .media_type(MediaType::ImageManifest)
             .digest(
                 Sha256Digest::from_str(
@@ -247,16 +236,14 @@ mod tests {
             )
             .size(7143u64)
             .platform(
-                PlatformBuilder::default()
+                Platform::builder()
                     .architecture(Arch::PowerPC64le)
                     .os(Os::Linux)
-                    .build()
-                    .expect("build ppc64le platform"),
+                    .build(),
             )
-            .build()
-            .expect("build ppc manifest descriptor");
+            .build();
 
-        let amd64_manifest = DescriptorBuilder::default()
+        let amd64_manifest = Descriptor::builder()
             .media_type(MediaType::ImageManifest)
             .digest(
                 Sha256Digest::from_str(
@@ -266,20 +253,17 @@ mod tests {
             )
             .size(7682u64)
             .platform(
-                PlatformBuilder::default()
+                Platform::builder()
                     .architecture(Arch::Amd64)
                     .os(Os::Linux)
-                    .build()
-                    .expect("build amd64 platform"),
+                    .build(),
             )
-            .build()
-            .expect("build amd64 manifest descriptor");
+            .build();
 
-        ImageIndexBuilder::default()
+        ImageIndex::builder()
             .schema_version(SCHEMA_VERSION)
             .manifests(vec![ppc_manifest, amd64_manifest])
             .build()
-            .expect("build image index")
     }
 
     fn get_index_path() -> PathBuf {

@@ -1,6 +1,6 @@
 use crate::error::OciSpecError;
 use crate::runtime::LinuxIdMapping;
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -8,12 +8,7 @@ use std::path::PathBuf;
 #[derive(
     Builder, Clone, CopyGetters, Debug, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// Root contains information about the container's root filesystem on the
 /// host.
 pub struct Root {
@@ -53,12 +48,7 @@ impl Default for Root {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError", validate = "Self::validate")
-)]
+#[builder(on(_, into), finish_fn(vis = "", name = __build))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 /// Mount specifies a mount for a container.
 pub struct Mount {
@@ -207,19 +197,17 @@ pub fn get_default_mounts() -> Vec<Mount> {
     ]
 }
 
-impl MountBuilder {
+impl Mount {
     fn validate(&self) -> Result<(), OciSpecError> {
         let uid_specified = self
             .uid_mappings
             .as_ref()
-            .and_then(|v| v.as_ref())
             .map(|v| !v.is_empty())
             .unwrap_or(false);
 
         let gid_specified = self
             .gid_mappings
             .as_ref()
-            .and_then(|v| v.as_ref())
             .map(|v| !v.is_empty())
             .unwrap_or(false);
 
@@ -230,6 +218,15 @@ impl MountBuilder {
         }
 
         Ok(())
+    }
+}
+
+impl<S: mount_builder::IsComplete> MountBuilder<S> {
+    /// Builds the `Mount`, validating that uid/gid mappings are specified together.
+    pub fn build(self) -> Result<Mount, OciSpecError> {
+        let mount = self.__build();
+        mount.validate()?;
+        Ok(mount)
     }
 }
 

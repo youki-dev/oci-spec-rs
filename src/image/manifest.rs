@@ -1,9 +1,6 @@
 use super::{Descriptor, MediaType};
-use crate::{
-    error::{OciSpecError, Result},
-    from_file, from_reader, to_file, to_string, to_writer,
-};
-use derive_builder::Builder;
+use crate::{error::Result, from_file, from_reader, to_file, to_string, to_writer};
+use bon::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -27,11 +24,7 @@ use std::{
     Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// Unlike the image index, which contains information about a set of images
 /// that can span a variety of architectures and operating systems, an image
 /// manifest provides a configuration and set of layers for a single
@@ -49,7 +42,6 @@ pub struct ImageManifest {
     /// which differs from the descriptor use of mediaType.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     media_type: Option<MediaType>,
     /// This OPTIONAL property contains the type of an artifact when the manifest is used for an
     /// artifact. This MUST be set when config.mediaType is set to the empty value. If defined, the
@@ -58,7 +50,6 @@ pub struct ImageManifest {
     /// error on encountering an artifactType that is unknown to the implementation.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     artifact_type: Option<MediaType>,
     /// This REQUIRED property references a configuration object for a
     /// container, by digest. Beyond the descriptor requirements,
@@ -84,14 +75,12 @@ pub struct ImageManifest {
     /// referrers API, indicates a relationship to the specified manifest.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
-    #[builder(default)]
     subject: Option<Descriptor>,
     /// This OPTIONAL property contains arbitrary metadata for the image
     /// manifest. This OPTIONAL property MUST use the annotation
     /// rules.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get_mut = "pub", get = "pub", set = "pub")]
-    #[builder(default)]
     annotations: Option<HashMap<String, String>>,
 }
 
@@ -244,12 +233,12 @@ mod tests {
     use std::{fs, path::PathBuf, str::FromStr};
 
     use super::*;
-    use crate::image::{DescriptorBuilder, Sha256Digest};
+    use crate::image::Sha256Digest;
 
     fn create_manifest() -> ImageManifest {
         use crate::image::SCHEMA_VERSION;
 
-        let config = DescriptorBuilder::default()
+        let config = Descriptor::builder()
             .media_type(MediaType::ImageConfig)
             .size(7023u64)
             .digest(
@@ -257,8 +246,7 @@ mod tests {
                     .parse::<Sha256Digest>()
                     .unwrap(),
             )
-            .build()
-            .expect("build config descriptor");
+            .build();
 
         let layers: Vec<Descriptor> = [
             (
@@ -276,21 +264,19 @@ mod tests {
         ]
         .iter()
         .map(|l| {
-            DescriptorBuilder::default()
+            Descriptor::builder()
                 .media_type(MediaType::ImageLayerGzip)
                 .size(l.0)
                 .digest(Sha256Digest::from_str(l.1).unwrap())
                 .build()
-                .expect("build layer")
         })
         .collect();
 
-        ImageManifestBuilder::default()
+        ImageManifest::builder()
             .schema_version(SCHEMA_VERSION)
             .config(config)
             .layers(layers)
             .build()
-            .expect("build image manifest")
     }
 
     fn get_manifest_path() -> PathBuf {
