@@ -1,7 +1,4 @@
-use serde::{
-    de::{Deserializer, Error},
-    Deserialize, Serialize,
-};
+use serde::{de::Deserializer, Deserialize, Serialize};
 use std::collections::HashSet;
 
 use strum_macros::{Display, EnumString};
@@ -9,7 +6,7 @@ use strum_macros::{Display, EnumString};
 /// Capabilities is a unique set of Capability values.
 pub type Capabilities = HashSet<Capability>;
 
-#[derive(Clone, Copy, Debug, EnumString, Eq, Display, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, EnumString, Eq, Display, Hash, PartialEq, Serialize)]
 /// All available capabilities.
 ///
 /// For the purpose of performing permission checks, traditional UNIX
@@ -517,6 +514,12 @@ pub enum Capability {
     /// **CLOCK_REALTIME_ALARM** and **CLOCK_BOOTTIME_ALARM** timers).
     /// _since Linux 3.0_
     WakeAlarm,
+
+    /// A capability this crate does not know, kept verbatim as it was written
+    /// in the configuration.
+    #[serde(untagged)]
+    #[strum(disabled)]
+    Unknown(String),
 }
 
 impl<'de> Deserialize<'de> for Capability {
@@ -581,9 +584,7 @@ impl<'de> Deserialize<'de> for Capability {
             "SYS_TTY_CONFIG" => Ok(Self::SysTtyConfig),
             "SYSLOG" => Ok(Self::Syslog),
             "WAKE_ALARM" => Ok(Self::WakeAlarm),
-            other => Err(Error::custom(format!(
-                "no variant for {input} (converted to {other})",
-            ))),
+            _ => Ok(Self::Unknown(input)),
         }
     }
 }
@@ -622,6 +623,41 @@ mod tests {
         assert_eq!(res.len(), 2);
         assert!(res.contains(&Capability::Syslog));
         assert!(res.contains(&Capability::Chown));
+        Ok(())
+    }
+
+    #[test]
+    fn unknown_capability_is_kept_verbatim() {
+        // an unknown name deserializes instead of failing the whole document
+        let cap: Capability = serde_json::from_str("\"TEST_CAP\"").unwrap();
+        assert_eq!(cap, Capability::Unknown("TEST_CAP".to_string()));
+
+        // and round-trips exactly as written, casing included
+        let cap: Capability = serde_json::from_str("\"&]HWHbJBqh\"").unwrap();
+        assert_eq!(serde_json::to_string(&cap).unwrap(), "\"&]HWHbJBqh\"");
+    }
+
+    #[test]
+    fn capability_sets_keep_unknown_capabilities() -> Result<()> {
+        let caps: crate::runtime::LinuxCapabilities = serde_json::from_str(
+            r#"{
+                "bounding": ["TEST_CAP", "CAP_CHOWN"],
+                "effective": ["cap_syslog"]
+            }"#,
+        )?;
+
+        assert_eq!(
+            caps.bounding().as_ref().unwrap(),
+            &Capabilities::from([
+                Capability::Chown,
+                Capability::Unknown("TEST_CAP".to_string())
+            ])
+        );
+        assert_eq!(
+            caps.effective().as_ref().unwrap(),
+            &Capabilities::from([Capability::Syslog])
+        );
+        assert!(caps.inheritable().is_none());
         Ok(())
     }
 
