@@ -4,7 +4,7 @@ use derive_builder::Builder;
 use getset::{Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     io::{Read, Write},
     path::Path,
 };
@@ -59,7 +59,7 @@ pub struct ArtifactManifest {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get_mut = "pub", get = "pub", set = "pub")]
     #[builder(default)]
-    annotations: Option<HashMap<String, String>>,
+    annotations: Option<BTreeMap<String, String>>,
 }
 
 impl ArtifactManifest {
@@ -246,7 +246,7 @@ mod tests {
             )
             .build()
             .unwrap();
-        let annotations = HashMap::from([
+        let annotations = BTreeMap::from([
             (
                 "org.opencontainers.artifact.created".to_string(),
                 "2022-01-01T14:42:55Z".to_string(),
