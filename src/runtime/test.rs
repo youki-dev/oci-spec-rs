@@ -11,22 +11,20 @@ fn serialize_and_deserialize_spec() {
 
 #[test]
 fn test_linux_device_cgroup_to_string() {
-    let ldc = LinuxDeviceCgroupBuilder::default()
+    let ldc = LinuxDeviceCgroup::builder()
         .allow(true)
         .typ(LinuxDeviceType::B)
         .access("rwm".to_string())
-        .build()
-        .expect("build device cgroup");
+        .build();
     assert_eq!(ldc.to_string(), "b *:* rwm");
 
-    let ldc = LinuxDeviceCgroupBuilder::default()
+    let ldc = LinuxDeviceCgroup::builder()
         .allow(true)
         .typ(LinuxDeviceType::A)
         .major(1)
         .minor(9)
         .access("rwm".to_string())
-        .build()
-        .expect("build device cgroup");
+        .build();
     assert_eq!(ldc.to_string(), "a 1:9 rwm");
 }
 
@@ -87,10 +85,7 @@ fn test_linux_netdevice_lifecycle() {
 
     // Set ens6
     let mut net_devices = net_devices.clone();
-    let ens6 = LinuxNetDeviceBuilder::default()
-        .name("ens6".to_string())
-        .build()
-        .unwrap();
+    let ens6 = LinuxNetDevice::builder().name("ens6".to_string()).build();
     net_devices.insert("ens6".to_string(), ens6);
     assert_eq!(net_devices.len(), 4);
 

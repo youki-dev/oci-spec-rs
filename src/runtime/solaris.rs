@@ -1,5 +1,4 @@
-use crate::error::OciSpecError;
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{Getters, Setters};
 use serde::{Deserialize, Serialize};
 
@@ -7,12 +6,7 @@ use serde::{Deserialize, Serialize};
     Builder, Clone, Debug, Default, Deserialize, Getters, Setters, Eq, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// Solaris contains platform-specific configuration for Solaris application
 /// containers.
@@ -49,12 +43,7 @@ pub struct Solaris {
     Builder, Clone, Debug, Default, Deserialize, Getters, Setters, Eq, PartialEq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// SolarisAnet provides the specification for automatic creation of network
 /// resources for this container.
@@ -92,12 +81,7 @@ pub struct SolarisAnet {
 #[derive(
     Builder, Clone, Debug, Default, Deserialize, Getters, Setters, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// SolarisCappedCPU allows users to set limit on the amount of CPU time
 /// that can be used by container.
@@ -110,12 +94,7 @@ pub struct SolarisCappedCPU {
 #[derive(
     Builder, Clone, Debug, Default, Deserialize, Getters, Setters, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// SolarisCappedMemory allows users to set the physical and swap caps on
 /// the memory that can be used by this container.

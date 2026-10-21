@@ -1,9 +1,6 @@
 use super::{Arch, Os};
-use crate::{
-    error::{OciSpecError, Result},
-    from_file, from_reader, to_file, to_string, to_writer,
-};
-use derive_builder::Builder;
+use crate::{error::Result, from_file, from_reader, to_file, to_string, to_writer};
+use bon::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use serde::{ser::SerializeMap, Deserialize, Deserializer, Serialize, Serializer};
 #[cfg(test)]
@@ -32,12 +29,7 @@ pub const LABEL_VERSION: &str = "version";
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// The image configuration is associated with an image and describes some
 /// basic information about the image such as date created, author, as
@@ -282,12 +274,7 @@ impl Display for ImageConfiguration {
     Serialize,
 )]
 #[serde(rename_all = "PascalCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// The execution parameters which SHOULD be used as a base when
 /// running a container using the image.
@@ -419,12 +406,7 @@ where
 #[derive(
     Builder, Clone, Debug, Deserialize, Eq, Getters, MutGetters, Setters, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// RootFs references the layer content addresses used by the image.
 pub struct RootFs {
@@ -459,12 +441,7 @@ impl Default for RootFs {
     PartialEq,
     Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 /// Describes the history of a layer.
 pub struct History {
     /// A combined date and time at which the layer was created,
@@ -499,8 +476,8 @@ mod tests {
     use super::*;
     use crate::image::{ANNOTATION_CREATED, ANNOTATION_VERSION};
 
-    fn create_base_config() -> ConfigBuilder {
-        ConfigBuilder::default()
+    fn create_base_config() -> Config {
+        Config::builder()
             .user("alice".to_owned())
             .exposed_ports(vec!["8080/tcp".to_owned()])
             .env(vec![
@@ -519,42 +496,39 @@ mod tests {
                 "/var/log/my-app-logs".to_owned(),
             ])
             .working_dir("/home/alice".to_owned())
+            .build()
     }
 
-    fn create_base_imgconfig(conf: Config) -> ImageConfigurationBuilder {
-        ImageConfigurationBuilder::default()
+    fn create_base_imgconfig(conf: Config) -> ImageConfiguration {
+        ImageConfiguration::builder()
             .created("2015-10-31T22:22:56.015925234Z".to_owned())
             .author("Alyssa P. Hacker <alyspdev@example.com>".to_owned())
             .architecture(Arch::Amd64)
             .os(Os::Linux)
-            .config(conf
-            )
-            .rootfs(RootFsBuilder::default()
+            .config(conf)
+            .rootfs(RootFs::builder()
+            .typ("layers")
             .diff_ids(vec![
                 "sha256:c6f988f4874bb0add23a778f753c65efe992244e148a1d2ec2a8b664fb66bbd1".to_owned(),
                 "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef".to_owned(),
             ])
-            .build()
-            .expect("build rootfs"))
+            .build())
             .history(vec![
-                HistoryBuilder::default()
+                History::builder()
                 .created("2015-10-31T22:22:54.690851953Z".to_owned())
                 .created_by("/bin/sh -c #(nop) ADD file:a3bc1e842b69636f9df5256c49c5374fb4eef1e281fe3f282c65fb853ee171c5 in /".to_owned())
-                .build()
-                .expect("build history"),
-                HistoryBuilder::default()
+                .build(),
+                History::builder()
                 .created("2015-10-31T22:22:55.613815829Z".to_owned())
                 .created_by("/bin/sh -c #(nop) CMD [\"sh\"]".to_owned())
                 .empty_layer(true)
-                .build()
-                .expect("build history"),
+                .build(),
             ])
+            .build()
     }
 
     fn create_config() -> ImageConfiguration {
-        create_base_imgconfig(create_base_config().build().expect("config"))
-            .build()
-            .expect("build configuration")
+        create_base_imgconfig(create_base_config())
     }
 
     /// A config with some additions (labels)
@@ -565,11 +539,9 @@ mod tests {
         ]
         .into_iter()
         .map(|(k, v)| (k.to_owned(), v.to_owned()));
-        let config = create_base_config()
-            .labels(labels.collect::<HashMap<_, _>>())
-            .build()
-            .unwrap();
-        create_base_imgconfig(config).build().unwrap()
+        let mut config = create_base_config();
+        config.set_labels(Some(labels.collect::<HashMap<_, _>>()));
+        create_base_imgconfig(config)
     }
 
     fn get_config_path() -> PathBuf {
@@ -680,17 +652,16 @@ mod tests {
 
     #[test]
     fn serialize_without_history() {
-        let config = ImageConfigurationBuilder::default()
+        let config = ImageConfiguration::builder()
             .architecture(Arch::Amd64)
             .os(Os::Linux)
             .rootfs(
-                RootFsBuilder::default()
+                RootFs::builder()
+                    .typ("layers")
                     .diff_ids(vec!["sha256:abc123".to_owned()])
-                    .build()
-                    .expect("build rootfs"),
+                    .build(),
             )
-            .build()
-            .expect("build config");
+            .build();
 
         let json = config.to_string().expect("serialize");
         assert!(!json.contains("history"));
@@ -698,17 +669,16 @@ mod tests {
 
     #[test]
     fn builder_without_history() {
-        let config = ImageConfigurationBuilder::default()
+        let config = ImageConfiguration::builder()
             .architecture(Arch::Amd64)
             .os(Os::Linux)
             .rootfs(
-                RootFsBuilder::default()
+                RootFs::builder()
+                    .typ("layers")
                     .diff_ids(vec!["sha256:abc123".to_owned()])
-                    .build()
-                    .expect("build rootfs"),
+                    .build(),
             )
-            .build()
-            .expect("build config");
+            .build();
 
         assert!(config.history().is_none());
     }

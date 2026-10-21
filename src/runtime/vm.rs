@@ -1,5 +1,4 @@
-use crate::error::OciSpecError;
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{Getters, Setters};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -7,12 +6,7 @@ use std::path::PathBuf;
 #[derive(
     Builder, Clone, Debug, Default, Deserialize, Getters, Setters, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// VM contains information for virtual-machine-based containers.
 pub struct VM {
@@ -34,12 +28,7 @@ pub struct VM {
 #[derive(
     Builder, Clone, Debug, Default, Deserialize, Getters, Setters, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// VMHypervisor contains information about the hypervisor to use for a
 /// virtual machine.
@@ -56,12 +45,7 @@ pub struct VMHypervisor {
 #[derive(
     Builder, Clone, Debug, Default, Deserialize, Getters, Setters, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// VMKernel contains information about the kernel to use for a virtual
 /// machine.
@@ -83,12 +67,7 @@ pub struct VMKernel {
 #[derive(
     Builder, Clone, Debug, Default, Deserialize, Getters, Setters, Eq, PartialEq, Serialize,
 )]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// VMImage contains information about the virtual machine root image.
 pub struct VMImage {
