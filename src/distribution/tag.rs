@@ -1,16 +1,11 @@
 //! Tag types of the distribution spec.
 
-use crate::error::OciSpecError;
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{Getters, Setters};
 use serde::{Deserialize, Serialize};
 
 #[derive(Builder, Clone, Debug, Deserialize, Eq, Getters, Setters, PartialEq, Serialize)]
-#[builder(
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get = "pub", set = "pub")]
 /// A list of tags for a given repository.
 pub struct TagList {
@@ -28,17 +23,9 @@ mod tests {
 
     #[test]
     fn tag_list_success() -> Result<()> {
-        let list = TagListBuilder::default()
-            .name("name")
-            .tags(vec![])
-            .build()?;
+        let list = TagList::builder().name("name").tags(vec![]).build();
         assert!(list.tags().is_empty());
         assert_eq!(list.name(), "name");
         Ok(())
-    }
-
-    #[test]
-    fn tag_list_failure() {
-        assert!(TagListBuilder::default().build().is_err());
     }
 }

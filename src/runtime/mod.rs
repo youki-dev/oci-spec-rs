@@ -2,7 +2,7 @@
 //!
 //! [`Spec`] represents the root object from the specification.
 
-use derive_builder::Builder;
+use bon::Builder;
 use getset::{Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -12,7 +12,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::error::{oci_error, OciSpecError, Result};
+use crate::error::{oci_error, Result};
 
 mod capability;
 mod features;
@@ -47,12 +47,7 @@ pub use zos::*;
     Builder, Clone, Debug, Deserialize, Getters, MutGetters, Setters, PartialEq, Eq, Serialize,
 )]
 #[serde(rename_all = "camelCase")]
-#[builder(
-    default,
-    pattern = "owned",
-    setter(into, strip_option),
-    build_fn(error = "OciSpecError")
-)]
+#[builder(on(_, into))]
 #[getset(get_mut = "pub", get = "pub", set = "pub")]
 pub struct Spec {
     #[serde(default, rename = "ociVersion")]
@@ -215,8 +210,8 @@ impl Default for Spec {
 impl Spec {
     /// Load a new `Spec` from the provided JSON file `path`.
     /// # Errors
-    /// This function will return an [OciSpecError::Io] if the spec does not exist or an
-    /// [OciSpecError::SerDe] if it is invalid.
+    /// This function will return an [crate::OciSpecError::Io] if the spec does not exist or an
+    /// [crate::OciSpecError::SerDe] if it is invalid.
     /// # Example
     /// ``` no_run
     /// use oci_spec::runtime::Spec;
@@ -233,8 +228,8 @@ impl Spec {
 
     /// Save a `Spec` to the provided JSON file `path`.
     /// # Errors
-    /// This function will return an [OciSpecError::Io] if a file cannot be created at the provided
-    /// path or an [OciSpecError::SerDe] if the spec cannot be serialized.
+    /// This function will return an [crate::OciSpecError::Io] if a file cannot be created at the provided
+    /// path or an [crate::OciSpecError::SerDe] if the spec cannot be serialized.
     /// # Example
     /// ``` no_run
     /// use oci_spec::runtime::Spec;
@@ -259,11 +254,10 @@ impl Spec {
             .ok_or_else(|| oci_error("no root path provided for canonicalization"))?;
         let path = Self::canonicalize_path(bundle, root.path())?;
         self.root = Some(
-            RootBuilder::default()
+            Root::builder()
                 .path(path)
                 .readonly(root.readonly().unwrap_or(false))
-                .build()
-                .map_err(|_| oci_error("failed to set canonicalized root"))?,
+                .build(),
         );
         Ok(())
     }
@@ -322,15 +316,10 @@ mod tests {
         fs::create_dir_all(&rootfs_absolute_path).expect("failed to create the testing rootfs");
         {
             // Test the case with absolute path
-            let mut spec = SpecBuilder::default()
-                .root(
-                    RootBuilder::default()
-                        .path(rootfs_absolute_path.clone())
-                        .build()
-                        .unwrap(),
-                )
-                .build()
-                .unwrap();
+            let mut spec = Spec::builder()
+                .version("1.3.0")
+                .root(Root::builder().path(rootfs_absolute_path.clone()).build())
+                .build();
 
             spec.canonicalize_rootfs(&bundle)
                 .expect("failed to canonicalize rootfs");
@@ -342,10 +331,10 @@ mod tests {
         }
         {
             // Test the case with relative path
-            let mut spec = SpecBuilder::default()
-                .root(RootBuilder::default().path(rootfs_name).build().unwrap())
-                .build()
-                .unwrap();
+            let mut spec = Spec::builder()
+                .version("1.3.0")
+                .root(Root::builder().path(rootfs_name).build())
+                .build();
 
             spec.canonicalize_rootfs(&bundle)
                 .expect("failed to canonicalize rootfs");
