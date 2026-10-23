@@ -7,7 +7,7 @@ use derive_builder::Builder;
 use getset::{CopyGetters, Getters, Setters};
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     fmt::Display,
     io::{Read, Write},
     path::Path,
@@ -67,7 +67,7 @@ pub struct ImageIndex {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get_mut = "pub", get = "pub", set = "pub")]
     #[builder(default)]
-    annotations: Option<HashMap<String, String>>,
+    annotations: Option<BTreeMap<String, String>>,
 }
 
 impl ImageIndex {

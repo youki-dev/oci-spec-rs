@@ -6,15 +6,14 @@ use crate::{
 use derive_builder::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use serde::{ser::SerializeMap, Deserialize, Deserializer, Serialize, Serializer};
-#[cfg(test)]
-use std::collections::BTreeMap;
+#[cfg(not(test))]
+use std::collections::HashMap;
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     fmt::Display,
     io::{Read, Write},
     path::Path,
 };
-
 /// In theory, this key is not standard.  In practice, it's used by at least the
 /// RHEL UBI images for a long time.
 pub const LABEL_VERSION: &str = "version";
@@ -227,7 +226,7 @@ impl ImageConfiguration {
     }
 
     /// Extract the labels of the configuration, if present.
-    pub fn labels_of_config(&self) -> Option<&HashMap<String, String>> {
+    pub fn labels_of_config(&self) -> Option<&BTreeMap<String, String>> {
         self.config().as_ref().and_then(|c| c.labels().as_ref())
     }
 
@@ -353,7 +352,7 @@ pub struct Config {
     /// This property MUST use the annotation rules.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get_mut = "pub", get = "pub", set = "pub")]
-    labels: Option<HashMap<String, String>>,
+    labels: Option<BTreeMap<String, String>>,
     /// The field contains the system call signal that will be
     /// sent to the container to exit. The signal can be a signal
     /// name in the format SIGNAME, for instance SIGKILL or SIGRTMIN+3.
@@ -566,7 +565,7 @@ mod tests {
         .into_iter()
         .map(|(k, v)| (k.to_owned(), v.to_owned()));
         let config = create_base_config()
-            .labels(labels.collect::<HashMap<_, _>>())
+            .labels(labels.collect::<BTreeMap<_, _>>())
             .build()
             .unwrap();
         create_base_imgconfig(config).build().unwrap()
@@ -660,6 +659,33 @@ mod tests {
         // assert
         let expected = fs::read_to_string(get_config_path()).expect("read expected");
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn labels_serialize_in_key_order() {
+        let labels: BTreeMap<String, String> = [
+            ("zeta", "last"),
+            ("alpha", "first"),
+            ("middle", "third"),
+            ("beta", "second"),
+        ]
+        .into_iter()
+        .map(|(key, value)| (key.to_owned(), value.to_owned()))
+        .collect();
+        let config = create_base_config()
+            .labels(labels)
+            .build()
+            .expect("build config");
+        let image_config = create_base_imgconfig(config)
+            .build()
+            .expect("build image config");
+
+        let json = image_config.to_string().expect("serialize image config");
+        let alpha = json.find("\"alpha\"").expect("alpha label");
+        let beta = json.find("\"beta\"").expect("beta label");
+        let middle = json.find("\"middle\"").expect("middle label");
+        let zeta = json.find("\"zeta\"").expect("zeta label");
+        assert!(alpha < beta && beta < middle && middle < zeta);
     }
 
     #[test]

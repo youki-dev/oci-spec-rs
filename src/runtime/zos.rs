@@ -50,10 +50,10 @@ pub enum ZOSNamespaceType {
     Uts,
 }
 
-impl TryFrom<&str> for ZOSNamespaceType {
-    type Error = OciSpecError;
+impl core::str::FromStr for ZOSNamespaceType {
+    type Err = OciSpecError;
 
-    fn try_from(namespace: &str) -> Result<Self, Self::Error> {
+    fn from_str(namespace: &str) -> Result<Self, Self::Err> {
         match namespace {
             "pid" => Ok(ZOSNamespaceType::Pid),
             "mount" => Ok(ZOSNamespaceType::Mount),
@@ -63,6 +63,14 @@ impl TryFrom<&str> for ZOSNamespaceType {
                 "unknown z/OS namespace {namespace}, could not convert"
             ))),
         }
+    }
+}
+
+impl TryFrom<&str> for ZOSNamespaceType {
+    type Error = OciSpecError;
+
+    fn try_from(namespace: &str) -> Result<Self, Self::Error> {
+        namespace.parse()
     }
 }
 

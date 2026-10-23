@@ -7,7 +7,7 @@ use derive_builder::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     fmt::Display,
     io::{Read, Write},
     path::Path,
@@ -92,7 +92,7 @@ pub struct ImageManifest {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get_mut = "pub", get = "pub", set = "pub")]
     #[builder(default)]
-    annotations: Option<HashMap<String, String>>,
+    annotations: Option<BTreeMap<String, String>>,
 }
 
 impl ImageManifest {
@@ -376,5 +376,27 @@ mod tests {
         // assert
         let expected = fs::read_to_string(get_manifest_path()).expect("read expected");
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn annotations_serialize_in_key_order() {
+        let mut manifest = create_manifest();
+        manifest.set_annotations(Some(
+            [
+                ("zeta".to_owned(), "last".to_owned()),
+                ("alpha".to_owned(), "first".to_owned()),
+                ("middle".to_owned(), "third".to_owned()),
+                ("beta".to_owned(), "second".to_owned()),
+            ]
+            .into_iter()
+            .collect(),
+        ));
+
+        let json = manifest.to_string().expect("serialize manifest");
+        let alpha = json.find("\"alpha\"").expect("alpha annotation");
+        let beta = json.find("\"beta\"").expect("beta annotation");
+        let middle = json.find("\"middle\"").expect("middle annotation");
+        let zeta = json.find("\"zeta\"").expect("zeta annotation");
+        assert!(alpha < beta && beta < middle && middle < zeta);
     }
 }

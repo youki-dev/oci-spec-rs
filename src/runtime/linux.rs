@@ -889,10 +889,10 @@ pub enum LinuxNamespaceType {
     Time = 0x00000080,
 }
 
-impl TryFrom<&str> for LinuxNamespaceType {
-    type Error = OciSpecError;
+impl core::str::FromStr for LinuxNamespaceType {
+    type Err = OciSpecError;
 
-    fn try_from(namespace: &str) -> Result<Self, Self::Error> {
+    fn from_str(namespace: &str) -> Result<Self, Self::Err> {
         match namespace {
             "mnt" | "mount" => Ok(LinuxNamespaceType::Mount),
             "cgroup" => Ok(LinuxNamespaceType::Cgroup),
@@ -906,6 +906,14 @@ impl TryFrom<&str> for LinuxNamespaceType {
                 "unknown namespace {namespace}, could not convert"
             ))),
         }
+    }
+}
+
+impl TryFrom<&str> for LinuxNamespaceType {
+    type Error = OciSpecError;
+
+    fn try_from(namespace: &str) -> Result<Self, Self::Error> {
+        namespace.parse()
     }
 }
 

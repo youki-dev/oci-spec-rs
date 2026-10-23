@@ -3,7 +3,7 @@ use crate::error::OciSpecError;
 use derive_builder::Builder;
 use getset::{CopyGetters, Getters, Setters};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[derive(
     Builder, Clone, CopyGetters, Debug, Deserialize, Eq, Getters, Setters, PartialEq, Serialize,
@@ -52,7 +52,7 @@ pub struct Descriptor {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[getset(get = "pub", set = "pub")]
     #[builder(default)]
-    annotations: Option<HashMap<String, String>>,
+    annotations: Option<BTreeMap<String, String>>,
     /// This OPTIONAL property describes the minimum runtime requirements of
     /// the image. This property SHOULD be present if its target is
     /// platform-specific.
