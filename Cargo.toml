@@ -37,5 +37,5 @@ regex = "1"
 
 [dev-dependencies]
 tempfile = "3.23.0"
-rstest = "0.26.1"
+rstest = "0.28.0"
 serde_json = { version = "1.0.66", features = ["preserve_order"] }
