@@ -15,7 +15,8 @@ const DOCKER_HUB_OFFICIAL_REPO_NAME: &str = "library";
 const DEFAULT_TAG: &str = "latest";
 /// REFERENCE_REGEXP is the full supported format of a reference. The regexp
 /// is anchored and has capturing groups for name, tag, and digest components.
-const REFERENCE_REGEXP: &str = r"^((?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])(?:(?:\.(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]))+)?(?::[0-9]+)?/)?[a-z0-9]+(?:(?:(?:[._]|__|[-]*)[a-z0-9]+)+)?(?:(?:/[a-z0-9]+(?:(?:(?:[._]|__|[-]*)[a-z0-9]+)+)?)+)?)(?::([\w][\w.-]{0,127}))?(?:@([A-Za-z][A-Za-z0-9]*(?:[-_+.][A-Za-z][A-Za-z0-9]*)*[:][[:xdigit:]]{32,}))?$";
+/// An IPv6 registry host is written in square brackets and must contain at least one colon.
+const REFERENCE_REGEXP: &str = r"^((?:(?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])(?:(?:\.(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]))+)?|\[(?:[a-fA-F0-9:]*:[a-fA-F0-9:]*)\])(?::[0-9]+)?/)?[a-z0-9]+(?:(?:(?:[._]|__|[-]*)[a-z0-9]+)+)?(?:(?:/[a-z0-9]+(?:(?:(?:[._]|__|[-]*)[a-z0-9]+)+)?)+)?)(?::([\w][\w.-]{0,127}))?(?:@([A-Za-z][A-Za-z0-9]*(?:[-_+.][A-Za-z][A-Za-z0-9]*)*[:][[:xdigit:]]{32,}))?$";
 
 fn reference_regexp() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
@@ -393,6 +394,17 @@ mod test {
             case("foo_bar.com:8080", "docker.io", "library/foo_bar.com", Some("8080"), None, "docker.io/library/foo_bar.com:8080" ),
             case("foo/foo_bar.com:8080", "docker.io", "foo/foo_bar.com", Some("8080"), None, "docker.io/foo/foo_bar.com:8080"),
             case("opensuse/leap:15.3", "docker.io", "opensuse/leap", Some("15.3"), None, "docker.io/opensuse/leap:15.3"),
+            // IPv6 registry hosts, aligned with distribution/reference.
+            case("[::1]/repo", "[::1]", "repo", Some("latest"), None, "[::1]/repo:latest"),
+            case("[::1]:5000/repo", "[::1]:5000", "repo", Some("latest"), None, "[::1]:5000/repo:latest"),
+            case("[2001:db8::1]/repo", "[2001:db8::1]", "repo", Some("latest"), None, "[2001:db8::1]/repo:latest"),
+            case("[2001:db8:1:2:3:4:5:6]/repo:tag", "[2001:db8:1:2:3:4:5:6]", "repo", Some("tag"), None, "[2001:db8:1:2:3:4:5:6]/repo:tag"),
+            case("[2001:db8::1]:5000/repo", "[2001:db8::1]:5000", "repo", Some("latest"), None, "[2001:db8::1]:5000/repo:latest"),
+            case("[2001:db8::1]:5000/repo:tag", "[2001:db8::1]:5000", "repo", Some("tag"), None, "[2001:db8::1]:5000/repo:tag"),
+            case("[2001:db8::]:5000/repo", "[2001:db8::]:5000", "repo", Some("latest"), None, "[2001:db8::]:5000/repo:latest"),
+            case("[2001:DB8::1]:443/org/app:1.0", "[2001:DB8::1]:443", "org/app", Some("1.0"), None, "[2001:DB8::1]:443/org/app:1.0"),
+            case("[2001:db8::1]:5000/repo@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "[2001:db8::1]:5000", "repo", None, Some("sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"), "[2001:db8::1]:5000/repo@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+            case("[2001:db8::1]:5000/repo:tag@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "[2001:db8::1]:5000", "repo", Some("tag"), Some("sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"), "[2001:db8::1]:5000/repo:tag@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
         )]
         fn parse_good_reference(
             input: &str,
@@ -426,7 +438,15 @@ mod test {
             // FIXME: should really pass a ParseError::NameContainsUppercase, but "invalid format" is good enough for now.
             case("test:5000/Uppercase/lowercase:tag", ParseError::ReferenceInvalidFormat),
             case("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ParseError::NameTooLong),
-            case("aa/asdf$$^/aa", ParseError::ReferenceInvalidFormat)
+            case("aa/asdf$$^/aa", ParseError::ReferenceInvalidFormat),
+            // IPv6 hosts require a repository path. Zone identifiers, IPv4-mapped
+            // addresses, and bracketed hex without a colon are not registry hosts.
+            case("[2001:db8::1]", ParseError::ReferenceInvalidFormat),
+            case("[2001:db8::1]:5000", ParseError::ReferenceInvalidFormat),
+            case("[2001:db8::1]:tag", ParseError::ReferenceInvalidFormat),
+            case("[fe80::1%eth0]:5000/repo", ParseError::ReferenceInvalidFormat),
+            case("[::ffff:192.0.2.128]/repo", ParseError::ReferenceInvalidFormat),
+            case("[abcdef]/repo", ParseError::ReferenceInvalidFormat),
         )]
         fn parse_bad_reference(input: &str, err: ParseError) {
             assert_eq!(Reference::try_from(input).unwrap_err(), err)
