@@ -225,6 +225,75 @@ impl Reference {
         }
     }
 
+    /// Parses a reference like [`Reference::from_str`], but first normalizes the registry
+    /// host with [IDNA] (the standard for domain names in any script).
+    ///
+    /// Registries and other tools only accept ASCII hosts. A Unicode domain name has a
+    /// standard ASCII form, called punycode, which starts with `xn--`. IDNA converts to
+    /// it, and also normalizes the rest of the host, for example by lowercasing letters:
+    ///
+    /// | Input                      | Registry                       |
+    /// |----------------------------|--------------------------------|
+    /// | `bücher.example/app`       | `xn--bcher-kva.example`        |
+    /// | `Bücher.Example/app`       | `xn--bcher-kva.example`        |
+    /// | `Registry.Example.COM/app` | `registry.example.com`         |
+    /// | `bücher。example:5000/app` | `xn--bcher-kva.example:5000`   |
+    /// | `[::1]:5000/app`           | `[::1]:5000` (unchanged)       |
+    ///
+    /// The part before the first `/` is normalized if, after IDNA, it has a `.` or a port
+    /// (`:`). IDNA decides which characters are dots: besides `.`, it reads full stops such
+    /// as the ideographic `。` as dots. A part without a dot or port, such as `Foo` in
+    /// `Foo/bar` or `bücher` in `bücher/app`, is not a host and is left as written. IPv6
+    /// hosts in brackets and the port are also left as written.
+    ///
+    /// The IDNA rules for the host:
+    ///
+    /// - after normalizing, the only ASCII characters allowed are letters, digits and
+    ///   `-`;
+    /// - a label (a part of the domain between dots) must not start or end with `-`;
+    /// - a label is at most 63 bytes, and the domain at most 253 bytes;
+    /// - non-ASCII characters must be allowed by IDNA, and left-to-right and
+    ///   right-to-left letters must not be mixed.
+    ///
+    /// `--` as the third and fourth characters of a label is allowed, as in browsers,
+    /// because real hosts such as YouTube CDN nodes use it.
+    ///
+    /// If IDNA rejects the host, the input is parsed unchanged. This matches how
+    /// `from_str` treats an invalid host: `foo_bar.example/app` has the registry `""` and
+    /// the repository `foo_bar.example/app`. So an ASCII host that only IDNA rejects, for
+    /// example one longer than 253 bytes, is kept as written. The returned reference's
+    /// [`whole()`](Self::whole) always parses back to the same reference with `from_str`.
+    ///
+    /// Enabling the `idna` feature does not change `str::parse` or `Reference::try_from`,
+    /// so it is safe for any crate in a build to enable it.
+    ///
+    /// # Errors
+    ///
+    /// Returns the same errors as `from_str` gives for the normalized input, or for the
+    /// input as written if IDNA rejects the host.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use oci_spec::distribution::Reference;
+    ///
+    /// let reference = Reference::parse_normalizing_host("Bücher.example:5000/app:v1").unwrap();
+    /// assert_eq!("xn--bcher-kva.example:5000", reference.registry());
+    /// assert_eq!("xn--bcher-kva.example:5000/app:v1", reference.whole());
+    /// ```
+    ///
+    /// [IDNA]: https://www.unicode.org/reports/tr46/
+    #[cfg(feature = "idna")]
+    pub fn parse_normalizing_host(s: &str) -> Result<Self, ParseError> {
+        match s.split_once('/') {
+            Some((first, rest)) => match normalize_host(first) {
+                Some(host) => format!("{host}/{rest}").parse(),
+                None => s.parse(),
+            },
+            None => s.parse(),
+        }
+    }
+
     /// Returns the whole reference.
     pub fn whole(&self) -> String {
         self.to_string()
@@ -579,6 +648,28 @@ fn split_docker_domain(name: &str) -> (&str, String) {
         );
     }
     (domain, remainder.to_owned())
+}
+
+/// Normalizes `first`, the part before the first `/`, with IDNA, for
+/// [`Reference::parse_normalizing_host`]. Returns `None` if `first` is an IPv6 host,
+/// if IDNA rejects it, or if the result has no `.` and no port, so it is not a host.
+#[cfg(feature = "idna")]
+fn normalize_host(first: &str) -> Option<String> {
+    use idna::uts46::{AsciiDenyList, DnsLength, Hyphens, Uts46};
+
+    if first.starts_with('[') {
+        return None;
+    }
+    let (domain, port) = first.split_at(first.find(':').unwrap_or(first.len()));
+    let domain = Uts46::new()
+        .to_ascii(
+            domain.as_bytes(),
+            AsciiDenyList::STD3,
+            Hyphens::CheckFirstLast,
+            DnsLength::Verify,
+        )
+        .ok()?;
+    (domain.contains('.') || !port.is_empty()).then(|| format!("{domain}{port}"))
 }
 
 /// Whether the first component of a reference is treated as a domain.
@@ -952,7 +1043,7 @@ mod test {
             case("[::1/app", ParseError::ReferenceInvalidFormat, None),
             case("[::g]/app", ParseError::ReferenceInvalidFormat, None),
             case("-a.com/app", ParseError::ReferenceInvalidFormat, None),
-            // Unicode domains are not supported.
+            // Unicode domains need `Reference::parse_normalizing_host` (feature `idna`).
             case("bücher.example/app", ParseError::ReferenceInvalidFormat, None),
             case("☃.com/myimage", ParseError::ReferenceInvalidFormat, None),
             // A 64 character hex name is an image ID.
@@ -1134,6 +1225,261 @@ mod test {
                 digest.to_string(),
             );
             assert_eq!(expected, reference.to_string());
+        }
+    }
+
+    #[cfg(feature = "idna")]
+    mod parse_normalizing_host {
+        use super::*;
+        use rstest::rstest;
+
+        /// Checks a successful parse, and that `from_str` accepts the result as well.
+        fn assert_normalized(input: &str, registry: &str, repository: &str) {
+            let reference = assert_parses(Reference::parse_normalizing_host, input);
+            assert_field("registry", input, registry, reference.registry());
+            assert_field("repository", input, repository, reference.repository());
+            let whole = reference.whole();
+            let reparsed = Reference::try_from(whole.as_str());
+            assert!(
+                reparsed.as_ref() == Ok(&reference),
+                "{input:?} gives {whole:?}, but from_str parses that as {reparsed:?}"
+            );
+        }
+
+        /// ASCII hosts are normalized by IDNA too: letters are lowercased. Parts that are
+        /// not a host, IPv6 hosts and hosts that IDNA rejects are kept as written, so the
+        /// result is the same as from `from_str`.
+        #[rstest]
+        #[case("Registry.Example.COM/app", "registry.example.com", "app")]
+        #[case("Registry.Example.COM:5000/app", "registry.example.com:5000", "app")]
+        #[case("127.1/app", "127.1", "app")]
+        // `--` as the third and fourth characters is allowed.
+        #[case("ab--c.example/app", "ab--c.example", "app")]
+        #[case("ls---x.example/app", "ls---x.example", "app")]
+        #[case("[2001:DB8:0:0::1]:5000/app", "[2001:DB8:0:0::1]:5000", "app")]
+        // IDNA rejects `_`, so this is not a host, as in `from_str`.
+        #[case("foo_bar.example/app", "", "foo_bar.example/app")]
+        // No `.` and no port, so not normalized: `Foo` stays a host, as in `from_str`.
+        // Lowercased, it would become the Docker Hub repository `foo/bar`.
+        #[case("Foo/bar", "Foo", "bar")]
+        #[case("busybox", "docker.io", "library/busybox")]
+        #[case("foo/bar", "docker.io", "foo/bar")]
+        #[case("localhost/app", "localhost", "app")]
+        #[case("index.docker.io/app", "docker.io", "library/app")]
+        // A host that normalizes to Docker Hub is Docker Hub.
+        #[case("Docker.IO/app", "docker.io", "library/app")]
+        fn ascii(#[case] input: &str, #[case] registry: &str, #[case] repository: &str) {
+            assert_normalized(input, registry, repository);
+        }
+
+        #[rstest]
+        #[case("bücher.example/app", "xn--bcher-kva.example", "app")]
+        // ASCII labels are lowercased as well.
+        #[case("Bücher.Example:5000/app", "xn--bcher-kva.example:5000", "app")]
+        #[case("MyReg.bücher.example/app", "myreg.xn--bcher-kva.example", "app")]
+        #[case("ls---x.bücher.example/app", "ls---x.xn--bcher-kva.example", "app")]
+        // `--` as the third and fourth characters is allowed, as in browsers.
+        #[case("bü--c.example/app", "xn--b--c-0ra.example", "app")]
+        #[case("bücher\u{3002}example/app", "xn--bcher-kva.example", "app")]
+        #[case("bücher\u{FF0E}example/app", "xn--bcher-kva.example", "app")]
+        #[case("bücher:5000/app", "xn--bcher-kva:5000", "app")]
+        // The Unicode forms of the punycode domains in the `parse` tests.
+        #[case("☃.com/myimage", "xn--n3h.com", "myimage")]
+        #[case("🐳.com/myimage", "xn--7o8h.com", "myimage")]
+        // Normalization done by IDNA:
+        // `ß` is kept ("faß"); older IDNA (2003) turned it into "ss". Uppercase Greek is
+        // lowercased ("σασ").
+        #[case("faß.de/app", "xn--fa-hia.de", "app")]
+        #[case("ΣΑΣ.gr/app", "xn--mxa9ab.gr", "app")]
+        // Decomposed Unicode (NFD): "u" followed by a combining diaeresis gives the same
+        // result as "ü".
+        #[case("bu\u{308}cher.example/app", "xn--bcher-kva.example", "app")]
+        // Fullwidth letters are turned into ASCII.
+        #[case("ｅｘａｍｐｌｅ.com/app", "example.com", "app")]
+        // A right-to-left (Hebrew) label.
+        #[case("שלום.example/app", "xn--9dbne9b.example", "app")]
+        // A soft hyphen is invisible and removed by IDNA.
+        #[case("exam\u{AD}ple.cöm/app", "example.xn--cm-fka", "app")]
+        // A look-alike letter (Cyrillic "а") gives a different host than "apple.com".
+        #[case("\u{430}pple.com/app", "xn--pple-43d.com", "app")]
+        // A valid punycode label is kept.
+        #[case(
+            "xn--bcher-kva.bücher.example/app",
+            "xn--bcher-kva.xn--bcher-kva.example",
+            "app"
+        )]
+        fn good(#[case] input: &str, #[case] registry: &str, #[case] repository: &str) {
+            assert_normalized(input, registry, repository);
+        }
+
+        #[rstest]
+        // A label must not start or end with `-`, and ASCII characters other than
+        // letters, digits and `-` are not allowed.
+        #[case("-bücher.example/app")]
+        #[case("bücher-.example/app")]
+        #[case("bü_cher.example/app")]
+        #[case("bad hüst.example/app")]
+        // Zero width joiner and non-joiner.
+        #[case("\u{200D}.com/app")]
+        #[case("exa\u{200C}mple.cöm/app")]
+        // Mixing left-to-right and right-to-left letters in one label (Bidi rule).
+        #[case("aשלום.example/app")]
+        // Not a valid host or port.
+        #[case("bücher.example./app")]
+        #[case("bücher..example/app")]
+        #[case(" bücher.example/app")]
+        #[case("bücher.example\n/app")]
+        #[case("bü\tcher.example/app")]
+        #[case("user@bücher.example/app")]
+        #[case("bücher.example\u{FF1A}5000/app")]
+        #[case("bücher.example:５０００/app")]
+        #[case("bücher.example:port/app")]
+        // Percent-encoding is not decoded.
+        #[case("b%C3%BCcher.example/app")]
+        // IDNA maps U+2100 (℀) to "a/c" and U+FE55 (small colon) to `:`. Only letters,
+        // digits and `-` are allowed, so these are rejected and can't change where the
+        // host ends.
+        #[case("bücher.ex\u{2100}ample/app")]
+        #[case("bücher.example\u{FE55}5000/app")]
+        // A label longer than 63 bytes (for the whole domain, see `domain_length`).
+        #[case(&format!("{}.example/app", "ü".repeat(70)))]
+        // `xn--` followed by non-ASCII characters, and invalid punycode next to a Unicode
+        // label.
+        #[case("xn--kitty-點看pd34d.com/app")]
+        #[case("xn--not-valid.bücher.example/app")]
+        // Only the host may contain Unicode. The repository and tag must be ASCII.
+        #[case("bücher.example/bücher")]
+        #[case("bücher.example/app:tagé")]
+        // Without a `.` or `:` after IDNA, the first component is not a host, so it is left
+        // as written, and `from_str` rejects the non-ASCII repository.
+        #[case("bücher/app")]
+        fn bad(#[case] input: &str) {
+            assert_rejected(
+                Reference::parse_normalizing_host,
+                input,
+                ParseError::ReferenceInvalidFormat,
+            );
+        }
+
+        /// A host that is only dots fails the same way with `.` and `。`, and with the same
+        /// error as `from_str` gives for `.`.
+        #[rstest]
+        #[case(".", "。")]
+        #[case("./app", "。/app")]
+        #[case(".:5000/app", "。:5000/app")]
+        #[case("../app", "。。/app")]
+        fn only_dots(#[case] ascii: &str, #[case] unicode: &str) {
+            let expected = Reference::try_from(ascii);
+            assert!(
+                expected.is_err(),
+                "{ascii:?} should be rejected, got {expected:?}"
+            );
+            for input in [ascii, unicode] {
+                let result = Reference::parse_normalizing_host(input);
+                assert!(
+                    result == expected,
+                    "{input:?} gives {result:?}, expected {expected:?}"
+                );
+            }
+        }
+
+        /// Checks the example in the docs of `Reference::parse_normalizing_host`, because
+        /// CI does not run doctests.
+        #[test]
+        fn doc_example() {
+            let input = "Bücher.example:5000/app:v1";
+            let reference = assert_parses(Reference::parse_normalizing_host, input);
+            assert_field(
+                "registry",
+                input,
+                "xn--bcher-kva.example:5000",
+                reference.registry(),
+            );
+            assert_field(
+                "whole()",
+                input,
+                "xn--bcher-kva.example:5000/app:v1",
+                &reference.whole(),
+            );
+        }
+
+        /// The error is the same as from `from_str`, even when IDNA rejects the host.
+        #[rstest]
+        #[case("bücher.example/App")]
+        #[case("-bücher.example/App")]
+        fn uppercase_repository(#[case] input: &str) {
+            assert_rejected(
+                Reference::parse_normalizing_host,
+                input,
+                ParseError::NameContainsUppercase,
+            );
+        }
+
+        /// Every combination of these labels is either rejected or gives a reference
+        /// whose `whole()` parses back to the same reference with `from_str`.
+        #[test]
+        fn accepted_references_parse_back() {
+            let labels = [
+                "bücher",
+                "Bücher",
+                "faß",
+                "ΣΑΣ",
+                "ü--c",
+                "bü--c",
+                "ls---x",
+                "xn--bcher-kva",
+                "xn--not-valid",
+                "☃",
+                "שלום",
+                "aשלום",
+                "ｅｘａｍｐｌｅ",
+                "exam\u{AD}ple",
+                "\u{200D}",
+                "a",
+                "localhost",
+                "",
+            ];
+            let mut accepted = 0;
+            for (a, b) in labels
+                .iter()
+                .flat_map(|a| labels.iter().map(move |b| (a, b)))
+            {
+                for dot in [".", "\u{3002}"] {
+                    for rest in ["/app", ":5000/app", "/App", "/app:v1"] {
+                        let input = format!("{a}{dot}{b}{rest}");
+                        let Ok(reference) = Reference::parse_normalizing_host(&input) else {
+                            continue;
+                        };
+                        accepted += 1;
+                        let whole = reference.whole();
+                        let reparsed = Reference::try_from(whole.as_str());
+                        assert!(
+                            reparsed.as_ref() == Ok(&reference),
+                            "{input:?} gives {whole:?}, but from_str parses that as {reparsed:?}"
+                        );
+                    }
+                }
+            }
+            assert!(accepted > 100, "only {accepted} inputs were accepted");
+        }
+
+        /// A domain is at most 253 bytes. An ASCII host that is longer is not normalized,
+        /// but kept as written, as `from_str` accepts it.
+        #[test]
+        fn domain_length() {
+            let labels = format!("{}.", "a".repeat(63)).repeat(3);
+            let ascii = |n| format!("xn--bcher-kva.{labels}{}", "a".repeat(n));
+            let unicode = |n| format!("bücher.{labels}{}/app", "a".repeat(n));
+            assert_eq!(253, ascii(47).len(), "the test domain should be 253 bytes");
+            assert_normalized(&unicode(47), &ascii(47), "app");
+            assert_rejected(
+                Reference::parse_normalizing_host,
+                &unicode(48),
+                ParseError::ReferenceInvalidFormat,
+            );
+            let long = format!("Upper-case-abc.{labels}{}", "a".repeat(47));
+            assert_eq!(254, long.len(), "the long domain should be 254 bytes");
+            assert_normalized(&format!("{long}/app"), &long, "app");
         }
     }
 

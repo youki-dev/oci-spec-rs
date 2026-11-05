@@ -81,6 +81,8 @@ jobs:
         uses: taiki-e/install-action@cargo-llvm-cov
       - name: Generate code coverage
         run: cargo llvm-cov --all-features --lcov --output-path lcov.info
+      - name: Test with default features
+        run: cargo llvm-cov --no-report
       - name: Upload Results
         uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4 # v7.1.0
         with:

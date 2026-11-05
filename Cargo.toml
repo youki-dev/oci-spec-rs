@@ -16,12 +16,21 @@ license = "Apache-2.0"
 keywords = ["oci", "spec", "container", "runtime", "image"]
 categories = ["api-bindings"]
 
+[package.metadata.docs.rs]
+# Document `parse_normalizing_host`, which needs the `idna` feature.
+features = ["idna"]
+
 [features]
 default = ["distribution", "image", "runtime"]
 proptests = ["quickcheck"]
 distribution = []
 image = []
 runtime = []
+# Adds `distribution::Reference::parse_normalizing_host`, which normalizes the
+# registry host with IDNA, so Unicode hosts are accepted, e.g. `Bücher.Example` to
+# `xn--bcher-kva.example`. Normal parsing (`str::parse` / `Reference::try_from`)
+# does not change.
+idna = ["dep:idna", "distribution"]
 
 [dependencies]
 const_format = "0.2"
@@ -33,6 +42,7 @@ derive_builder = "0.20.0"
 getset = "0.1.3"
 strum = "0.27.0"
 strum_macros = "0.27.0"
+idna = { version = "1.1", optional = true }
 
 [dev-dependencies]
 tempfile = "3.23.0"
