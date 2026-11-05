@@ -4,10 +4,8 @@ use crate::{
 };
 use derive_builder::Builder;
 use getset::{CopyGetters, Getters, MutGetters, Setters};
-use regex::Regex;
 use serde::{de, Deserialize, Deserializer, Serialize};
 use std::path::PathBuf;
-use std::sync::OnceLock;
 use strum_macros::{Display as StrumDisplay, EnumString};
 
 #[derive(
@@ -609,16 +607,17 @@ where
     Ok(value)
 }
 
-fn exec_cpu_affinity_regex() -> &'static Regex {
-    static EXEC_CPU_AFFINITY_REGEX: OnceLock<Regex> = OnceLock::new();
-    EXEC_CPU_AFFINITY_REGEX.get_or_init(|| {
-        Regex::new(r"^(\d+(-\d+)?)(,\d+(-\d+)?)*$")
-            .expect("Failed to create regex for execCPUAffinity")
-    })
-}
-
+/// Validates a comma separated list of CPUs and CPU ranges, such as `0-3,7`, as used by
+/// `execCPUAffinity` in the [runtime-spec].
+///
+/// [runtime-spec]: https://github.com/opencontainers/runtime-spec/blob/v1.3.0/config.md#linux-process
 fn validate_cpu_affinity(s: &str) -> Result<(), String> {
-    if !exec_cpu_affinity_regex().is_match(s) {
+    let is_number = |n: &str| !n.is_empty() && n.bytes().all(|c| c.is_ascii_digit());
+    let valid = s.split(',').all(|item| match item.split_once('-') {
+        Some((first, last)) => is_number(first) && is_number(last),
+        None => is_number(item),
+    });
+    if !valid {
         return Err(format!("Invalid execCPUAffinity format: {s}"));
     }
 
@@ -771,7 +770,9 @@ mod tests {
                 "{valid:?} should be valid"
             );
         }
-        for invalid in ["", ",", "0,", "0-", "-3", "0-3-5", " 1"] {
+        // Only ASCII digits are allowed, not other Unicode digits such as the
+        // Arabic-Indic "٣" (3).
+        for invalid in ["", ",", "0,", "0-", "-3", "0-3-5", " 1", "٣", "0-٣"] {
             assert!(
                 validate_cpu_affinity(invalid).is_err(),
                 "{invalid:?} should be invalid"
