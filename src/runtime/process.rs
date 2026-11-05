@@ -764,6 +764,22 @@ mod tests {
     }
 
     #[test]
+    fn validate_cpu_affinity_format() {
+        for valid in ["0", "0-3", "0-3,7", "10,11-12"] {
+            assert!(
+                validate_cpu_affinity(valid).is_ok(),
+                "{valid:?} should be valid"
+            );
+        }
+        for invalid in ["", ",", "0,", "0-", "-3", "0-3-5", " 1"] {
+            assert!(
+                validate_cpu_affinity(invalid).is_err(),
+                "{invalid:?} should be invalid"
+            );
+        }
+    }
+
+    #[test]
     fn test_build_empty() {
         let affinity = ExecCPUAffinityBuilder::default().build();
         let affinity = affinity.unwrap();
